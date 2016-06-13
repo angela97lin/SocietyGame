@@ -4,23 +4,31 @@
 <script>
 	var socket = io();
 	var individual = 20;
+	
+	var playerNumberInput = prompt("What player number are you?");
+	var groupNumberInput = prompt("What group are you in?");
+	var teamNumberInput = prompt("What team are you on?");
 
 	//playerNumber
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player: " + data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
+		document.getElementById('individualscore').innerHTML = "Individual Score: " + individual;
 	});
 
 	//timer
 	socket.on('timer', function(data) {
-		document.getElementById('timer').innerHTML = "Time: " + data.timer;
+		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 	});
 
 	//get the updated world data
 	socket.on('world', function(data) {
-		document.getElementById('world').innerHTML = "World: " + data.world;
+		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
 
 	socket.on('enable', function(data) {
+		document.getElementById('decision1').disabled = false;
+		document.getElementById('decision2').disabled = false;
+		document.getElementById('decision3').disabled = false;
 		document.getElementById('decision4').disabled = false;
 	});
 
@@ -28,22 +36,27 @@
 	var decision4 = function() {
 		socket.emit('decision4', {});
 		individual--;
-		document.getElementById('individual').innerHTML = "Individual: " + individual;
+		document.getElementById('individualscore').innerHTML = "Individual Score: " + individual;
+		document.getElementById('decision1').disabled = true;
+		document.getElementById('decision2').disabled = true;
+		document.getElementById('decision3').disabled = true;
 		document.getElementById('decision4').disabled = true;
 	};
 
 </script>
 
-<body>
-
-<div id='playerNumber'></div>
-
-<div id='individual'>Individual: 20</div>
-
-<div id='world'>World: 20</div>
-
-<div id='timer'></div>
-
-<!--button-->
-<button id='decision4' onclick="decision4()">Decision 4</button>
-</body>
+<div style="background-color: black; width: 15%; text-align: center">
+	<h1 id="worldscore" style="color: white;">20</h1>
+	<!--<h2 id="nationscore" style="color: white;">insert number here</h2>-->
+	<h3 id="individualscore" style="color: white;">20</h3>
+	<!--<h4 id="roundnumber" style="color:white;">insert number here</h4>-->
+	<h4 id="timer" style="color:white;">insert number here</h4>
+	<h4 id="playerNumber" style="color:white;">insert number here</h4>
+	<button id="decision1" onclick="decision1()">Decision 1</button>
+	<h3></h3>
+	<button id="decision2" onclick="decision2()">Decision 2</button>
+	<h3></h3>
+	<button id="decision3" onclick="decision3()">Decision 3</button>
+	<h3></h3>
+	<button id="decision4" onclick="decision4()">Decision 4</button>
+</div>
