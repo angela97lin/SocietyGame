@@ -5,6 +5,11 @@ var playerNumber = 1;
 var world = 20;
 var TIME_LIMIT = 10;
 var timer = TIME_LIMIT;
+var playerScores = {};
+var groupScores = {};
+var teamScores = {};
+var playerToGroup = {};
+var groupToTeam = {};
 
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
@@ -31,21 +36,68 @@ io.sockets.on('connection', function(socket) {
 	socket.emit('timer', {
 		timer: socket.timer
 	});
+	socket.on('decision1', function(data) {
+		world += -1;
+		groupScores[data.groupNumber] += -2;
+		teamScores[data.teamNumber] += -2;
+		playerScores[data.playerNumber] += 2;
+		console.log(teamScores);
+		socket.emit('decisionUpdate', {
+			playerScore: playerScores[data.playerNumber],
+			groupScore: groupScores[data.groupNumber],
+			teamScore: teamScores[data.teamNumber]
+		});
+	});
+	socket.on('decision2', function(data) {
+		world += 0;
+		groupScores[data.groupNumber] += 2;
+		teamScores[data.teamNumber] += 2;
+		playerScores[data.playerNumber] += -1;
+		socket.emit('decisionUpdate', {
+			playerScore: playerScores[data.playerNumber],
+			groupScore: groupScores[data.groupNumber],
+			teamScore: teamScores[data.teamNumber]
+		});
+	});
 	playerNumber++;
-	socket.on('decision4', function() {
+	socket.on('decision3', function(data) {
+		world += -1;
+		groupScores[data.groupNumber] += 1;
+		teamScores[data.teamNumber] += 1;
+		playerScores[data.playerNumber] += 1;
+		socket.emit('decisionUpdate', {
+			playerScore: playerScores[data.playerNumber],
+			groupScore: groupScores[data.groupNumber],
+			teamScore: teamScores[data.teamNumber]
+		});
+	});
+	socket.on('decision4', function(data) {
 		world += 2;
+		groupScores[data.groupNumber] += 0;
+		teamScores[data.teamNumber] += 0;
+		playerScores[data.playerNumber] += -1;
+		socket.emit('decisionUpdate', {
+			playerScore: playerScores[data.playerNumber],
+			groupScore: groupScores[data.groupNumber],
+			teamScore: teamScores[data.teamNumber]
+		});
+	});
+	socket.on('playerConnect', function(data) {
+		if (!(data.playerNumber in playerScores)){
+			playerScores[data.playerNumber] = 20;
+		}
+		
+		if (!(data.groupNumber in groupScores)){
+			groupScores[data.groupNumber] = 20;
+		}
+		
+		if (!(data.teamNumber in teamScores)){
+			teamScores[data.teamNumber] = 40;
+			console.log("howdy");
+			console.log(teamScores[data.teamNumber]);
+		}
 	});
 });
-
-setInterval(function() {
-	for(var i in SOCKET_LIST) {
-		var socket = SOCKET_LIST[i];
-		socket.world = world;
-		socket.emit('world', {
-			world: socket.world
-		});
-	}
-}, 1000 * TIME_LIMIT);
 
 //increment the timer
 setInterval(function() {

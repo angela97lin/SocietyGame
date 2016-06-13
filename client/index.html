@@ -3,16 +3,22 @@
 
 <script>
 	var socket = io();
-	var individual = 20;
+	var playerScore = 20;
 	
 	var playerNumberInput = prompt("What player number are you?");
 	var groupNumberInput = prompt("What group are you in?");
 	var teamNumberInput = prompt("What team are you on?");
+	
+	var playerNumber = playerNumberInput;
+	var groupNumber = groupNumberInput;
+	var teamNumber = teamNumberInput;
+	
+	socket.emit('playerConnect', {playerNumber: playerNumberInput});
 
 	//playerNumber
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
-		document.getElementById('individualscore').innerHTML = "Individual Score: " + individual;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
+		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 	});
 
 	//timer
@@ -23,19 +29,35 @@
 	socket.on('world', function(data) {
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
+	
+	socket.on('decisionUpdate', function(data) {
+		console.log(data)
+		playerScore = data.playerScore;
+		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
+		document.getElementById('nationscore').innerHTML = "Team Score: " + data.teamScore;
+	});
 
-	//decision4
+	var decision1 = function() {
+		socket.emit('decision1', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+	};
+	
+	var decision2 = function() {
+		socket.emit('decision2', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+	};
+	
+	var decision3 = function() {
+		socket.emit('decision3', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+	};
+	
 	var decision4 = function() {
-		socket.emit('decision4', {});
-		individual--;
-		document.getElementById('individualscore').innerHTML = "Individual Score: " + individual;
+		socket.emit('decision4', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
 	};
 
 </script>
 
 <div style="background-color: black; width: 15%; text-align: center">
 	<h1 id="worldscore" style="color: white;">20</h1>
-	<!--<h2 id="nationscore" style="color: white;">insert number here</h2>-->
+	<h2 id="nationscore" style="color: white;">insert number here</h2>
 	<h3 id="individualscore" style="color: white;">20</h3>
 	<!--<h4 id="roundnumber" style="color:white;">insert number here</h4>-->
 	<h4 id="timer" style="color:white;">insert number here</h4>
