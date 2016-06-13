@@ -4,6 +4,10 @@
 <script>
 	var socket = io();
 	var individual = 20;
+	
+	var playerNumberInput = prompt("What player number are you?");
+	var groupNumberInput = prompt("What group are you in?");
+	var teamNumberInput = prompt("What team are you on?");
 
 	//playerNumber
 	socket.on('player', function(data) {
