@@ -15,8 +15,13 @@
 		document.getElementById('timer').innerHTML = "Time: " + data.timer;
 	});
 
+	//get the updated world data
 	socket.on('world', function(data) {
 		document.getElementById('world').innerHTML = "World: " + data.world;
+	});
+
+	socket.on('enable', function(data) {
+		document.getElementById('decision4').disabled = false;
 	});
 
 	//decision4
@@ -24,6 +29,7 @@
 		socket.emit('decision4', {});
 		individual--;
 		document.getElementById('individual').innerHTML = "Individual: " + individual;
+		document.getElementById('decision4').disabled = true;
 	};
 
 </script>
@@ -39,5 +45,5 @@
 <div id='timer'></div>
 
 <!--button-->
-<button onclick="decision4()">Decision 4</button>
+<button id='decision4' onclick="decision4()">Decision 4</button>
 </body>
