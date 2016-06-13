@@ -1,0 +1,43 @@
+<!--socket-->
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+<script>
+	var socket = io();
+	var individual = 20;
+
+	//playerNumber
+	socket.on('player', function(data) {
+		document.getElementById('playerNumber').innerHTML = "Player: " + data.number;
+	});
+
+	//timer
+	socket.on('timer', function(data) {
+		document.getElementById('timer').innerHTML = "Time: " + data.timer;
+	});
+
+	socket.on('world', function(data) {
+		document.getElementById('world').innerHTML = "World: " + data.world;
+	});
+
+	//decision4
+	var decision4 = function() {
+		socket.emit('decision4', {});
+		individual--;
+		document.getElementById('individual').innerHTML = "Individual: " + individual;
+	};
+
+</script>
+
+<body>
+
+<div id='playerNumber'></div>
+
+<div id='individual'>Individual: 20</div>
+
+<div id='world'>World: 20</div>
+
+<div id='timer'></div>
+
+<!--button-->
+<button onclick="decision4()">Decision 4</button>
+</body>
