@@ -24,6 +24,13 @@ io.sockets.on('connection', function(socket) {
 	socket.emit('player', {
 		number: socket.id
 	});
+	socket.world = world;
+	socket.emit('world', {
+		world: socket.world
+	});
+	socket.emit('timer', {
+		timer: socket.timer
+	});
 	playerNumber++;
 	socket.on('decision4', function() {
 		world += 2;

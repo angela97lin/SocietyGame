@@ -11,37 +11,40 @@
 
 	//playerNumber
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player: " + data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
+		document.getElementById('individualscore').innerHTML = "Individual Score: " + individual;
 	});
 
 	//timer
 	socket.on('timer', function(data) {
-		document.getElementById('timer').innerHTML = "Time: " + data.timer;
+		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 	});
 
 	socket.on('world', function(data) {
-		document.getElementById('world').innerHTML = "World: " + data.world;
+		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
 
 	//decision4
 	var decision4 = function() {
 		socket.emit('decision4', {});
 		individual--;
-		document.getElementById('individual').innerHTML = "Individual: " + individual;
+		document.getElementById('individualscore').innerHTML = "Individual Score: " + individual;
 	};
 
 </script>
 
-<body>
-
-<div id='playerNumber'></div>
-
-<div id='individual'>Individual: 20</div>
-
-<div id='world'>World: 20</div>
-
-<div id='timer'></div>
-
-<!--button-->
-<button onclick="decision4()">Decision 4</button>
-</body>
+<div style="background-color: black; width: 15%; text-align: center">
+	<h1 id="worldscore" style="color: white;">20</h1>
+	<!--<h2 id="nationscore" style="color: white;">insert number here</h2>-->
+	<h3 id="individualscore" style="color: white;">20</h3>
+	<!--<h4 id="roundnumber" style="color:white;">insert number here</h4>-->
+	<h4 id="timer" style="color:white;">insert number here</h4>
+	<h4 id="playerNumber" style="color:white;">insert number here</h4>
+	<button id="decision1" onclick="decision1()">Decision 1</button>
+	<h3></h3>
+	<button id="decision2" onclick="decision2()">Decision 2</button>
+	<h3></h3>
+	<button id="decision3" onclick="decision3()">Decision 3</button>
+	<h3></h3>
+	<button id="decision4" onclick="decision4()">Decision 4</button>
+</div>
