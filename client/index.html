@@ -26,6 +26,7 @@
 		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 	});
 
+	//get the updated world data
 	socket.on('world', function(data) {
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
@@ -51,7 +52,18 @@
 	
 	var decision4 = function() {
 		socket.emit('decision4', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		document.getElementById('decision1').disabled = true;
+		document.getElementById('decision2').disabled = true;
+		document.getElementById('decision3').disabled = true;
+		document.getElementById('decision4').disabled = true;
 	};
+
+	socket.on('enable', function(data) {
+		document.getElementById('decision1').disabled = false;
+		document.getElementById('decision2').disabled = false;
+		document.getElementById('decision3').disabled = false;
+		document.getElementById('decision4').disabled = false;
+	});
 
 </script>
 
