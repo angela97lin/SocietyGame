@@ -47,13 +47,14 @@ io.sockets.on('connection', function(socket) {
 	});
 	
 	playerNumber++;
+	totalPlayers++;
+	console.log('totalPlayers: ' + totalPlayers);
 	
 	socket.on('decision1', function(data) {
 		world += -1;
 		groupScores[data.groupNumber] += -2;
 		teamScores[data.teamNumber] += -2;
 		playerScores[data.playerNumber] += 2;
-		console.log(teamScores);
 		socket.emit('decisionUpdate', {
 			playerScore: playerScores[data.playerNumber],
 			groupScore: groupScores[data.groupNumber],
@@ -105,14 +106,9 @@ io.sockets.on('connection', function(socket) {
 		
 		if (!(data.teamNumber in teamScores)){
 			teamScores[data.teamNumber] = 40;
-			console.log("howdy");
-			console.log(teamScores[data.teamNumber]);
 		}
 	});
 });
-
-	totalPlayers++;
-	console.log('totalPlayers: ' + totalPlayers);
 	
 
 if (decisionMode == "timer") {
