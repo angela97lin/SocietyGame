@@ -6,7 +6,7 @@ var totalPlayers = 0;
 var world = 20;
 //decide whether a round is over based on the timer or once all players have made a decision
 //either timer or waitForPlayers
-var decisionMode = "timer";
+var decisionMode = "waitForPlayers";
 
 //variables for timer
 var TIME_LIMIT = 10;
@@ -57,6 +57,7 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += -2;
 		teamScores[data.teamNumber] += -2;
 		playerScores[data.playerNumber] += 2;
+		checkPlayers(decisionMode);
 	});
 
 	socket.on('decision2', function(data) {
@@ -64,6 +65,7 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += 2;
 		teamScores[data.teamNumber] += 2;
 		playerScores[data.playerNumber] += -1;
+		checkPlayers(decisionMode);
 	});
 	
 	socket.on('decision3', function(data) {
@@ -71,6 +73,7 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += 1;
 		teamScores[data.teamNumber] += 1;
 		playerScores[data.playerNumber] += 1;
+		checkPlayers(decisionMode);
 	});
 
 	socket.on('decision4', function(data) {
@@ -78,6 +81,7 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += 0;
 		teamScores[data.teamNumber] += 0;
 		playerScores[data.playerNumber] += -1;
+		checkPlayers(decisionMode);
 	});
 	
 	socket.on('playerConnect', function(data) {
@@ -135,8 +139,10 @@ var checkPlayers = function(mode) {
 			decidedPlayers = 0;
 			for(var i in SOCKET_LIST) {
 				var socket = SOCKET_LIST[i];
-				socket.emit('world', {
-					world: socket.world
+				socket.emit('decisionUpdate', {
+					playerScore: playerScores[socket.playerNumber],
+					groupScore: groupScores[socket.groupNumber],
+					teamScore: teamScores[socket.teamNumber]
 				});
 				socket.emit('enable', {});
 			}
