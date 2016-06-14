@@ -15,20 +15,22 @@
 	
 	socket.emit('playerConnect', {playerNumber: playerNumberInput, groupNumber: groupNumberInput, teamNumber: teamNumberInput});
 
-	//playerNumber
+	//initialize the data on individual screens
 	socket.on('player', function(data) {
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 	});
 
-	//timer
 	socket.on('timer', function(data) {
 		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 	});
 
-	//get the updated world data
 	socket.on('world', function(data) {
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
+	});
+
+	socket.on('team', function(data) {
+		document.getElementById('nationscore').innerHTML = "Team Score:" + data.team;
 	});
 	
 	socket.on('decisionUpdate', function(data) {
@@ -36,6 +38,7 @@
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = "Team Score: " + data.teamScore;
+		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
 
 	var decision1 = function() {
