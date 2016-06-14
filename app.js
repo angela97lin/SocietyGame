@@ -22,7 +22,6 @@ var playerToGroup = {};
 var groupToTeam = {};
 
 app.get('/', function(req, res) {
-	console.log(req.url);
 	res.sendFile(__dirname + '/client/index.html');
 });
 app.use('/client', express.static(__dirname + '/client'));
@@ -34,19 +33,8 @@ var SOCKET_LIST = {};
 var io = require('socket.io')(serv, {});
 io.sockets.on('connection', function(socket) {
 	socket.id = playerNumber;
-	socket.timer = timer;
 	SOCKET_LIST[socket.id] = socket;
 	console.log('connection made');
-	socket.emit('player', {
-		number: socket.id
-	});
-	socket.world = world;
-	socket.emit('world', {
-		world: socket.world
-	});
-	socket.emit('timer', {
-		timer: socket.timer
-	});
 	
 	playerNumber++;
 	totalPlayers++;
@@ -99,6 +87,18 @@ io.sockets.on('connection', function(socket) {
 		if (!(data.teamNumber in teamScores)){
 			teamScores[data.teamNumber] = 40;
 		}
+		socket.emit('player', {
+			number: socket.id
+		});
+		socket.emit('team', {
+			team: teamScores[data.teamNumber] 
+		});
+		socket.emit('world', {
+			world: world
+		});
+		socket.emit('timer', {
+			timer: timer
+		});
 	});
 });
 
@@ -125,7 +125,8 @@ if (decisionMode == "timer") {
 			socket.emit('decisionUpdate', {
 				playerScore: playerScores[socket.playerNumber],
 				groupScore: groupScores[socket.groupNumber],
-				teamScore: teamScores[socket.teamNumber]
+				teamScore: teamScores[socket.teamNumber],
+				world: world
 			});
 			socket.emit('enable', {});
 		}
@@ -142,7 +143,8 @@ var checkPlayers = function(mode) {
 				socket.emit('decisionUpdate', {
 					playerScore: playerScores[socket.playerNumber],
 					groupScore: groupScores[socket.groupNumber],
-					teamScore: teamScores[socket.teamNumber]
+					teamScore: teamScores[socket.teamNumber],
+					world: world
 				});
 				socket.emit('enable', {});
 			}
