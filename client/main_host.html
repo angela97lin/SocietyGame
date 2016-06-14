@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Main_Host</title>
+</head>
+
+<body>
+	<h1 id="quarterlyreports"> Quarterly Reports </h1>
+	<h2 id="nationscore"> nation: team_score </h2>
+    <p id="groupscore">
+    sector: group_score </p>
+<footer id="roundnumber"> roundnumber </footer>
+
+<script type="text/javascript">
+		var worldscore = 40;
+		var nationscore = 30;
+		var individualscore = 20;
+		var roundnumber = 1;
+		var nation = "Japan";
+				
+		updateScores();
+		
+		function updateScores(){
+			document.getElementById("nationscore").innerHTML = nation + "'s Score: " + nationscore;
+		}
+		
+		function decision1(){
+			worldscore += -1;
+			nationscore += -2;
+			individualscore += 2;
+			updateScores();
+		}
+		
+		function decision2(){
+			worldscore += 0;
+			nationscore += 2;
+			individualscore += -1;
+			updateScores();
+		}
+		
+		function decision3(){
+			worldscore += -1;
+			nationscore += 1;
+			individualscore += 1;
+			updateScores();
+		}
+		
+		function decision4(){
+			worldscore += 2;
+			nationscore += 0;
+			individualscore += -1;
+			updateScores();
+		}
+		
+		document.getElementById("roundnumber").innerHTML = "Round Number: " + roundnumber;
+		
+		
+		</script>
+        
+</body>
+</html>
