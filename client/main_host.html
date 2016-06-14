@@ -11,9 +11,13 @@
 	<h2 id="nationscore"> nation: team_score </h2>
     <p id="groupscore">
     sector: group_score </p>
-<footer id="roundnumber"> roundnumber </footer>
+<footer id="roundnumber">Round Number: 1</footer>
+
+<!--socket-->
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 
 <script type="text/javascript">
+		var socket = io();
 		var worldscore = 40;
 		var nationscore = 30;
 		var individualscore = 20;
@@ -54,8 +58,9 @@
 			updateScores();
 		}
 		
-		document.getElementById("roundnumber").innerHTML = "Round Number: " + roundnumber;
-		
+		socket.on('nextRound', function(data) {
+			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		});	
 		
 		</script>
         

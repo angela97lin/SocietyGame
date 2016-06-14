@@ -2,8 +2,9 @@ var express = require('express');
 var app = express();
 var serv = require('http').createServer(app);
 var playerNumber = 1;
-var totalPlayers = 0;
+var totalPlayers = -1;
 var world = 20;
+var roundNumber = 1;
 //decide whether a round is over based on the timer or once all players have made a decision
 //either timer or waitForPlayers
 var decisionMode = "waitForPlayers";
@@ -23,6 +24,9 @@ var groupToTeam = {};
 
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
+});
+app.get('/main', function(req, res) {
+	res.sendFile(__dirname + '/client/main_host.html');
 });
 app.use('/client', express.static(__dirname + '/client'));
 
@@ -120,16 +124,7 @@ if (decisionMode == "timer") {
 	//enable output
 	setInterval(function() {
 		timer = TIME_LIMIT;
-		for(var i in SOCKET_LIST) {
-			var socket = SOCKET_LIST[i];
-			socket.emit('decisionUpdate', {
-				playerScore: playerScores[socket.playerNumber],
-				groupScore: groupScores[socket.groupNumber],
-				teamScore: teamScores[socket.teamNumber],
-				world: world
-			});
-			socket.emit('enable', {});
-		}
+		updateRound(SOCKET_LIST);
 	}, 1000 * TIME_LIMIT);
 };
 
@@ -138,16 +133,24 @@ var checkPlayers = function(mode) {
 	if (mode == "waitForPlayers") {
 		if (decidedPlayers == totalPlayers) {
 			decidedPlayers = 0;
-			for(var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.emit('decisionUpdate', {
-					playerScore: playerScores[socket.playerNumber],
-					groupScore: groupScores[socket.groupNumber],
-					teamScore: teamScores[socket.teamNumber],
-					world: world
-				});
-				socket.emit('enable', {});
-			}
+			updateRound(SOCKET_LIST);
 		}
+	}
+};
+
+var updateRound = function(sockets) {
+	roundNumber++;
+	for(var i in sockets) {
+		var socket = sockets[i];
+		socket.emit('decisionUpdate', {
+			playerScore: playerScores[socket.playerNumber],
+			groupScore: groupScores[socket.groupNumber],
+			teamScore: teamScores[socket.teamNumber],
+			world: world
+		});
+		socket.emit('enable', {});
+		socket.emit('nextRound', {
+			roundNumber: roundNumber
+		});
 	}
 };

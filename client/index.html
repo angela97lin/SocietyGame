@@ -34,7 +34,7 @@
 	});
 
 	socket.on('team', function(data) {
-		document.getElementById('nationscore').innerHTML = "Team Score:" + data.team;
+		document.getElementById('nationscore').innerHTML = "Team Score: " + data.team;
 	});
 	
 	socket.on('decisionUpdate', function(data) {
@@ -84,13 +84,17 @@
 		document.getElementById('decision4').disabled = false;
 	});
 
+	socket.on('nextRound', function(data) {
+		document.getElementById('roundnumber').innerHTML = "Round: " + data.roundNumber;
+	});
+
 </script>
 
 <div style="background-color: black; width: 15%; text-align: center">
 	<h1 id="worldscore" style="color: white;">20</h1>
 	<h2 id="nationscore" style="color: white;">insert number here</h2>
 	<h3 id="individualscore" style="color: white;">20</h3>
-	<!--<h4 id="roundnumber" style="color:white;">insert number here</h4>-->
+	<h4 id="roundnumber" style="color:white;">Round: 1</h4>
 	<h4 id="timer" style="color:white;">insert number here</h4>
 	<h4 id="playerNumber" style="color:white;">insert number here</h4>
 	<button id="decision1" onclick="decision1()">Decision 1</button>
