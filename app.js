@@ -47,6 +47,8 @@ io.sockets.on('connection', function(socket) {
 	});
 	
 	playerNumber++;
+	totalPlayers++;
+	console.log('totalPlayers: ' + totalPlayers);
 	
 	socket.on('decision1', function(data) {
 		world += -1;
@@ -60,6 +62,7 @@ io.sockets.on('connection', function(socket) {
 			teamScore: teamScores[data.teamNumber]
 		});
 	});
+
 	socket.on('decision2', function(data) {
 		world += 0;
 		groupScores[data.groupNumber] += 2;
@@ -83,6 +86,7 @@ io.sockets.on('connection', function(socket) {
 			teamScore: teamScores[data.teamNumber]
 		});
 	});
+
 	socket.on('decision4', function(data) {
 		world += 2;
 		groupScores[data.groupNumber] += 0;
@@ -94,6 +98,7 @@ io.sockets.on('connection', function(socket) {
 			teamScore: teamScores[data.teamNumber]
 		});
 	});
+	
 	socket.on('playerConnect', function(data) {
 		if (!(data.playerNumber in playerScores)){
 			playerScores[data.playerNumber] = 20;
@@ -110,10 +115,6 @@ io.sockets.on('connection', function(socket) {
 		}
 	});
 });
-
-	totalPlayers++;
-	console.log('totalPlayers: ' + totalPlayers);
-	
 
 if (decisionMode == "timer") {
 	//increment the timer

@@ -40,14 +40,26 @@
 
 	var decision1 = function() {
 		socket.emit('decision1', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		document.getElementById('decision1').disabled = true;
+		document.getElementById('decision2').disabled = true;
+		document.getElementById('decision3').disabled = true;
+		document.getElementById('decision4').disabled = true;
 	};
 	
 	var decision2 = function() {
 		socket.emit('decision2', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		document.getElementById('decision1').disabled = true;
+		document.getElementById('decision2').disabled = true;
+		document.getElementById('decision3').disabled = true;
+		document.getElementById('decision4').disabled = true;
 	};
 	
 	var decision3 = function() {
 		socket.emit('decision3', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		document.getElementById('decision1').disabled = true;
+		document.getElementById('decision2').disabled = true;
+		document.getElementById('decision3').disabled = true;
+		document.getElementById('decision4').disabled = true;
 	};
 	
 	var decision4 = function() {
