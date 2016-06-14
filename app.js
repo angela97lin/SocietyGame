@@ -7,17 +7,19 @@ var world = 20;
 //decide whether a round is over based on the timer or once all players have made a decision
 //either timer or waitForPlayers
 var decisionMode = "timer";
+
 //variables for timer
 var TIME_LIMIT = 10;
 var timer = TIME_LIMIT;
+
+//variables for waitForPlayers
+var decidedPlayers = 0;
+
 var playerScores = {};
 var groupScores = {};
 var teamScores = {};
 var playerToGroup = {};
 var groupToTeam = {};
-
-//variables for waitForPlayers
-var decidedPlayers = 0;
 
 app.get('/', function(req, res) {
 	console.log(req.url);
@@ -55,12 +57,6 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += -2;
 		teamScores[data.teamNumber] += -2;
 		playerScores[data.playerNumber] += 2;
-		console.log(teamScores);
-		socket.emit('decisionUpdate', {
-			playerScore: playerScores[data.playerNumber],
-			groupScore: groupScores[data.groupNumber],
-			teamScore: teamScores[data.teamNumber]
-		});
 	});
 
 	socket.on('decision2', function(data) {
@@ -68,11 +64,6 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += 2;
 		teamScores[data.teamNumber] += 2;
 		playerScores[data.playerNumber] += -1;
-		socket.emit('decisionUpdate', {
-			playerScore: playerScores[data.playerNumber],
-			groupScore: groupScores[data.groupNumber],
-			teamScore: teamScores[data.teamNumber]
-		});
 	});
 	
 	socket.on('decision3', function(data) {
@@ -80,11 +71,6 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += 1;
 		teamScores[data.teamNumber] += 1;
 		playerScores[data.playerNumber] += 1;
-		socket.emit('decisionUpdate', {
-			playerScore: playerScores[data.playerNumber],
-			groupScore: groupScores[data.groupNumber],
-			teamScore: teamScores[data.teamNumber]
-		});
 	});
 
 	socket.on('decision4', function(data) {
@@ -92,14 +78,12 @@ io.sockets.on('connection', function(socket) {
 		groupScores[data.groupNumber] += 0;
 		teamScores[data.teamNumber] += 0;
 		playerScores[data.playerNumber] += -1;
-		socket.emit('decisionUpdate', {
-			playerScore: playerScores[data.playerNumber],
-			groupScore: groupScores[data.groupNumber],
-			teamScore: teamScores[data.teamNumber]
-		});
 	});
 	
 	socket.on('playerConnect', function(data) {
+		socket.playerNumber = data.playerNumber;
+		socket.groupNumber = data.groupNumber;
+		socket.teamNumber = data.teamNumber;
 		if (!(data.playerNumber in playerScores)){
 			playerScores[data.playerNumber] = 20;
 		}
@@ -110,8 +94,6 @@ io.sockets.on('connection', function(socket) {
 		
 		if (!(data.teamNumber in teamScores)){
 			teamScores[data.teamNumber] = 40;
-			console.log("howdy");
-			console.log(teamScores[data.teamNumber]);
 		}
 	});
 });
@@ -136,9 +118,10 @@ if (decisionMode == "timer") {
 		timer = TIME_LIMIT;
 		for(var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
-			socket.world = world;
-			socket.emit('world', {
-				world: socket.world
+			socket.emit('decisionUpdate', {
+				playerScore: playerScores[socket.playerNumber],
+				groupScore: groupScores[socket.groupNumber],
+				teamScore: teamScores[socket.teamNumber]
 			});
 			socket.emit('enable', {});
 		}

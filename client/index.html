@@ -13,7 +13,7 @@
 	var groupNumber = groupNumberInput;
 	var teamNumber = teamNumberInput;
 	
-	socket.emit('playerConnect', {playerNumber: playerNumberInput});
+	socket.emit('playerConnect', {playerNumber: playerNumberInput, groupNumber: groupNumberInput, teamNumber: teamNumberInput});
 
 	//playerNumber
 	socket.on('player', function(data) {
