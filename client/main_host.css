@@ -1,0 +1,76 @@
+@charset "utf-8";
+/* CSS Document */
+
+html, body, div, h1, h2, h3, footer {
+	margin: 5px;
+	padding: 3px;
+	font-family: Tahoma, Arial, sans-serif;
+	color: #f9f9f9;
+	line-height: 40px;
+	box-shadow: 4px, 4px, 10px, #f9f9f9;
+	display: block;
+	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
+	background-repeat: no-repeat;
+	background-size: 100% 800%;
+	background-position: 50% 50%
+}
+
+h1 {
+	margin: 30px;
+	border: 5px;
+	padding: 10px;
+	color: #CE0003;
+	font-variant: small-caps;
+	font-size: 40px;
+}
+	
+
+#nationscore {
+	font-size: 40px;
+	margin: 20px;
+}
+
+#groupscore {
+	font-size: 30px;
+	color: #096B7B;
+	margin-left: 50px;
+}
+
+#roundnumber {
+	font-size: 20px;
+	text-align: center
+}
+
+/*--Some messing around with visuals--*/
+body{
+   margin: 0px;
+   padding: 0px;
+}
+div{
+   margin: 0px;
+   padding: 0px;
+}
+
+p{
+   margin: 15px;
+   padding: 0px;
+}
+ul{
+   margin-top: 10px;
+   margin-bottom: 10px;
+   margin-left: 35px;
+   padding: 0px;
+   list-style-image: url('image location');
+   line-height: 20px;
+}
+a{
+   text-decoration: none;
+   color: #E1E1E1;
+   font-weight: bold/normal;
+}
+a:hover{
+   text-decoration: underline;
+   color: #F9F9F9;
+   font-weight: normal;
+   /*make sure to change at least one thing from your a tag definition*/
+}
