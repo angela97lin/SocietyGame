@@ -16,10 +16,10 @@
 	var groupNumberInput = prompt("What group are you in?");
 	
 	var playerNumber = playerNumberInput;
-	var groupNumber = groupNumberInput;
 	var teamNumber = teamNumberInput;
+	var groupNumber = [teamNumber, groupNumberInput];
 	
-	socket.emit('playerConnect', {playerNumber: playerNumberInput, groupNumber: groupNumberInput, teamNumber: teamNumberInput});
+	socket.emit('playerConnect', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
 
 	//initialize the data on individual screens
 	socket.on('player', function(data) {

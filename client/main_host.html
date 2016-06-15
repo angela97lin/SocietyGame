@@ -7,7 +7,8 @@
 </head>
 
 <body>
-	<h1 id="quarterlyreports"> Quarterly Reports </h1>
+	<h1 id="quarterlyreports">Quarterly Reports: Start</h1>
+	<h2 id="roundnumber">Round Number: 1</h2>
 	<table id="nations" align="center" border="0" cellpadding="20">
 		<tbody>
 			<tr>
@@ -16,9 +17,6 @@
 			</tr>
 		</tbody>
 	</table>
-    <p id="groupscore">
-    sector: group_score </p>
-<footer id="roundnumber">Round Number: 1</footer>
 
 <!--socket-->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -53,26 +51,40 @@
 			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
 		});
 
-		function createCell(cell, text, style) {
+		socket.on('quarterTeams', function(data) {
+			console.log(data);
+			for (var i = 1; i <= numberOfTeams; i++) {
+				document.getElementById(i).innerHTML = "Nation Score: " + data[i];
+			};
+		});
+
+		socket.on('newQuarter', function(data) {
+			document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
+		});
+
+		function createCell(cell, text, style, id=null) {
 			var div = document.createElement('div');
 			var txt = document.createTextNode(text);
 			div.appendChild(txt);
 			div.setAttribute('class', style);
 			div.setAttribute('className', style);
+			div.setAttribute('id', id);
 			cell.appendChild(div);
 		}
 
 		function addNation(nation) {
 			var nations = document.getElementById('nations');
 			createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col');
-			createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col');
+			createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col', nation);
 		}
 
 		function addGroup(group) {
 			var nations = document.getElementById('nations');
-			var row = nations.insertRow(nations.rows.length);
+			var row1 = nations.insertRow(nations.rows.length);
+			var row2 = nations.insertRow(nations.rows.length);
 			for (var i = 0; i < nations.rows[0].cells.length; i++) {
-				createCell(row.insertCell(i), group, 'row');
+				createCell(row1.insertCell(i), group, 'row');
+				createCell(row2.insertCell(i), "Group Score: " + 20, 'row');
 			}
 		};
 		
