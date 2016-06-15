@@ -2,8 +2,10 @@ var express = require('express');
 var app = express();
 var serv = require('http').createServer(app);
 var playerNumber = 1;
-var totalPlayers = -1;
-var world = 20;
+var totalPlayers = 0;
+var numberOfGroups = 0;
+var numberOfTeams = 0;
+var world = 0;
 var roundNumber = 1;
 //decide whether a round is over based on the timer or once all players have made a decision
 //either timer or waitForPlayers
@@ -41,8 +43,14 @@ io.sockets.on('connection', function(socket) {
 	console.log('connection made');
 	
 	playerNumber++;
-	totalPlayers++;
 	console.log('totalPlayers: ' + totalPlayers);
+
+	socket.on('start', function(data) {
+		world = data.numberOfTeams * 10;
+		totalPlayers = data.numberOfPlayers;
+		numberOfGroups = data.numberOfGroups;
+		numberOfTeams = data.numberOfTeams;
+	});
 	
 	socket.on('decision1', function(data) {
 		world += -1;
@@ -89,7 +97,7 @@ io.sockets.on('connection', function(socket) {
 		}
 		
 		if (!(data.teamNumber in teamScores)){
-			teamScores[data.teamNumber] = 40;
+			teamScores[data.teamNumber] = 20 * numberOfGroups;
 		}
 		socket.emit('player', {
 			number: socket.id

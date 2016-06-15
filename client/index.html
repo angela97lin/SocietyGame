@@ -12,8 +12,8 @@
 	var playerScore = 20;
 	
 	var playerNumberInput = prompt("What player number are you?");
-	var groupNumberInput = prompt("What group are you in?");
 	var teamNumberInput = prompt("What team are you on?");
+	var groupNumberInput = prompt("What group are you in?");
 	
 	var playerNumber = playerNumberInput;
 	var groupNumber = groupNumberInput;
@@ -23,12 +23,12 @@
 
 	//initialize the data on individual screens
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
+		//document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 	});
 
 	socket.on('timer', function(data) {
-		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+		//document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 	});
 
 	socket.on('world', function(data) {
@@ -93,6 +93,7 @@
 </script>
 
 
+
 <div style=" width: 100%; text-align: center">
                     <h1 id="worldscore">worldscore</h1>
                     <h2 id="nationscore">insert number here</h2>
@@ -106,6 +107,5 @@
                     <h3></h3>
                     <button class="decision" id="decision3" onclick="decision3()">Mi casa, tu casa</button>
                     <h3></h3>
-                    <button class="decision" id="decision4" onclick="decision4()">I drive a hybrid</button>
+                    <button class="decision" id="decision4" onclick="decision4()">I drive a hybrid, bitch</button>
 </div>
-       
