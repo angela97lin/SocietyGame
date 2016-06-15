@@ -2,13 +2,33 @@
 /* CSS Document */
 
 html, body, div, h1, h2, h3, footer {
-	margin: 5px;
-	padding: 3px;
 	font-family: Tahoma, Arial, sans-serif;
 	color: #f9f9f9;
-	line-height: 60px;
-	box-shadow: 4px, 4px, 10px, #f9f9f9;
+	line-height: 100%;
 	display: block;
+}
+
+h1, h2, h3{
+	margin: 2%;
+	padding: 1%;
+	text-align: center;
+}
+
+.container:{
+	width: 100%;
+	max-width: 200 px;
+	margin: 0 auto;
+	overflow: hidden;
+	text-align: center;
+}
+
+.main:{
+	-webkit-box-flex: 1;
+	flex: 1 0 auto;
+	display: flex;
+}
+
+body{
 	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
 	background-repeat: repeat;
 	background-size: 100% 100%;
@@ -17,32 +37,33 @@ html, body, div, h1, h2, h3, footer {
 
 #worldscore {
 	color: #D1E7E2;
-	font-size: 50px;
+	font-size: 5vw;
 	font-variant: small-caps
 }
 
 #nationscore {
-	font-size: 60px
+	font-size: 7.5vw
 }
 
 #individualscore {
-	font-size: 42px
+	font-size: 4.5vw
 }
 
 #roundnumber {
-	font-size: 36px
+	font-size: 4vw
 }
 
 button {
-	font-size: 24px;
-	font-align: left;
+	font-size: 4vw;
+	text-align: center;
 	border: 2px solid #9ED6DF;
-	border-box: 10%;
 	border-radius: 7px;
-	margin: 5px; 
-	padding: 40px;
-	padding-left: 300px;
-	padding-right: 300px;
+	margin-top: 1%; 
+	padding: 2%;
+	padding-left: 8%;
+	padding-right: 8%;
+	min-width: 70%;
+	max-width: 70%;
 	background: radial-gradient(#000000, #000000, #20493E);
 	color: #D1E7E2;
 	box-shadow: 20 20 20px #127998;
@@ -57,12 +78,16 @@ button:hover{
 	-o-transition: all 1s ease;
    text-decoration: underline;
    color: #F9F9F9;
+   background: #20493E;
    font-weight: normal;
-   padding: 60px;
-   padding-left: 350px;
-   padding-right: 350px;
+   padding: 3%;
+   padding-left: 10%;
+   padding-right: 10%;
+	min-width: 80%;
+	max-width: 80%;
 }
 
 button:focus{
 	background: #20493E;
+	color: #f9f9f9;
 }
