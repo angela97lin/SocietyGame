@@ -52,11 +52,19 @@
 		});
 
 		socket.on('quarterTeams', function(data) {
-			console.log(data);
 			for (var i = 1; i <= numberOfTeams; i++) {
 				document.getElementById(i).innerHTML = "Nation Score: " + data[i];
 			};
 		});
+
+		socket.on('quarterGroups', function(data) {
+			console.log(data);
+			for (var i = 1; i <= numberOfTeams; i++) {
+				for (var j = 1; j <= numberOfGroups; j++) {
+					document.getElementById([i, j]).innerHTML = "Group Score: " + data[[i, j]];
+				}
+			}
+		})
 
 		socket.on('newQuarter', function(data) {
 			document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
@@ -84,7 +92,7 @@
 			var row2 = nations.insertRow(nations.rows.length);
 			for (var i = 0; i < nations.rows[0].cells.length; i++) {
 				createCell(row1.insertCell(i), group, 'row');
-				createCell(row2.insertCell(i), "Group Score: " + 20, 'row');
+				createCell(row2.insertCell(i), "Group Score: " + 20, 'row', [i + 1, group]);
 			}
 		};
 		

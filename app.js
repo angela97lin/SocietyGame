@@ -171,6 +171,7 @@ var quarterlyReport = function(sockets) {
 			var socket = sockets[i];
 			quarterTeamScores = teamScores;
 			socket.emit('quarterTeams', teamScores);
+			socket.emit('quarterGroups', groupScores);
 			socket.emit('newQuarter', {
 				quarter: quarter
 			});
