@@ -8,8 +8,10 @@
 
 <body>
 	<h1 id="quarterlyreports"> Quarterly Reports </h1>
-	<table id="nations" align="center" border="0" cellspacing="0" cellpadding="0">
+	<table id="nations" align="center" border="0" cellpadding="20">
 		<tbody>
+			<tr>
+			</tr>
 			<tr>
 			</tr>
 		</tbody>
@@ -34,8 +36,7 @@
 			numberOfPlayers: numberOfPlayers
 		});
 
-		var worldscore = 40;
-		var nationscore = 30;
+		var nationscore = 20 * numberOfGroups / numberOfPlayers;
 		var individualscore = 20;
 		var roundnumber = 1;
 		//var nation = "Japan";
@@ -45,6 +46,11 @@
 		// function updateScores(){
 		// 	document.getElementById("nationscore").innerHTML = nation + "'s Score: " + nationscore;
 		// }
+
+		document.getElementById('nations').cellSpacing = 400 / numberOfTeams;
+		for (var i = 1; i <= numberOfTeams; i++) {
+			addNation(i);
+		};
 		
 		function decision1(){
 			worldscore += -1;
@@ -77,6 +83,21 @@
 		socket.on('nextRound', function(data) {
 			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
 		});
+
+		function createCell(cell, text, style) {
+			var div = document.createElement('div');
+			var txt = document.createTextNode(text);
+			div.appendChild(txt);
+			div.setAttribute('class', style);
+			div.setAttribute('className', style);
+			cell.appendChild(div);
+		}
+
+		function addNation(nation) {
+			var nations = document.getElementById('nations');
+			createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col');
+			createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col');
+		}
 		
 		</script>
         
