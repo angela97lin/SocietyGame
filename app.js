@@ -97,7 +97,7 @@ io.sockets.on('connection', function(socket) {
 		}
 		
 		if (!(data.teamNumber in teamScores)){
-			teamScores[data.teamNumber] = 20 * numberOfGroups / numberOfTeams;
+			teamScores[data.teamNumber] = 20 * numberOfGroups;
 		}
 		socket.emit('player', {
 			number: socket.id
