@@ -5,7 +5,6 @@ html, body, div, h1, h2, h3, footer {
 	font-family: Tahoma, Arial, sans-serif;
 	color: #f9f9f9;
 	line-height: 100%;
-	display: block;
 }
 
 h1, h2, h3{
@@ -14,56 +13,85 @@ h1, h2, h3{
 	text-align: center;
 }
 
-.container:{
-	width: 100%;
-	max-width: 200 px;
-	margin: 0 auto;
-	overflow: hidden;
+.container{ 
 	text-align: center;
-}
-
-.main:{
+	/*
 	-webkit-box-flex: 1;
 	flex: 1 0 auto;
-	display: flex;
+	width: 100%;
+	max-width: 1180px;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;*/
+}
+
+.main{
+	width: 100%; 
+	text-align: center;
+	-webkit-box-flex: 1;
+	flex: 1 0 auto;
+	
+}
+
+.info{
+	width: 100%;
+	display: inline-block;
+}
+
+.infotype{
+	width: 50%;
+	min-width: 590px;
+	display: inline-block;
+	margin-left:0px;
+}
+.choices{
+
+}
+
+#info1{
+
+}
+#info2{
+
 }
 
 body{
 	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
 	background-repeat: repeat;
 	background-size: 100% 100%;
-	background-position: 50% 50%
+	background-position: 50% 50%;
 }
 
 #worldscore {
 	color: #D1E7E2;
-	font-size: 5vw;
-	font-variant: small-caps
+	font-size: 300%;
+	font-variant: small-caps;
 }
 
 #nationscore {
-	font-size: 7.5vw
+	font-size: 400%;
 }
 
 #individualscore {
-	font-size: 4.5vw
+	font-size: 250%;
 }
 
 #roundnumber {
-	font-size: 4vw
+	font-size: 200%;
+}
+
+#info {
+	margin-bottom: 20px;
 }
 
 button {
-	font-size: 4vw;
+	font-size: 400%;
 	text-align: center;
 	border: 2px solid #9ED6DF;
 	border-radius: 7px;
 	margin-top: 1%; 
 	padding: 2%;
-	padding-left: 8%;
-	padding-right: 8%;
-	min-width: 70%;
-	max-width: 70%;
+	width: 100%;
 	background: radial-gradient(#000000, #000000, #20493E);
 	color: #D1E7E2;
 	box-shadow: 20 20 20px #127998;
@@ -76,15 +104,10 @@ button:hover{
 	-webkit-transition: all 0.5s ease;
 	-moz-transition: all 0.5s ease;
 	-o-transition: all 1s ease;
-   text-decoration: underline;
    color: #F9F9F9;
    background: #20493E;
    font-weight: normal;
-   padding: 3%;
-   padding-left: 10%;
-   padding-right: 10%;
-	min-width: 80%;
-	max-width: 80%;
+   padding: 4%;
 }
 
 button:focus{

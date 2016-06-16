@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <head>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    <link href="client/main_mobile.css" rel="stylesheet" type="text/css" />
+    <link href="grid.css" rel="stylesheet" type="text/css" />
+	<link href="client/grid.css" rel="stylesheet" type="text/css" />
+	<link href="main_mobile.css" rel="stylesheet" type="text/css" />
+	<link href="client/main_mobile.css" rel="stylesheet" type="text/css" />
+
     <title>Society</title>
 </head>
 
 <!--socket-->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+<!--<script src="node_modules/jquery/dist/jquery.min.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
 
 
 
@@ -39,7 +47,7 @@
 /*LISTENERS*/
 	
 	socket.on('player', function(data) {
-		//document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 	});
 
@@ -70,6 +78,10 @@
 	socket.on('nextRound', function(data) {
 		document.getElementById('roundnumber').innerHTML = "Round: " + data.roundNumber;
 	});
+	
+	socket.on('newQuarter', function() {
+		swapToInvestigation();
+	}
 	
 	
 	
@@ -109,24 +121,75 @@
 		disableButtons();
 	};
 	
+	var swapToInvestigation = function() {
+		$("#decisionScreen").replaceWith(
+			'<div id="investigationScreen" style=" width: 100%; text-align: center"> \
+			<h1 id="worldscore">worldscore</h1> \
+			<h2 id="nationscore">insert number here</h2> \
+			<h3 id="individualscore">insert number here</h3> \
+			<h4 id="timer">insert number here</h4> \
+			<h4 id="playerNumber">insert number here</h4> \
+			<footer id="roundnumber">roundnumber</footer> \
+			<button class="decision" id="investigate1" onclick="">Player 1</button> \
+			<h3></h3> \
+			<button class="decision" id="investigate2" onclick="">Player 2</button> \
+			<h3></h3> \
+			<button class="decision" id="investigate3" onclick="">Player 3</button> \
+			<h3></h3> \
+			<button class="decision" id="investigate4" onclick="">Player 4</button> \
+			</div>'
+		);
+		socket.emit('infoRequest', {});
+	};
+	
+	var swapToDecision = function() {
+		$("#investigationScreen").replaceWith(
+			'<div id="decisionScreen" style=" width: 100%; text-align: center"> \
+			<h1 id="worldscore">worldscore</h1> \
+			<h2 id="nationscore">insert number here</h2> \
+			<h3 id="individualscore">insert number here</h3> \
+			<h4 id="timer">insert number here</h4> \
+			<h4 id="playerNumber">insert number here</h4> \
+			<footer id="roundnumber">roundnumber</footer> \
+			<button class="decision" id="decision1" onclick="decision1()">Be a shithead</button> \
+			<h3></h3> \
+			<button class="decision" id="decision2" onclick="decision2()">Team Player</button> \
+			<h3></h3> \
+			<button class="decision" id="decision3" onclick="decision3()">Mi casa, tu casa</button> \
+			<h3></h3> \
+			<button class="decision" id="decision4" onclick="decision4()">I drive a hybrid, bitch</button> \
+			</div>'		
+		);
+		socket.emit('infoRequest', {});
+	};
+	
 </script>
 
 
-
-<!-- HTML -->
-
-<div style=" width: 100%; text-align: center">
-	<h1 id="worldscore">worldscore</h1>
-	<h2 id="nationscore">insert number here</h2>
-	<h3 id="individualscore">insert number here</h3>
-	<h4 id="timer">insert number here</h4>
-	<h4 id="playerNumber">insert number here</h4>
-	<footer id="roundnumber">roundnumber</footer>
-	<button class="decision" id="decision1" onclick="decision1()">Be a shithead</button>
-	<h3></h3>
-	<button class="decision" id="decision2" onclick="decision2()">Team Player</button>
-	<h3></h3>
-	<button class="decision" id="decision3" onclick="decision3()">Mi casa, tu casa</button>
-	<h3></h3>
-	<button class="decision" id="decision4" onclick="decision4()">I drive a hybrid, bitch</button>
+<div class = "container">
+	<div class = "row" id = "info">
+		<div class = "col-md-50" id="info1">
+			<h1 id="worldscore">worldscore</h1>
+			<h2 id="nationscore">insert number here</h2>
+			<h3 id="individualscore">insert number here</h3>
+		</div>
+		<div class = "col-md-50" id = "info2">
+			<h4 id="timer">insert number here</h4>
+			<h4 id="playerNumber">insert number here</h4>
+			<footer id="roundnumber">roundnumber</footer>
+		</div>
+	</div>
+	<div class = "row">
+		<div class="col-md-45">
+			<button class="decision" id="decision1" onclick="decision1()">Be a shithead</button>
+			<h3></h3>
+			<button class="decision" id="decision2" onclick="decision2()">Team Player</button>
+			<h3></h3>
+		</div>
+		<div class = "col-md-45 col-md-offset-10">
+			<button class="decision" id="decision3" onclick="decision3()">Mi casa, tu casa</button>
+			<h3></h3>
+			<button class="decision" id="decision4" onclick="decision4()">I drive a hybrid, bitch</button>
+		</div>
+	</div>
 </div>
