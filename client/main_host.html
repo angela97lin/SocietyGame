@@ -38,6 +38,11 @@
 			var nationscore = 20 * numberOfGroups;
 			var individualscore = 20;
 			var roundnumber = 1;
+			var teamNumberNames = {};
+			var GROUP_NAMES = {1: "Education",
+							  2: "Military",
+							  3: "Workforce",
+							  4: "Policy Makers"};
 
 			socket.emit('start', {
 				numberOfTeams: numberOfTeams,
@@ -45,7 +50,9 @@
 				numberOfPlayers: numberOfPlayers
 			});
 
-			document.getElementById('nations').cellSpacing = 400 / numberOfTeams;
+			var nations = document.getElementById('nations');
+			nations.cellSpacing = 200 / numberOfGroups;
+			createCell(nations.rows[0].insertCell(0), "", 'col');
 			for (var i = 1; i <= numberOfTeams; i++) {
 				addNation(i);
 			};
@@ -57,7 +64,8 @@
 /*LISTENERS*/
 			
 			socket.on('newTeam', function(data) {
-				document.getElementById(['name', data.currentTeamNumber]).innerHTML = data.teamName;
+				teamNumberNames[data.currentTeamNumber] = data.teamName;
+				document.getElementById(data.currentTeamNumber).innerHTML = data.teamName + "'s Score: " + nationscore;
 			});
 			
 			socket.on('nextRound', function(data) {
@@ -66,7 +74,7 @@
 
 			socket.on('quarter', function(data) {
 				for (var i = 1; i <= numberOfTeams; i++) {
-					document.getElementById(i).innerHTML = "Nation Score: " + data.teamScores[i];
+					document.getElementById(i).innerHTML = teamNumberNames[i] + "'s Score: " + data.teamScores[i];
 					for (var j = 1; j <= numberOfGroups; j++) {
 						document.getElementById([i, j]).innerHTML = "Group Score: " + data.groupScores[[i, j]];
 					};
@@ -91,18 +99,14 @@
 			};
 
 			function addNation(nation) {
-				var nations = document.getElementById('nations');
-				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col', ['name', nation]);
-				createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col', nation);
+				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), "Nation Score: " + nationscore, 'col', nation);
 			};
 
 			function addGroup(group) {
-				var nations = document.getElementById('nations');
-				var row1 = nations.insertRow(nations.rows.length);
-				var row2 = nations.insertRow(nations.rows.length);
-				for (var i = 0; i < nations.rows[0].cells.length; i++) {
-					createCell(row1.insertCell(i), group, 'row');
-					createCell(row2.insertCell(i), "Group Score: " + 20, 'row', [i + 1, group]);
+				var row = nations.insertRow(nations.rows.length);
+				createCell(row.insertCell(0), GROUP_NAMES[group], 'row');
+				for (var i = 1; i < nations.rows[0].cells.length; i++) {
+					createCell(row.insertCell(i), "Group Score: " + 20, 'row', [i + 1, group]);
 				};
 			};
 			
