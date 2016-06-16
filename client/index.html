@@ -26,23 +26,25 @@
 	var playerScore = 20;
 	
 	var playerNumberInput = prompt("What player number are you?");
-	var teamNumberInput = prompt("What team are you on?");
+	var teamNameInput = prompt("What team are you on?");
 	var groupNumberInput = prompt("What group are you in?");
 	
 	var playerNumber = playerNumberInput;
-	var teamNumber = teamNumberInput;
-	var groupNumber = [teamNumber, groupNumberInput];
+	var teamName = teamNameInput;
+	var teamNumber = 0;
+	var groupNumber = [];
 	
-	
-	socket.emit('playerConnect', {
-		playerNumber: playerNumber,
-		groupNumber: groupNumber,
-		teamNumber: teamNumber
+	socket.emit('playerConnect', {playerNumber: playerNumber, teamName: teamName, groupNumberInput: groupNumberInput});
+
+	socket.on('getTeamNumber', function(data) {
+		teamNumber = data.teamNameNumbers[teamName];
+		groupNumber = data.groupNumber;
 	});
+
+
 	
 	
-	
-<!-- LISTENERS -->
+/*LISTENERS*/
 	
 	socket.on('player', function(data) {
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
@@ -58,7 +60,7 @@
 	});
 
 	socket.on('team', function(data) {
-		document.getElementById('nationscore').innerHTML = "Team Score: " + data.team;
+		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.team;
 	});
 	
 	socket.on('decisionUpdate', function(data) {
@@ -79,11 +81,11 @@
 	
 	socket.on('newQuarter', function() {
 		swapToInvestigation();
-	}
+	});
 	
 	
 	
-<!-- FUNCTIONS -->
+/*FUNCTIONS*/
 	
 	var disableButtons = function() {
 		document.getElementById('decision1').disabled = true;

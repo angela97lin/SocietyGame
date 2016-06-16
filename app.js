@@ -1,4 +1,4 @@
-/*<!-- INITIALIZATION -->*/
+/*INITIALIZATION*/
 
 	var express = require('express');
 	var app = express();
@@ -16,8 +16,6 @@
 	});
 	app.use('/client', express.static(__dirname + '/client'));
 
-
-
 	var playerNumber = 1;
 	var totalPlayers = 0;
 	var numberOfPlayersInGroups = 0;
@@ -30,6 +28,8 @@
 	var playerScores = {};
 	var groupScores = {};
 	var teamScores = {};
+	var teamNameNumbers = {};
+	var currentTeamNumber = 1;
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
@@ -42,31 +42,8 @@
 	//variables for waitForPlayers
 	var decidedPlayers = 0;
 
-	if (decisionMode == "timer") {
-		//increment the timer
-		setInterval(function() {
-			for(var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.timer = timer;
-				socket.emit('timer', {
-					timer: socket.timer
-				});
-			}
-			timer--;
-		}, 1000);
 
-		//timer resets every TIMER_LIMIT seconds
-		//show the updated data
-		//enable output
-		setInterval(function() {
-			timer = TIME_LIMIT;
-			updateRound(SOCKET_LIST);
-		}, 1000 * TIME_LIMIT);
-	};
-
-
-
-/*<!-- LISTENERS -->*/
+/*LISTENERS*/
 
 	io.sockets.on('connection', function(socket) {
 
@@ -117,7 +94,7 @@
 			playerScores[socket.playerNumber] += -1;
 			checkPlayers(decisionMode);
 		});
-		
+
 		socket.on('playerConnect', function(data) {
 			socket.playerNumber = data.playerNumber + ((socket.groupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 			socket.groupNumber = data.groupNumber + ((socket.teamNumber-1) * (numberOfGroups));
@@ -139,12 +116,43 @@
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 
 			});
+
 			socket.emit('world', {
 				world: world
 			});
 			socket.emit('timer', {
 				timer: timer
 			});
+
+			//associate team names and numbers
+			if (!(data.teamName in teamNameNumbers)) {
+				teamNameNumbers[data.teamName] = currentTeamNumber;
+				console.log(currentTeamNumber);
+				for (var i in SOCKET_LIST) {
+					var emitSocket = SOCKET_LIST[i];
+					emitSocket.emit('newTeam', {
+						teamName: data.teamName,
+						currentTeamNumber: currentTeamNumber
+					});
+				};
+				currentTeamNumber++;
+			};
+			socket.teamNumber = teamNameNumbers[data.teamName];
+			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
+			if (!(socket.teamNumber in teamScores)){
+				teamScores[socket.teamNumber] = 20 * numberOfGroups;
+			};
+			if (!(socket.groupNumber in groupScores)){
+				groupScores[socket.groupNumber] = 20;
+			};
+			socket.emit('getTeamNumber', {
+				teamNameNumbers: teamNameNumbers,
+				groupNumber: socket.groupNumber
+			});
+			socket.emit('team', {
+				team: teamScores[socket.teamNumber]
+			});
+
 		});
 		
 		socket.on('infoRequest', function() {
@@ -162,18 +170,39 @@
 	});
 
 
+/*FUNCTIONS*/
 
-/*<!-- FUNCTIONS -->*/
-
-	var checkPlayers = function(mode) {
-		decidedPlayers++;
-		if (mode == "waitForPlayers") {
-			if (decidedPlayers == totalPlayers) {
-				decidedPlayers = 0;
-				updateRound(SOCKET_LIST);
+	if (decisionMode == "timer") {
+		//increment the timer
+		setInterval(function() {
+			for(var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.timer = timer;
+				socket.emit('timer', {
+					timer: socket.timer
+				});
 			}
-		}
+			timer--;
+		}, 1000);
+
+		//timer resets every TIMER_LIMIT seconds
+		//show the updated data
+		//enable output
+		setInterval(function() {
+			timer = TIME_LIMIT;
+			updateRound(SOCKET_LIST);
+		}, 1000 * TIME_LIMIT);
 	};
+
+		var checkPlayers = function(mode) {
+			decidedPlayers++;
+			if (mode == "waitForPlayers") {
+				if (decidedPlayers == totalPlayers) {
+					decidedPlayers = 0;
+					updateRound(SOCKET_LIST);
+				}
+			}
+		};
 
 	var updateRound = function(sockets) {
 		quarterlyReport(sockets);
@@ -199,8 +228,10 @@
 			for (var i in sockets) {
 				var socket = sockets[i];
 				quarterTeamScores = teamScores;
-				socket.emit('quarterTeams', teamScores);
-				socket.emit('quarterGroups', groupScores);
+				socket.emit('quarter', {
+					teamScores: teamScores,
+					groupScores: groupScores
+				});
 				socket.emit('newQuarter', {
 					quarter: quarter
 				});
