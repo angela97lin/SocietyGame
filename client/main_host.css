@@ -42,6 +42,15 @@ h1 {
 }
 
 /*--Some messing around with visuals--*/
+
+.col{
+	margin: 20px 70px;
+}
+
+.row{
+margin: 20px 70px;
+}
+
 body{
    margin: 0px;
    padding: 0px;
