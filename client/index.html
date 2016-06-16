@@ -1,6 +1,6 @@
 <!DOCTYPE html><head>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    <link href="main_mobile.css" rel="stylesheet" type="text/css" />
+    <link href="client/main_mobile.css" rel="stylesheet" type="text/css" />
     <title>Society</title>
 </head>
 
@@ -8,6 +8,11 @@
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 
 <script>
+
+
+
+<!-- INITIALIZATION -->
+
 	var socket = io();
 	var playerScore = 20;
 	
@@ -19,9 +24,17 @@
 	var teamNumber = teamNumberInput;
 	var groupNumber = [teamNumber, groupNumberInput];
 	
-	socket.emit('playerConnect', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
-
-	//initialize the data on individual screens
+	
+	socket.emit('playerConnect', {
+		playerNumber: playerNumber,
+		groupNumber: groupNumber,
+		teamNumber: teamNumber
+	});
+	
+	
+	
+<!-- LISTENERS -->
+	
 	socket.on('player', function(data) {
 		//document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
@@ -47,52 +60,57 @@
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
 
-	var decision1 = function() {
-		socket.emit('decision1', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
-	};
-	
-	var decision2 = function() {
-		socket.emit('decision2', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
-	};
-	
-	var decision3 = function() {
-		socket.emit('decision3', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
-	};
-	
-	var decision4 = function() {
-		socket.emit('decision4', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
-	};
-
 	socket.on('enable', function(data) {
-		document.getElementById('decision1').disabled = false;
-		document.getElementById('decision2').disabled = false;
-		document.getElementById('decision3').disabled = false;
-		document.getElementById('decision4').disabled = false;
+		enableButtons();
 	});
 
 	socket.on('nextRound', function(data) {
 		document.getElementById('roundnumber').innerHTML = "Round: " + data.roundNumber;
 	});
+	
+	
+	
+<!-- FUNCTIONS -->
+	
+	var disableButtons = function() {
+		document.getElementById('decision1').disabled = true;
+		document.getElementById('decision2').disabled = true;
+		document.getElementById('decision3').disabled = true;
+		document.getElementById('decision4').disabled = true;
+	};
+	
+	var enableButtons = function() {
+		document.getElementById('decision1').disabled = false;
+		document.getElementById('decision2').disabled = false;
+		document.getElementById('decision3').disabled = false;
+		document.getElementById('decision4').disabled = false;
+	};
 
+	var decision1 = function() {
+		socket.emit('decision1', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		disableButtons();
+	};
+	
+	var decision2 = function() {
+		socket.emit('decision2', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		disableButtons();
+	};
+	
+	var decision3 = function() {
+		socket.emit('decision3', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		disableButtons();
+	};
+	
+	var decision4 = function() {
+		socket.emit('decision4', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		disableButtons();
+	};
+	
 </script>
 
 
+
+<!-- HTML -->
 
 <div style=" width: 100%; text-align: center">
                     <h1 id="worldscore">worldscore</h1>

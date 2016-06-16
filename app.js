@@ -1,6 +1,23 @@
+/* INITIALIZATION */
+
+app.get('/', function(req, res) {
+	res.sendFile(__dirname + '/client/index.html');
+});
+app.get('/main', function(req, res) {
+	res.sendFile(__dirname + '/client/main_host.html');
+});
+app.use('/client', express.static(__dirname + '/client'));
+
 var express = require('express');
 var app = express();
 var serv = require('http').createServer(app);
+serv.listen(3000, "0.0.0.0");
+console.log('server started');
+var SOCKET_LIST = {};
+var io = require('socket.io')(serv, {});
+
+
+
 var playerNumber = 1;
 var totalPlayers = 0;
 var numberOfGroups = 0;
@@ -8,6 +25,10 @@ var numberOfTeams = 0;
 var world = 0;
 var roundNumber = 1;
 var quarter = 0;
+var playerScores = {};
+var groupScores = {};
+var teamScores = {};
+
 //decide whether a round is over based on the timer or once all players have made a decision
 //either timer or waitForPlayers
 var decisionMode = "waitForPlayers";
@@ -19,29 +40,38 @@ var timer = TIME_LIMIT;
 //variables for waitForPlayers
 var decidedPlayers = 0;
 
-var playerScores = {};
-var groupScores = {};
-var teamScores = {};
+if (decisionMode == "timer") {
+	//increment the timer
+	setInterval(function() {
+		for(var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
+			socket.timer = timer;
+			socket.emit('timer', {
+				timer: socket.timer
+			});
+		}
+		timer--;
+	}, 1000);
 
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/client/index.html');
-});
-app.get('/main', function(req, res) {
-	res.sendFile(__dirname + '/client/main_host.html');
-});
-app.use('/client', express.static(__dirname + '/client'));
+	//timer resets every TIMER_LIMIT seconds
+	//show the updated data
+	//enable output
+	setInterval(function() {
+		timer = TIME_LIMIT;
+		updateRound(SOCKET_LIST);
+	}, 1000 * TIME_LIMIT);
+};
 
-serv.listen(3000, "0.0.0.0");
-console.log('server started');
-var SOCKET_LIST = {};
 
-var io = require('socket.io')(serv, {});
+
+/* LISTENERS */
+
 io.sockets.on('connection', function(socket) {
+
 	socket.id = playerNumber;
 	SOCKET_LIST[socket.id] = socket;
 	console.log('connection made');
 	console.log(socket.id);
-	
 	playerNumber++;
 	console.log('totalPlayers: ' + totalPlayers);
 
@@ -114,27 +144,9 @@ io.sockets.on('connection', function(socket) {
 	});
 });
 
-if (decisionMode == "timer") {
-	//increment the timer
-	setInterval(function() {
-		for(var i in SOCKET_LIST) {
-			var socket = SOCKET_LIST[i];
-			socket.timer = timer;
-			socket.emit('timer', {
-				timer: socket.timer
-			});
-		}
-		timer--;
-	}, 1000);
 
-	//timer resets every TIMER_LIMIT seconds
-	//show the updated data
-	//enable output
-	setInterval(function() {
-		timer = TIME_LIMIT;
-		updateRound(SOCKET_LIST);
-	}, 1000 * TIME_LIMIT);
-};
+
+/* FUNCTIONS */
 
 var checkPlayers = function(mode) {
 	decidedPlayers++;
