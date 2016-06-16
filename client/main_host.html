@@ -1,102 +1,115 @@
 <!doctype html>
+
+<!-- HTML -->
+
 <html>
-<head>
-<meta charset="utf-8">
-<title>Society Game Host</title>
-<link href="client/main_host.css" rel="stylesheet" type="text/css" />
-</head>
+	<head>
+		<meta charset="utf-8">
+		<title>Society Game Host</title>
+		<link href="client/main_host.css" rel="stylesheet" type="text/css" />
+	</head>
 
-<body>
-	<h1 id="quarterlyreports">Quarterly Reports: Start</h1>
-	<h2 id="roundnumber">Round Number: 1</h2>
-	<table id="nations" align="center" border="0" cellpadding="20">
-		<tbody>
-			<tr>
-			</tr>
-			<tr>
-			</tr>
-		</tbody>
-	</table>
+	<body>
+		<h1 id="quarterlyreports">Quarterly Reports: Start</h1>
+		<h2 id="roundnumber">Round Number: 1</h2>
+		<table id="nations" align="center" border="0" cellpadding="20">
+			<tbody>
+				<tr></tr>
+				<tr></tr>
+			</tbody>
+		</table>
 
-<!--socket-->
-<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<!--socket-->
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	
 
-<script type="text/javascript">
-		var socket = io();
+	
+<!-- INITIALIZATION -->
+	
+	<script type="text/javascript">
+	
+			var socket = io();
 
-		var numberOfTeams = prompt("How many teams will there be?");
-		var numberOfGroups = prompt("How many groups will be in each team?");
-		var numberOfPlayersInGroups = prompt("How many players are in each group?");
-		var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
+			var numberOfTeams = prompt("How many teams will there be?");
+			var numberOfGroups = prompt("How many groups will be in each team?");
+			var numberOfPlayersInGroups = prompt("How many players are in each group?");
+			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
 
-		socket.emit('start', {
-			numberOfTeams: numberOfTeams,
-			numberOfGroups: numberOfGroups,
-			numberOfPlayers: numberOfPlayers
-		});
+			socket.emit('start', {
+				numberOfTeams: numberOfTeams,
+				numberOfGroups: numberOfGroups,
+				numberOfPlayers: numberOfPlayers
+			});
 
-		var nationscore = 20 * numberOfGroups;
-		var individualscore = 20;
-		var roundnumber = 1;
+			var nationscore = 20 * numberOfGroups;
+			var individualscore = 20;
+			var roundnumber = 1;
 
-		document.getElementById('nations').cellSpacing = 400 / numberOfTeams;
-		for (var i = 1; i <= numberOfTeams; i++) {
-			addNation(i);
-		};
-		for (var i = 1; i <= numberOfGroups; i++) {
-			addGroup(i);
-		};
-		
-		socket.on('nextRound', function(data) {
-			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
-		});
-
-		socket.on('quarterTeams', function(data) {
+			document.getElementById('nations').cellSpacing = 400 / numberOfTeams;
 			for (var i = 1; i <= numberOfTeams; i++) {
-				document.getElementById(i).innerHTML = "Nation Score: " + data[i];
+				addNation(i);
 			};
-		});
+			for (var i = 1; i <= numberOfGroups; i++) {
+				addGroup(i);
+			};
+			
+			
+			
+<!-- LISTENERS -->
+			
+			socket.on('nextRound', function(data) {
+				document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+			});
 
-		socket.on('quarterGroups', function(data) {
-			console.log(data);
-			for (var i = 1; i <= numberOfTeams; i++) {
-				for (var j = 1; j <= numberOfGroups; j++) {
-					document.getElementById([i, j]).innerHTML = "Group Score: " + data[[i, j]];
-				}
-			}
-		})
+			socket.on('quarterTeams', function(data) {
+				for (var i = 1; i <= numberOfTeams; i++) {
+					document.getElementById(i).innerHTML = "Nation Score: " + data[i];
+				};
+			});
 
-		socket.on('newQuarter', function(data) {
-			document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
-		});
+			socket.on('quarterGroups', function(data) {
+				console.log(data);
+				for (var i = 1; i <= numberOfTeams; i++) {
+					for (var j = 1; j <= numberOfGroups; j++) {
+						document.getElementById([i, j]).innerHTML = "Group Score: " + data[[i, j]];
+					};
+				};
+			});
 
-		function createCell(cell, text, style, id=null) {
-			var div = document.createElement('div');
-			var txt = document.createTextNode(text);
-			div.appendChild(txt);
-			div.setAttribute('class', style);
-			div.setAttribute('className', style);
-			div.setAttribute('id', id);
-			cell.appendChild(div);
-		}
+			socket.on('newQuarter', function(data) {
+				document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
+			});
+			
 
-		function addNation(nation) {
-			var nations = document.getElementById('nations');
-			createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col');
-			createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col', nation);
-		}
+			
+<!-- FUNCTIONS -->
+			
+			function createCell(cell, text, style, id=null) {
+				var div = document.createElement('div');
+				var txt = document.createTextNode(text);
+				div.appendChild(txt);
+				div.setAttribute('class', style);
+				div.setAttribute('className', style);
+				div.setAttribute('id', id);
+				cell.appendChild(div);
+			};
 
-		function addGroup(group) {
-			var nations = document.getElementById('nations');
-			var row1 = nations.insertRow(nations.rows.length);
-			var row2 = nations.insertRow(nations.rows.length);
-			for (var i = 0; i < nations.rows[0].cells.length; i++) {
-				createCell(row1.insertCell(i), group, 'row');
-				createCell(row2.insertCell(i), "Group Score: " + 20, 'row', [i + 1, group]);
-			}
-		};
-		
-		</script>
-        
-</body>
+			function addNation(nation) {
+				var nations = document.getElementById('nations');
+				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col');
+				createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col', nation);
+			};
+
+			function addGroup(group) {
+				var nations = document.getElementById('nations');
+				var row1 = nations.insertRow(nations.rows.length);
+				var row2 = nations.insertRow(nations.rows.length);
+				for (var i = 0; i < nations.rows[0].cells.length; i++) {
+					createCell(row1.insertCell(i), group, 'row');
+					createCell(row2.insertCell(i), "Group Score: " + 20, 'row', [i + 1, group]);
+				};
+			};
+			
+		</script>	
+	</body>
 </html>
