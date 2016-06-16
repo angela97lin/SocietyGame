@@ -46,6 +46,10 @@
 		for (var i = 1; i <= numberOfGroups; i++) {
 			addGroup(i);
 		};
+
+		socket.on('newTeam', function(data) {
+			document.getElementById(['name', data.currentTeamNumber]).innerHTML = data.teamName;
+		});
 		
 		socket.on('nextRound', function(data) {
 			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
@@ -82,7 +86,7 @@
 
 		function addNation(nation) {
 			var nations = document.getElementById('nations');
-			createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col');
+			createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), nation, 'col', ['name', nation]);
 			createCell(nations.rows[1].insertCell(nations.rows[1].cells.length), "Nation Score: " + nationscore, 'col', nation);
 		}
 

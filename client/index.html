@@ -12,14 +12,22 @@
 	var playerScore = 20;
 	
 	var playerNumberInput = prompt("What player number are you?");
-	var teamNumberInput = prompt("What team are you on?");
+	var teamNameInput = prompt("What team are you on?");
 	var groupNumberInput = prompt("What group are you in?");
 	
 	var playerNumber = playerNumberInput;
-	var teamNumber = teamNumberInput;
+	var teamName = teamNameInput;
+	var teamNumber = 0;
 	var groupNumber = [teamNumber, groupNumberInput];
 	
-	socket.emit('playerConnect', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+	socket.emit('playerConnect', {playerNumber: playerNumber, groupNumber: groupNumber, teamName: teamName});
+
+	socket.on('getTeamNumber', function(data) {
+		teamNumber = data.teamNameNumbers[teamName];
+		socket.emit('getTeamScore', {
+			teamNumber: teamNumber
+		});
+	});
 
 	//initialize the data on individual screens
 	socket.on('player', function(data) {
@@ -36,7 +44,7 @@
 	});
 
 	socket.on('team', function(data) {
-		document.getElementById('nationscore').innerHTML = "Team Score: " + data.team;
+		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.team;
 	});
 	
 	socket.on('decisionUpdate', function(data) {
