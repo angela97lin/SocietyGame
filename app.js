@@ -142,6 +142,19 @@
 				timer: timer
 			});
 		});
+		
+		socket.on('infoRequest', function() {
+			socket.emit('player', {});
+			socket.emit('team', {
+				team: teamScores[socket.teamNumber] 
+			});
+			socket.emit('world', {
+				world: world
+			});
+			socket.emit('timer', {
+				timer: timer
+			});
+		});
 	});
 
 
