@@ -26,11 +26,22 @@
 	var playerScore = 20;
 	
 	var playerNumberInput = prompt("What player number are you?");
-	var teamNameInput = prompt("What team are you on?");
-	var groupNumberInput = prompt("What group are you in?");
+	var teamNameInput = prompt("What nation are you on?\n" +
+							   "1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
+							   "5: Russia, 6: China, 7: Mexico");
+	var groupNumberInput = prompt("What group are you in?\n" +
+								  "1: Education, 2: Military, 3: Workforce, 4: Policy Makers");
+
+	var NATIONS = {1: "Japan",
+				   2: "Canada",
+				   3: "UK",
+				   4: "Turkey",
+				   5: "Russia",
+				   6: "China",
+				   7: "Mexico"};
 	
 	var playerNumber = playerNumberInput;
-	var teamName = teamNameInput;
+	var teamName = NATIONS[teamNameInput];
 	var teamNumber = 0;
 	var groupNumber = [];
 	
