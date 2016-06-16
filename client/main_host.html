@@ -34,11 +34,14 @@
 			var numberOfGroups = prompt("How many groups will be in each team?");
 			var numberOfPlayersInGroups = prompt("How many players are in each group?");
 			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
-
+			var numberOfPlayersInTeams = numberOfGroups * numberOfPlayersInGroups;
+			
 			socket.emit('start', {
 				numberOfTeams: numberOfTeams,
 				numberOfGroups: numberOfGroups,
 				numberOfPlayers: numberOfPlayers
+				numberOfPlayersInGroups: numberOfPlayersInGroups
+				numberOfPlayersInTeams: numberOfPlayersInTeams
 			});
 
 			var nationscore = 20 * numberOfGroups;

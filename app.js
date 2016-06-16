@@ -20,6 +20,8 @@
 
 	var playerNumber = 1;
 	var totalPlayers = 0;
+	var numberOfPlayersInGroups = 0;
+	var numberOfPlayersInTeams = 0;
 	var numberOfGroups = 0;
 	var numberOfTeams = 0;
 	var world = 0;
@@ -80,60 +82,62 @@
 			totalPlayers = data.numberOfPlayers;
 			numberOfGroups = data.numberOfGroups;
 			numberOfTeams = data.numberOfTeams;
+			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
+			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
 		});
 		
 		socket.on('decision1', function(data) {
 			world += -1;
-			groupScores[data.groupNumber] += -2;
-			teamScores[data.teamNumber] += -2;
-			playerScores[data.playerNumber] += 2;
+			groupScores[socket.groupNumber] += -2;
+			teamScores[socket.teamNumber] += -2;
+			playerScores[socket.playerNumber] += 2;
 			checkPlayers(decisionMode);
 		});
 
 		socket.on('decision2', function(data) {
 			world += 0;
-			groupScores[data.groupNumber] += 2;
-			teamScores[data.teamNumber] += 2;
-			playerScores[data.playerNumber] += -1;
+			groupScores[socket.groupNumber] += 2;
+			teamScores[socket.teamNumber] += 2;
+			playerScores[socket.playerNumber] += -1;
 			checkPlayers(decisionMode);
 		});
 		
 		socket.on('decision3', function(data) {
 			world += -1;
-			groupScores[data.groupNumber] += 1;
-			teamScores[data.teamNumber] += 1;
-			playerScores[data.playerNumber] += 1;
+			groupScores[socket.groupNumber] += 1;
+			teamScores[socket.teamNumber] += 1;
+			playerScores[socket.playerNumber] += 1;
 			checkPlayers(decisionMode);
 		});
 
 		socket.on('decision4', function(data) {
 			world += 2;
-			groupScores[data.groupNumber] += 0;
-			teamScores[data.teamNumber] += 0;
-			playerScores[data.playerNumber] += -1;
+			groupScores[socket.groupNumber] += 0;
+			teamScores[socket.teamNumber] += 0;
+			playerScores[socket.playerNumber] += -1;
 			checkPlayers(decisionMode);
 		});
 		
 		socket.on('playerConnect', function(data) {
-			socket.playerNumber = data.playerNumber;
-			socket.groupNumber = data.groupNumber;
+			socket.playerNumber = data.playerNumber + ((socket.groupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+			socket.groupNumber = data.groupNumber + ((socket.teamNumber-1) * (numberOfGroups));
 			socket.teamNumber = data.teamNumber;
-			if (!(data.playerNumber in playerScores)){
-				playerScores[data.playerNumber] = 20;
+			if (!(socket.playerNumber in playerScores)){
+				playerScores[socket.playerNumber] = 20;
 			}
 			
-			if (!(data.groupNumber in groupScores)){
-				groupScores[data.groupNumber] = 20;
+			if (!(socket.groupNumber in groupScores)){
+				groupScores[socket.groupNumber] = 20;
 			}
 			
-			if (!(data.teamNumber in teamScores)){
-				teamScores[data.teamNumber] = 20 * numberOfGroups;
+			if (!(socket.teamNumber in teamScores)){
+				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			}
 			socket.emit('player', {
 				number: socket.id
 			});
 			socket.emit('team', {
-				team: teamScores[data.teamNumber] 
+				team: teamScores[socket.teamNumber] 
 			});
 			socket.emit('world', {
 				world: world
