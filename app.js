@@ -1,13 +1,5 @@
 /*<!-- INITIALIZATION -->*/
 
-	app.get('/', function(req, res) {
-		res.sendFile(__dirname + '/client/index.html');
-	});
-	app.get('/main', function(req, res) {
-		res.sendFile(__dirname + '/client/main_host.html');
-	});
-	app.use('/client', express.static(__dirname + '/client'));
-
 	var express = require('express');
 	var app = express();
 	var serv = require('http').createServer(app);
@@ -15,6 +7,14 @@
 	console.log('server started');
 	var SOCKET_LIST = {};
 	var io = require('socket.io')(serv, {});
+	
+	app.get('/', function(req, res) {
+		res.sendFile(__dirname + '/client/index.html');
+	});
+	app.get('/main', function(req, res) {
+		res.sendFile(__dirname + '/client/main_host.html');
+	});
+	app.use('/client', express.static(__dirname + '/client'));
 
 
 
