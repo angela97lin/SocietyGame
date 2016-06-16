@@ -6,6 +6,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Society Game Host</title>
+		<link href="main_host.css" rel="stylesheet" type="text/css" />
 		<link href="client/main_host.css" rel="stylesheet" type="text/css" />
 	</head>
 
@@ -34,6 +35,8 @@
 			var numberOfGroups = prompt("How many groups will be in each team?");
 			var numberOfPlayersInGroups = prompt("How many players are in each group?");
 			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
+			var numberOfPlayersInTeams = numberOfGroups * numberOfPlayersInGroups;
+			
 
 			var nationscore = 20 * numberOfGroups;
 			var individualscore = 20;
@@ -48,6 +51,8 @@
 				numberOfTeams: numberOfTeams,
 				numberOfGroups: numberOfGroups,
 				numberOfPlayers: numberOfPlayers
+				numberOfPlayersInGroups: numberOfPlayersInGroups
+				numberOfPlayersInTeams: numberOfPlayersInTeams
 			});
 
 			var nations = document.getElementById('nations');
