@@ -15,7 +15,33 @@
 <!--<script src="node_modules/jquery/dist/jquery.min.js"></script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 
-
+<div class = "container">
+	<div class = "row" id = "info">
+		<div class = "col-md-50" id="info1">
+			<h1 id="worldscore">worldscore</h1>
+			<h2 id="nationscore">insert number here</h2>
+			<h3 id="individualscore">insert number here</h3>
+		</div>
+		<div class = "col-md-50" id = "info2">
+			<h4 id="timer"></h4>
+			<h4 id="playerNumber">insert number here</h4>
+			<footer id="roundnumber">Round Number: 1</footer>
+		</div>
+	</div>
+	<div class = "row">
+		<div class="col-md-45">
+			<button class="decision" id="decision1" onclick="decision1()"></button>
+			<h3></h3>
+			<button class="decision" id="decision2" onclick="decision2()"></button>
+			<h3></h3>
+		</div>
+		<div class = "col-md-45 col-md-offset-10">
+			<button class="decision" id="decision3" onclick="decision3()"></button>
+			<h3></h3>
+			<button class="decision" id="decision4" onclick="decision4()"></button>
+		</div>
+	</div>
+</div>
 
 
 <!-- INITIALIZATION -->
@@ -39,6 +65,25 @@
 				   5: "Russia",
 				   6: "China",
 				   7: "Mexico"};
+
+	var DECISIONS = [{1: "Pocket money from school fundraiser",
+					  2: "Buy school supplies for students out of pocket",
+					  3: "Inflate students' test scores",
+					  4: "Go teach for a year to impoverished students"},
+					 {1: "Extort local families in the war zone",
+					  2: "Fight on the front lines",
+					  3: "Use biochemical warfare",
+					  4: "Give rations to starving children in war zone"},
+					 {1: "Buy a boat with company money",
+					  2: "Come in on Saturdays",
+					  3: "Switch production to fossil fuels for a month to lower production costs",
+					  4: "Donate to charity"},
+					 {1: "Take a bribe to lower emissions requirements",
+					  2: "Attend every voting session",
+					  3: "Impose tariffs on international trade",
+					  4: "Give time to international disaster relief organization"}];
+
+	createDecisions(groupNumberInput);
 	
 	var playerNumber = playerNumberInput;
 	var teamName = NATIONS[teamNameInput];
@@ -100,6 +145,14 @@
 	
 	
 /*FUNCTIONS*/
+
+	function createDecisions(group) {
+		console.log(DECISIONS[group - 1]);
+		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
+		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
+		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];
+		document.getElementById('decision4').innerHTML = DECISIONS[group - 1][4];
+	};
 	
 	var disableButtons = function() {
 		document.getElementById('decision1').disabled = true;
@@ -179,32 +232,3 @@
 	};
 	
 </script>
-
-
-<div class = "container">
-	<div class = "row" id = "info">
-		<div class = "col-md-50" id="info1">
-			<h1 id="worldscore">worldscore</h1>
-			<h2 id="nationscore">insert number here</h2>
-			<h3 id="individualscore">insert number here</h3>
-		</div>
-		<div class = "col-md-50" id = "info2">
-			<h4 id="timer"></h4>
-			<h4 id="playerNumber">insert number here</h4>
-			<footer id="roundnumber">Round Number: 1</footer>
-		</div>
-	</div>
-	<div class = "row">
-		<div class="col-md-45">
-			<button class="decision" id="decision1" onclick="decision1()"></button>
-			<h3></h3>
-			<button class="decision" id="decision2" onclick="decision2()"></button>
-			<h3></h3>
-		</div>
-		<div class = "col-md-45 col-md-offset-10">
-			<button class="decision" id="decision3" onclick="decision3()"></button>
-			<h3></h3>
-			<button class="decision" id="decision4" onclick="decision4()"></button>
-		</div>
-	</div>
-</div>
