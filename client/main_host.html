@@ -89,6 +89,10 @@
 			socket.on('newQuarter', function(data) {
 				document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
 			});
+
+			socket.on('worldEnd', function() {
+				window.location = "/worldend";
+			});
 			
 			
 /*FUNCTIONS*/

@@ -92,6 +92,10 @@
 	socket.on('newQuarter', function() {
 		swapToInvestigation();
 	});
+
+	socket.on('worldEnd', function() {
+		window.location = "/worldend";
+	});
 	
 	
 	

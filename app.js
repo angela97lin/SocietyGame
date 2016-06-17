@@ -3,7 +3,6 @@
 	var express = require('express');
 	var app = express();
 	var serv = require('http').createServer(app);
-	serv.listen(3000, "0.0.0.0");
 	console.log('server started');
 	var SOCKET_LIST = {};
 	var io = require('socket.io')(serv, {});
@@ -14,6 +13,9 @@
 	app.get('/main', function(req, res) {
 		res.sendFile(__dirname + '/client/main_host.html');
 	});
+	app.get('/worldend', function(req, res) {
+		res.sendFile(__dirname + '/client/worldend.html');
+	})
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
@@ -25,6 +27,7 @@
 	var world = 0;
 	var roundNumber = 1;
 	var quarter = 0;
+	var ROUNDS = 12;
 	var playerScores = {};
 	var groupScores = {};
 	var teamScores = {};
@@ -207,6 +210,7 @@
 	};
 
 	var updateRound = function(sockets) {
+		endGame(sockets);
 		quarterlyReport(sockets);
 		roundNumber++;
 		for(var i in sockets) {
@@ -237,6 +241,20 @@
 				socket.emit('newQuarter', {
 					quarter: quarter
 				});
+			};
+		};
+	};
+
+	var endGame = function(sockets) {
+		if (world <= 0) {
+			for (var i in sockets) {
+				var emitSocket = sockets[i];
+				emitSocket.emit('worldEnd', {});
+			};
+		} else if (roundNumber == ROUNDS) {
+			for (var i in sockets) {
+				var emitSocket = sockets[i];
+				emitSocket.emit('worldEnd', {});
 			};
 		};
 	};
