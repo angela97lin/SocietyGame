@@ -14,6 +14,9 @@
 	app.get('/main', function(req, res) {
 		res.sendFile(__dirname + '/client/main_host.html');
 	});
+	app.get('/worldend', function(req, res) {
+		res.sendFile(__dirname + '/client/worldend.html');
+	})
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
@@ -25,6 +28,7 @@
 	var world = 0;
 	var roundNumber = 1;
 	var quarter = 0;
+	var ROUNDS = 12;
 	var playerScores = {};
 	var groupScores = {};
 	var teamScores = {};
@@ -101,15 +105,15 @@
 			socket.teamNumber = data.teamNumber;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
-			}
+			};
 			
 			if (!(socket.groupNumber in groupScores)){
 				groupScores[socket.groupNumber] = 20;
-			}
+			};
 			
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
-			}
+			};
 			socket.emit('player', {
 				number: socket.id
 			});
@@ -120,9 +124,11 @@
 			socket.emit('world', {
 				world: world
 			});
-			socket.emit('timer', {
-				timer: timer
-			});
+			if (decisionMode == "timer") {
+				socket.emit('timer', {
+					timer: timer
+				});
+			};
 
 			//associate team names and numbers
 			if (!(data.teamName in teamNameNumbers)) {
@@ -181,7 +187,7 @@
 				socket.emit('timer', {
 					timer: socket.timer
 				});
-			}
+			};
 			timer--;
 		}, 1000);
 
@@ -194,17 +200,18 @@
 		}, 1000 * TIME_LIMIT);
 	};
 
-		var checkPlayers = function(mode) {
-			decidedPlayers++;
-			if (mode == "waitForPlayers") {
-				if (decidedPlayers == totalPlayers) {
-					decidedPlayers = 0;
-					updateRound(SOCKET_LIST);
-				}
-			}
+	var checkPlayers = function(mode) {
+		decidedPlayers++;
+		if (mode == "waitForPlayers") {
+			if (decidedPlayers == totalPlayers) {
+				decidedPlayers = 0;
+				updateRound(SOCKET_LIST);
+			};
 		};
+	};
 
 	var updateRound = function(sockets) {
+		endGame(sockets);
 		quarterlyReport(sockets);
 		roundNumber++;
 		for(var i in sockets) {
@@ -219,7 +226,7 @@
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
 			});
-		}
+		};
 	};
 
 	var quarterlyReport = function(sockets) {
@@ -235,6 +242,20 @@
 				socket.emit('newQuarter', {
 					quarter: quarter
 				});
+			};
+		};
+	};
+
+	var endGame = function(sockets) {
+		if (world <= 0) {
+			for (var i in sockets) {
+				var emitSocket = sockets[i];
+				emitSocket.emit('worldEnd', {});
+			};
+		} else if (roundNumber == ROUNDS) {
+			for (var i in sockets) {
+				var emitSocket = sockets[i];
+				emitSocket.emit('worldEnd', {});
 			};
 		};
 	};

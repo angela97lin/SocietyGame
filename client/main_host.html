@@ -17,6 +17,7 @@
 				<h2 id="roundnumber">Round Number: 1</h2>
 				<h2 id="worldscore">World Score: 60</h2>
 			</div>
+			<h2 id="timer"></h2>
 			<table class ="cellTable" id="nations">
 				<tbody>
 					<tr></tr>
@@ -92,6 +93,10 @@
 
 			socket.on('newQuarter', function(data) {
 				document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
+			});
+
+			socket.on('worldEnd', function() {
+				window.location = "/worldend";
 			});
 			
 			
