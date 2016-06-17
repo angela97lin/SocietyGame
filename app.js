@@ -101,15 +101,15 @@
 			socket.teamNumber = data.teamNumber;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
-			}
+			};
 			
 			if (!(socket.groupNumber in groupScores)){
 				groupScores[socket.groupNumber] = 20;
-			}
+			};
 			
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
-			}
+			};
 			socket.emit('player', {
 				number: socket.id
 			});
@@ -120,9 +120,11 @@
 			socket.emit('world', {
 				world: world
 			});
-			socket.emit('timer', {
-				timer: timer
-			});
+			if (decisionMode == "timer") {
+				socket.emit('timer', {
+					timer: timer
+				});
+			};
 
 			//associate team names and numbers
 			if (!(data.teamName in teamNameNumbers)) {
@@ -181,7 +183,7 @@
 				socket.emit('timer', {
 					timer: socket.timer
 				});
-			}
+			};
 			timer--;
 		}, 1000);
 
@@ -194,15 +196,15 @@
 		}, 1000 * TIME_LIMIT);
 	};
 
-		var checkPlayers = function(mode) {
-			decidedPlayers++;
-			if (mode == "waitForPlayers") {
-				if (decidedPlayers == totalPlayers) {
-					decidedPlayers = 0;
-					updateRound(SOCKET_LIST);
-				}
-			}
+	var checkPlayers = function(mode) {
+		decidedPlayers++;
+		if (mode == "waitForPlayers") {
+			if (decidedPlayers == totalPlayers) {
+				decidedPlayers = 0;
+				updateRound(SOCKET_LIST);
+			};
 		};
+	};
 
 	var updateRound = function(sockets) {
 		quarterlyReport(sockets);
@@ -219,7 +221,7 @@
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
 			});
-		}
+		};
 	};
 
 	var quarterlyReport = function(sockets) {

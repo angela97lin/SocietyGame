@@ -63,7 +63,7 @@
 	});
 
 	socket.on('timer', function(data) {
-		//document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 	});
 
 	socket.on('world', function(data) {
@@ -75,10 +75,9 @@
 	});
 	
 	socket.on('decisionUpdate', function(data) {
-		console.log(data)
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
-		document.getElementById('nationscore').innerHTML = "Team Score: " + data.teamScore;
+		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
 
@@ -87,7 +86,7 @@
 	});
 
 	socket.on('nextRound', function(data) {
-		document.getElementById('roundnumber').innerHTML = "Round: " + data.roundNumber;
+		document.getElementById('roundnumber').innerHTML = "Round Number: " + data.roundNumber;
 	});
 	
 	socket.on('newQuarter', function() {
@@ -186,9 +185,9 @@
 			<h3 id="individualscore">insert number here</h3>
 		</div>
 		<div class = "col-md-50" id = "info2">
-			<h4 id="timer">insert number here</h4>
+			<h4 id="timer"></h4>
 			<h4 id="playerNumber">insert number here</h4>
-			<footer id="roundnumber">roundnumber</footer>
+			<footer id="roundnumber">Round Number: 1</footer>
 		</div>
 	</div>
 	<div class = "row">
