@@ -12,12 +12,17 @@
 
 	<body>
 		<h1 id="quarterlyreports">Quarterly Reports: Start</h1>
-		<h2 id="roundnumber">Round Number: 1</h2>
-		<table id="nations" align="center" border="0" cellpadding="20">
-			<tbody>
-				<tr></tr>
-			</tbody>
-		</table>
+		<div class="container">
+			<div class ="centeredInline">
+				<h2 id="roundnumber">Round Number: 1</h2>
+				<h2 id="worldscore">World Score: 60</h2>
+			</div>
+			<table class ="cellTable" id="nations">
+				<tbody>
+					<tr></tr>
+				</tbody>
+			</table>
+		</div>
 
 	<!--socket-->
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -56,7 +61,7 @@
 
 			var nations = document.getElementById('nations');
 			nations.cellSpacing = 200 / numberOfGroups;
-			createCell(nations.rows[0].insertCell(0), "", 'col');
+			createCell(nations.rows[0].insertCell(0), "", 'col scoreCell');
 			for (var i = 1; i <= numberOfTeams; i++) {
 				addNation(i);
 			};
@@ -103,14 +108,14 @@
 			};
 
 			function addNation(nation) {
-				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), "Nation Score: " + nationscore, 'col', nation);
+				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), "Nation Score: " + nationscore, 'col scoreCell', nation);
 			};
 
 			function addGroup(group) {
 				var row = nations.insertRow(nations.rows.length);
-				createCell(row.insertCell(0), GROUP_NAMES[group], 'row');
+				createCell(row.insertCell(0), GROUP_NAMES[group], 'row scoreCell');
 				for (var i = 1; i < nations.rows[0].cells.length; i++) {
-					createCell(row.insertCell(i), "Group Score: " + 20, 'row', [i + 1, group]);
+					createCell(row.insertCell(i), 20, 'row scoreCell', [i + 1, group]);
 				};
 			};
 			

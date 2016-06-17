@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 
-html, body, div, h1, h2, h3, footer {
+html, body, h1, h2, h3, footer {
 	margin: 5px;
 	padding: 3px;
 	font-family: Tahoma, Arial, sans-serif;
@@ -9,24 +9,83 @@ html, body, div, h1, h2, h3, footer {
 	line-height: 40px;
 	box-shadow: 4px, 4px, 10px, #f9f9f9;
 	display: block;
-	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
+}
+body{
+	background: url("Planetarium_Mobile_Prototype_Background.jpg");
 	background-repeat: no-repeat;
 	background-size: 100% 800%;
 	background-position: 50% 50%
 }
-
-h1 {
-	margin: 30px;
+/*-----------Header---------*/
+.container{
+	width:90%;
+	margin:auto;
+}
+#quarterlyreports{
+	margin: 40px;
 	border: 5px;
 	padding: 10px;
 	color: #CE0003;
 	font-variant: small-caps;
-	font-size: 40px;
+	font-size: 60px;
+	text-align: center;
 }
+.centeredInline{
+	display: flex;
+  	justify-content: space-between;
+	margin: 60px auto;
+	font-variant: small-caps;
+	font-size: 50px;
+}
+
+#roundnumber {
+	text-align: right;
 	
+	display:inline;
+}
+
+#worldscore{
+	text-align: center;
+	
+	display:inline;
+	align:center;
+}
+
+/*-----------Table----------*/
+tbody{
+	border-radius: 70px;
+}
+tbody tr:first-child td {
+	border-top:none;
+}
+tr{
+	background: rgba(255,255,255,0)
+}	
+td {
+    border-left: 2px solid #9ED6DF;
+    border-top:2px solid #9ED6DF;
+}
+td:first-child {
+     border-left: none;
+}
+.cellTable{
+	font-size: 40px;
+	text-align:center;
+	margin:auto;
+	border-collapse: separate;
+	border-spacing: 0px;
+	border: 2px solid #9ED6DF;
+    border-radius:20px;
+    -moz-border-radius:20px;
+    background: rgba(255,255,255,0);
+	
+}
+.col{
+	color:white;
+}
 
 #nationscore {
-	font-size: 40px;
+	font-size: 30px;
 	margin: 20px;
 }
 
@@ -36,20 +95,13 @@ h1 {
 	margin-left: 50px;
 }
 
-#roundnumber {
-	font-size: 20px;
-	text-align: center
+
+.scoreCell{
+	padding: 40px 60px;
+	color: #9ED6DF;
 }
 
-/*--Some messing around with visuals--*/
 
-.col{
-	margin: 20px 70px;
-}
-
-.row{
-margin: 20px 70px;
-}
 
 body{
    margin: 0px;
