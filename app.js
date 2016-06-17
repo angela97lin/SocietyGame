@@ -3,6 +3,7 @@
 	var express = require('express');
 	var app = express();
 	var serv = require('http').createServer(app);
+	serv.listen(3000, "0.0.0.0");
 	console.log('server started');
 	var SOCKET_LIST = {};
 	var io = require('socket.io')(serv, {});
