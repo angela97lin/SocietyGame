@@ -11,13 +11,14 @@
 	</head>
 
 	<body>
-		<h1 id="quarterlyreports">Quarterly Reports: Start</h1>
+		
 		<div class="container">
+		<h2 id="roundnumber">Round Number: 1</h2>
 			<div class ="centeredInline">
-				<h2 id="roundnumber">Round Number: 1</h2>
+				<h2 id="timer">2:00</h2>
 				<h2 id="worldscore">World Score: 60</h2>
 			</div>
-			<h2 id="timer"></h2>
+			
 			<table class ="cellTable" id="nations">
 				<tbody>
 					<tr></tr>
@@ -62,7 +63,7 @@
 
 			var nations = document.getElementById('nations');
 			nations.cellSpacing = 200 / numberOfGroups;
-			createCell(nations.rows[0].insertCell(0), "", 'col scoreCell');
+			createCell(nations.rows[0].insertCell(0), "Q1", 'col scoreCell', "quarterlyreports");
 			for (var i = 1; i <= numberOfTeams; i++) {
 				addNation(i);
 			};
@@ -92,7 +93,7 @@
 			});
 
 			socket.on('newQuarter', function(data) {
-				document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
+				document.getElementById('quarterlyreports').innerHTML = "Q" + data.quarter;
 			});
 
 			socket.on('worldEnd', function() {
