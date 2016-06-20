@@ -37,6 +37,8 @@
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
+	var MODES = {1: "timer",
+				 2: "waitForPlayers"};
 	var decisionMode = "waitForPlayers";
 
 	//variables for timer
@@ -60,6 +62,7 @@
 		playerNumber++;
 
 		socket.on('start', function(data) {
+			decisionMode = MODES[data.mode];
 			world = data.numberOfTeams * 10;
 			totalPlayers = data.numberOfPlayers;
 			numberOfGroups = data.numberOfGroups;
@@ -67,7 +70,9 @@
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
 			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
 			if (decisionMode == "timer") {
-				socket.emit('startTimer', {});
+				socket.emit('startTimer', {
+					timer: timeLimitToString(timerMinutes, timerSeconds)
+				});
 			};
 		});
 		

@@ -21,7 +21,7 @@
 			</tbody>
 		</table>
 			<div class ="centeredInline">
-				<h2 id="timer">2:00</h2>
+				<h2 id="timer"></h2>
 				<h2 id="worldscore"></h2>
 			</div>
 			
@@ -43,6 +43,8 @@
 	
 			var socket = io();
 
+			var mode = prompt("How would you like rounds to end? \n" +
+							  "1: Timer, 2: Wait for everyone to make a decision");
 			var numberOfTeams = prompt("How many teams will there be?");
 			var numberOfGroups = prompt("How many groups will be in each team?");
 			var numberOfPlayersInGroups = prompt("How many players are in each group?");
@@ -64,7 +66,8 @@
 				numberOfGroups: numberOfGroups,
 				numberOfPlayers: numberOfPlayers,
 				numberOfPlayersInGroups: numberOfPlayersInGroups,
-				numberOfPlayersInTeams: numberOfPlayersInTeams
+				numberOfPlayersInTeams: numberOfPlayersInTeams,
+				mode: mode
 			});
 
 			document.getElementById('worldscore').innerHTML = "World Score: " + 10 * numberOfTeams;
@@ -112,7 +115,8 @@
 				document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 			});
 
-			socket.on('startTimer', function() {
+			socket.on('startTimer', function(data) {
+				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()">Start Timer</button>')
 			});
 
