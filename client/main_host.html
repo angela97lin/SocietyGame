@@ -11,13 +11,20 @@
 	</head>
 
 	<body>
-		<h1 id="quarterlyreports">Quarterly Reports: Start</h1>
+		
 		<div class="container">
+		<h2 id="roundnumber">Round Number: 1</h2>
+		<div id="starttimer"></div>
+		<table id="nations" align="center" border="0" cellpadding="20">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
 			<div class ="centeredInline">
-				<h2 id="roundnumber">Round Number: 1</h2>
-				<h2 id="worldscore">World Score: 60</h2>
+				<h2 id="timer">2:00</h2>
+				<h2 id="worldscore"></h2>
 			</div>
-			<h2 id="timer"></h2>
+			
 			<table class ="cellTable" id="nations">
 				<tbody>
 					<tr></tr>
@@ -27,7 +34,7 @@
 
 	<!--socket-->
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 
 	
 <!-- INITIALIZATION -->
@@ -60,9 +67,11 @@
 				numberOfPlayersInTeams: numberOfPlayersInTeams
 			});
 
+			document.getElementById('worldscore').innerHTML = "World Score: " + 10 * numberOfTeams;
+
 			var nations = document.getElementById('nations');
 			nations.cellSpacing = 200 / numberOfGroups;
-			createCell(nations.rows[0].insertCell(0), "", 'col scoreCell');
+			createCell(nations.rows[0].insertCell(0), "Q1", 'col scoreCell', "quarterlyreports");
 			for (var i = 1; i <= numberOfTeams; i++) {
 				addNation(i);
 			};
@@ -92,11 +101,23 @@
 			});
 
 			socket.on('newQuarter', function(data) {
-				document.getElementById('quarterlyreports').innerHTML = "Quarterly Reports: Quarter " + data.quarter;
+				document.getElementById('quarterlyreports').innerHTML = "Q" + data.quarter;
 			});
 
 			socket.on('worldEnd', function() {
-				window.location = "/worldend";
+				window.location = "http://corgiorgy.com";
+			});
+
+			socket.on('decisionUpdate', function(data) {
+				document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
+			});
+
+			socket.on('startTimer', function() {
+				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()">Start Timer</button>')
+			});
+
+			socket.on('timer', function(data) {
+				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 			});
 			
 			
@@ -123,7 +144,11 @@
 					createCell(row.insertCell(i), 20, 'row scoreCell', [i + 1, group]);
 				};
 			};
-			
-		</script>	
+
+			function beginGame() {
+				socket.emit('beginGame', {});
+			};
+
+	</script>	
 	</body>
 </html>

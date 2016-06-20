@@ -11,10 +11,10 @@ html, body, h1, h2, h3, footer {
 	display: block;
 }
 body{
-	background: url("Planetarium_Mobile_Prototype_Background.jpg");
+	background: url("Planetarium_Background_Prototype_Host_Violet.jpg");
 	background-repeat: no-repeat;
-	background-size: 100% 800%;
-	background-position: 50% 50%
+	background-position: -380% 190%;
+	background-color: black;
 }
 /*-----------Header---------*/
 .container{
@@ -39,13 +39,15 @@ body{
 }
 
 #roundnumber {
-	text-align: right;
-	
-	display:inline;
+	margin: 50px 0px;
+
+	color: #CE0003;
+	font-variant: small-caps;
+	font-size: 80px;
+	text-align: left;
 }
 
 #worldscore{
-	text-align: center;
 	
 	display:inline;
 	align:center;
