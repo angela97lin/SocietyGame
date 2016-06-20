@@ -50,19 +50,20 @@
 			var mode = prompt("How would you like rounds to end? \n" +
 							  "1: Timer, 2: Wait for everyone to make a decision");
 			var timeLimit;
+			var minutes;
+			var seconds;
 			if (mode == 1) {
 				timeLimit = prompt("How long should each round last? \n" +
 								   "Ex: 2:30 \n" +
 								   "2 minutes 30 seconds").split(":");
+				minutes = parseInt(timeLimit[0]);
+				seconds = parseInt(timeLimit[1]);
 			};
 			var numberOfTeams = prompt("How many teams will there be?");
 			var numberOfGroups = prompt("How many groups will be in each team?");
 			var numberOfPlayersInGroups = prompt("How many players are in each group?");
 			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
 			var numberOfPlayersInTeams = numberOfGroups * numberOfPlayersInGroups;
-
-			var minutes = parseInt(timeLimit[0]);
-			var seconds = parseInt(timeLimit[1]);
 
 			var nationscore = 20 * numberOfGroups;
 			var individualscore = 20;

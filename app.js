@@ -9,6 +9,9 @@
 	var io = require('socket.io')(serv, {});
 	
 	app.get('/', function(req, res) {
+		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
+	});
+	app.get('/index', function(req, res) {
 		res.sendFile(__dirname + '/client/index.html');
 	});
 	app.get('/main', function(req, res) {
@@ -16,7 +19,7 @@
 	});
 	app.get('/worldend', function(req, res) {
 		res.sendFile(__dirname + '/client/worldend.html');
-	})
+	});
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
@@ -69,11 +72,11 @@
 			numberOfTeams = data.numberOfTeams;
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
 			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
-			TIME_LIMIT_MINUTES = data.minutes;
-			TIME_LIMIT_SECONDS = data.seconds;
-			timerMinutes = TIME_LIMIT_MINUTES;
-			timerSeconds = TIME_LIMIT_SECONDS;
 			if (decisionMode == "timer") {
+				TIME_LIMIT_MINUTES = data.minutes;
+				TIME_LIMIT_SECONDS = data.seconds;
+				timerMinutes = TIME_LIMIT_MINUTES;
+				timerSeconds = TIME_LIMIT_SECONDS;
 				socket.emit('startTimer', {
 					timer: timeLimitToString(timerMinutes, timerSeconds)
 				});

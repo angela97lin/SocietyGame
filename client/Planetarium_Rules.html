@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Society Rules</title>
     <link href="tutorial.css" rel="stylesheet" type="text/css" />
+    <link href="client/tutorial.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -62,7 +63,7 @@
     	<div style="display:none" id="page8" class="page">
             <p> So remember: your choices will determine the fate of not only your nation, but your world! </p>
             <button type="button" onclick="previousFunction(8)">Previous</button>
-            <button type="button" onclick="nextFunction()">Start Game</button>
+            <button type="button" onclick="nextFunction(8)">Start Game</button>
         </div>
     </div>
 
@@ -79,6 +80,9 @@
     	}
 
     	function nextFunction(currentPageNumber) {
+            if (currentPageNumber == 8) {
+                window.location = "/index";
+            };
     		var currentPage = "page" + currentPageNumber;
     		var desiredPage = "page" + (currentPageNumber + 1);
             var shownPage = document.getElementById(desiredPage);
