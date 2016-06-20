@@ -39,8 +39,6 @@ body{
 }
 
 #roundnumber {
-	margin: 50px 0px;
-
 	color: #CE0003;
 	font-variant: small-caps;
 	font-size: 80px;
@@ -48,9 +46,13 @@ body{
 }
 
 #worldscore{
-	
 	display:inline;
 	align:center;
+}
+
+#timer {
+	margin: auto;
+	font-size: 60px;
 }
 
 /*-----------Table----------*/
@@ -136,4 +138,39 @@ a:hover{
    color: #F9F9F9;
    font-weight: normal;
    /*make sure to change at least one thing from your a tag definition*/
+}
+
+/*-----------Button----------*/
+#timerButton {
+	text-align: center;
+}
+
+button {
+	font-size: 200%;
+	text-align: center;
+	border: 2px solid #9ED6DF;
+	border-radius: 7px;
+	padding: 2%;
+	width: 35%;
+	background: radial-gradient(#000000, #000000, #20493E);
+	color: #D1E7E2;
+	box-shadow: 20 20 20px #127998;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
+}
+
+button:hover{
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
+   color: #F9F9F9;
+   background: #20493E;
+   font-weight: normal;
+   padding: 2.5%;
+}
+
+button:focus{
+	background: #20493E;
+	color: #f9f9f9;
 }

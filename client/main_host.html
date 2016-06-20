@@ -13,15 +13,19 @@
 	<body>
 		
 		<div class="container">
-		<h2 id="roundnumber">Round Number: 1</h2>
-		<div id="starttimer"></div>
+			<div class="centeredInline">
+				<h2 id="roundnumber">Round Number: 1</h2>
+				<h2 id="timer"></h2>
+			</div>
+			<div id="timerButton">
+				<div id="starttimer"></div>
+			</div>
 		<table id="nations" align="center" border="0" cellpadding="20">
 			<tbody>
 				<tr></tr>
 			</tbody>
 		</table>
 			<div class ="centeredInline">
-				<h2 id="timer">2:00</h2>
 				<h2 id="worldscore"></h2>
 			</div>
 			
@@ -43,12 +47,22 @@
 	
 			var socket = io();
 
+			var mode = prompt("How would you like rounds to end? \n" +
+							  "1: Timer, 2: Wait for everyone to make a decision");
+			var timeLimit;
+			if (mode == 1) {
+				timeLimit = prompt("How long should each round last? \n" +
+								   "Ex: 2:30 \n" +
+								   "2 minutes 30 seconds").split(":");
+			};
 			var numberOfTeams = prompt("How many teams will there be?");
 			var numberOfGroups = prompt("How many groups will be in each team?");
 			var numberOfPlayersInGroups = prompt("How many players are in each group?");
 			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
 			var numberOfPlayersInTeams = numberOfGroups * numberOfPlayersInGroups;
-			
+
+			var minutes = parseInt(timeLimit[0]);
+			var seconds = parseInt(timeLimit[1]);
 
 			var nationscore = 20 * numberOfGroups;
 			var individualscore = 20;
@@ -64,7 +78,10 @@
 				numberOfGroups: numberOfGroups,
 				numberOfPlayers: numberOfPlayers,
 				numberOfPlayersInGroups: numberOfPlayersInGroups,
-				numberOfPlayersInTeams: numberOfPlayersInTeams
+				numberOfPlayersInTeams: numberOfPlayersInTeams,
+				mode: mode,
+				minutes: minutes,
+				seconds: seconds
 			});
 
 			document.getElementById('worldscore').innerHTML = "World Score: " + 10 * numberOfTeams;
@@ -112,7 +129,8 @@
 				document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 			});
 
-			socket.on('startTimer', function() {
+			socket.on('startTimer', function(data) {
+				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()">Start Timer</button>')
 			});
 
@@ -147,6 +165,7 @@
 
 			function beginGame() {
 				socket.emit('beginGame', {});
+				$("#starttimer").remove();
 			};
 
 	</script>	
