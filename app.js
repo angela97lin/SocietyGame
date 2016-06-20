@@ -37,11 +37,13 @@
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
-	var decisionMode = "waitForPlayers";
+	var decisionMode = "timer";
 
 	//variables for timer
-	var TIME_LIMIT = 10;
-	var timer = TIME_LIMIT;
+	var TIME_LIMIT_MINUTES = 2;
+	var TIME_LIMIT_SECONDS = 0;
+	var timerMinutes = TIME_LIMIT_MINUTES;
+	var timerSeconds = TIME_LIMIT_SECONDS;
 
 	//variables for waitForPlayers
 	var decidedPlayers = 0;
@@ -54,9 +56,8 @@
 		socket.id = playerNumber;
 		SOCKET_LIST[socket.id] = socket;
 		console.log('connection made');
-		console.log(socket.id);
+		console.log("Socket: " + socket.id);
 		playerNumber++;
-		console.log('totalPlayers: ' + totalPlayers);
 
 		socket.on('start', function(data) {
 			world = data.numberOfTeams * 10;
@@ -65,6 +66,9 @@
 			numberOfTeams = data.numberOfTeams;
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
 			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
+			if (decisionMode == "timer") {
+				socket.emit('startTimer', {});
+			};
 		});
 		
 		socket.on('decision1', function(data) {
@@ -126,14 +130,13 @@
 			});
 			if (decisionMode == "timer") {
 				socket.emit('timer', {
-					timer: timer
+					timer: timeLimitToString(timerMinutes, timerSeconds)
 				});
 			};
 
 			//associate team names and numbers
 			if (!(data.teamName in teamNameNumbers)) {
 				teamNameNumbers[data.teamName] = currentTeamNumber;
-				console.log(currentTeamNumber);
 				for (var i in SOCKET_LIST) {
 					var emitSocket = SOCKET_LIST[i];
 					emitSocket.emit('newTeam', {
@@ -169,36 +172,39 @@
 			socket.emit('world', {
 				world: world
 			});
-			socket.emit('timer', {
-				timer: timer
-			});
+			if (decisionMode == 'timer') {
+				socket.emit('timer', {
+					timer: timeLimitToString(timerMinutes, timerSeconds)
+				});
+			};
+		});
+
+		socket.on('beginGame', function() {
+			setInterval(function() {
+				if (timerMinutes == 0 && timerSeconds == 0) {
+					timerMinutes = TIME_LIMIT_MINUTES;
+					timerSeconds = TIME_LIMIT_SECONDS;
+					updateRound(SOCKET_LIST);
+				};
+				for(var i in SOCKET_LIST) {
+					var socket = SOCKET_LIST[i];
+					socket.emit('timer', {
+						timer: timeLimitToString(timerMinutes, timerSeconds)
+					});
+				};
+				if (timerSeconds == 0) {
+					timerSeconds = 59
+					timerMinutes--;
+				} else {
+					timerSeconds--;
+				};
+			}, 1000);
 		});
 	});
 
 
 /*FUNCTIONS*/
 
-	if (decisionMode == "timer") {
-		//increment the timer
-		setInterval(function() {
-			for(var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.timer = timer;
-				socket.emit('timer', {
-					timer: socket.timer
-				});
-			};
-			timer--;
-		}, 1000);
-
-		//timer resets every TIMER_LIMIT seconds
-		//show the updated data
-		//enable output
-		setInterval(function() {
-			timer = TIME_LIMIT;
-			updateRound(SOCKET_LIST);
-		}, 1000 * TIME_LIMIT);
-	};
 
 	var checkPlayers = function(mode) {
 		decidedPlayers++;
@@ -257,5 +263,13 @@
 				var emitSocket = sockets[i];
 				emitSocket.emit('worldEnd', {});
 			};
+		};
+	};
+
+	function timeLimitToString(minutes, seconds) {
+		if (seconds < 10) {
+			return minutes.toString() + ":0" + seconds.toString();
+		} else {
+			return minutes.toString() + ":" + seconds.toString();
 		};
 	};
