@@ -37,7 +37,7 @@
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
-	var decisionMode = "waitForPlayers";
+	var decisionMode = "timer";
 
 	//variables for timer
 	var TIME_LIMIT = 10;
