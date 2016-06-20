@@ -20,12 +20,12 @@
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
-	var totalPlayers = 0;
-	var numberOfPlayersInGroups = 0;
-	var numberOfPlayersInTeams = 0;
-	var numberOfGroups = 0;
-	var numberOfTeams = 0;
-	var world = 0;
+	var totalPlayers;
+	var numberOfPlayersInGroups;
+	var numberOfPlayersInTeams;
+	var numberOfGroups;
+	var numberOfTeams;
+	var world;
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
@@ -39,13 +39,13 @@
 	//either timer or waitForPlayers
 	var MODES = {1: "timer",
 				 2: "waitForPlayers"};
-	var decisionMode = "waitForPlayers";
+	var decisionMode;
 
 	//variables for timer
-	var TIME_LIMIT_MINUTES = 2;
-	var TIME_LIMIT_SECONDS = 0;
-	var timerMinutes = TIME_LIMIT_MINUTES;
-	var timerSeconds = TIME_LIMIT_SECONDS;
+	var TIME_LIMIT_MINUTES;
+	var TIME_LIMIT_SECONDS;
+	var timerMinutes;
+	var timerSeconds;
 
 	//variables for waitForPlayers
 	var decidedPlayers = 0;
@@ -69,6 +69,10 @@
 			numberOfTeams = data.numberOfTeams;
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
 			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
+			TIME_LIMIT_MINUTES = data.minutes;
+			TIME_LIMIT_SECONDS = data.seconds;
+			timerMinutes = TIME_LIMIT_MINUTES;
+			timerSeconds = TIME_LIMIT_SECONDS;
 			if (decisionMode == "timer") {
 				socket.emit('startTimer', {
 					timer: timeLimitToString(timerMinutes, timerSeconds)
