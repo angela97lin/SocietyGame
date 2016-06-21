@@ -66,7 +66,6 @@
 			var numberOfPlayersInTeams = numberOfGroups * numberOfPlayersInGroups;
 
 			var nationscore = 20 * numberOfGroups;
-			var individualscore = 20;
 			var roundnumber = 1;
 			var teamNumberNames = {};
 			var GROUP_NAMES = {1: "Education",
@@ -160,7 +159,7 @@
 				var row = nations.insertRow(nations.rows.length);
 				createCell(row.insertCell(0), GROUP_NAMES[group], 'row scoreCell');
 				for (var i = 1; i < nations.rows[0].cells.length; i++) {
-					createCell(row.insertCell(i), 20, 'row scoreCell', [i + 1, group]);
+					createCell(row.insertCell(i), 20, 'row scoreCell', [i, group]);
 				};
 			};
 
