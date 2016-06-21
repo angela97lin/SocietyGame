@@ -26,8 +26,8 @@
 	var totalPlayers;
 	var numberOfPlayersInGroups;
 	var numberOfPlayersInTeams;
-	var numberOfGroups;
-	var numberOfTeams;
+	var numberOfGroups = 0
+	var numberOfTeams = 0
 	var world;
 	var roundNumber = 1;
 	var quarter = 0;
@@ -63,6 +63,10 @@
 		console.log('connection made');
 		console.log("Socket: " + socket.id);
 		playerNumber++;
+		socket.emit('indexConnect', {
+			numberOfTeams: numberOfTeams, 
+			numberOfGroups: numberOfGroups
+		});
 
 		socket.on('start', function(data) {
 			decisionMode = MODES[data.mode];

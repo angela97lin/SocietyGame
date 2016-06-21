@@ -18,14 +18,14 @@
 <div class = "container">
 	<div class = "row" id = "info">
 		<div class = "col-md-50" id="info1">
-			<h1 id="worldscore">worldscore</h1>
-			<h2 id="nationscore">insert number here</h2>
-			<h3 id="individualscore">insert number here</h3>
+			<h1 id="worldscore"></h1>
+			<h2 id="nationscore"></h2>
+			<h3 id="individualscore"></h3>
 		</div>
 		<div class = "col-md-50" id = "info2">
 			<h4 id="timer"></h4>
-			<h4 id="playerNumber">insert number here</h4>
-			<footer id="roundnumber">Round Number: 1</footer>
+			<h4 id="playerNumber"></h4>
+			<footer id="roundnumber"></footer>
 		</div>
 	</div>
 	<div class = "row">
@@ -47,17 +47,17 @@
 <!-- INITIALIZATION -->
 
 <script>
-
-	var socket = io();
-	var playerScore = 20;
 	
-	var playerNumberInput = prompt("What player number are you?");
-	var teamNameInput = prompt("What nation are you on?\n" +
-							   "1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
-							   "5: Russia, 6: China, 7: Mexico");
-	var groupNumberInput = prompt("What group are you in?\n" +
-								  "1: Education, 2: Military, 3: Workforce, 4: Policy Makers");
-
+	var socket = io();
+	
+	var playerScore = 20;
+	var numberOfTeams = 0;
+	var numberOfGroups = 0;
+	
+	var playerNumberInput;
+	var teamNameInput;
+	var groupNumberInput;
+	
 	var NATIONS = {1: "Japan",
 				   2: "Canada",
 				   3: "UK",
@@ -65,6 +65,12 @@
 				   5: "Russia",
 				   6: "China",
 				   7: "Mexico"};
+	
+	var GROUPS = {1: "Education",
+				  2: "Military",
+				  3: "Workforce",
+				  4: "Policy Makers"};
+
 
 	var DECISIONS = [{1: "Pocket money from school fundraiser",
 					  2: "Buy school supplies for students out of pocket",
@@ -82,25 +88,50 @@
 					  2: "Attend every voting session",
 					  3: "Impose tariffs on international trade",
 					  4: "Give time to international disaster relief organization"}];
-
-	createDecisions(groupNumberInput);
 	
 	var playerNumber = playerNumberInput;
-	var teamName = NATIONS[teamNameInput];
+	var teamName;
 	var teamNumber = 0;
 	var groupNumber = [];
-	
-	socket.emit('playerConnect', {playerNumber: playerNumber, teamName: teamName, groupNumberInput: groupNumberInput});
-
-	socket.on('getTeamNumber', function(data) {
-		teamNumber = data.teamNameNumbers[teamName];
-		groupNumber = data.groupNumber;
-	});
-
 
 	
 	
 /*LISTENERS*/
+
+	socket.on('indexConnect', function(data) {
+		numberOfTeams = data.numberOfTeams;
+		numberOfGroups = data.numberOfGroups;
+		console.log("NUMBERS RECIEVED");
+		var nationPromptText = "";
+		var groupPromptText = "";
+		
+		for (var i = 1; i <= numberOfTeams; i++){
+			nationPromptText += (i + ": " + NATIONS[i] + "\n");
+		};
+		
+		for (var i = 1; i <= numberOfGroups; i++){
+			groupPromptText += (i + ": " + GROUPS[i] + "\n");
+		};
+		
+		playerNumberInput = prompt("What player number are you?");
+		playerNumber = playerNumberInput;
+		
+		teamNameInput = prompt("What nation are you on?\n" + nationPromptText);
+								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
+								   //"5: Russia, 6: China, 7: Mexico");
+		groupNumberInput = prompt("What group are you in?\n" + groupPromptText);
+		
+		createDecisions(groupNumberInput);
+		
+		socket.emit('playerConnect', {playerNumber: playerNumber, teamName: teamName, groupNumberInput: groupNumberInput});
+		
+		teamName = NATIONS[teamNameInput];
+	});
+	
+	socket.on('getTeamNumber', function(data) {
+		teamNumber = data.teamNameNumbers[teamName];
+		groupNumber = data.groupNumber;
+	});
 	
 	socket.on('player', function(data) {
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
@@ -141,6 +172,7 @@
 	socket.on('worldEnd', function() {
 		window.location = "http://corgiorgy.com";
 	});
+		
 	
 	
 	
