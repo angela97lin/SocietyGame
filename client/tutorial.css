@@ -16,12 +16,12 @@ html, body, div, h1, p{
 .Intro{
 	margin-left: 1%;
 	margin-bottom: 0;
-	font-size: 6vw
+	font-size: 6vmax
 }
 
 #page1{
 	margin-top: 0;
-	font-size: 5.75vw
+	font-size: 5.75vmax
 }
 
 #Pride, #Honor, #Vice, #firstButton {
@@ -86,10 +86,10 @@ html, body, div, h1, p{
 
 p {
 	color: #9dbceb;
-	font-size: 3vw;
-	max-width: 100%
-	max-height: 100%;
-	font-family: Courier
+	font-size: 10vmin;
+	font-family: Courier;
+	margin: 0px;
+	padding: 2%;
 }
 
 #title {
@@ -105,14 +105,26 @@ greentext {
 	color: #0ff871;
 }
 
+#page5Text {
+	font-size: 6vmin;
+	margin: 0;
+	padding: 0;
+}
+
+#page6Text {
+	font-size: 7.5vmin;
+}
+
 .boxed {
 	border: 1px solid #7c1204;
-	margin: 2vw;
-	margin-left: 0%;
-	margin-right: 0%;
-	padding: 3vw;
+	margin-left: 15%;
+	margin-right: 15%;
+	margin: 3.5%;
+	padding: 1%;
+	padding-left: 3vw;
+	padding-right: 3vw;
 	text-align: center;
-	font-size: 100%;
+	font-size: 5vmin;
 	font-family: Tahoma
 }
 
@@ -120,16 +132,26 @@ greentext {
 	border: 1px solid #ccbab7;
 	background: radial-gradient(#000000, #750000, #ff0000);
 	text-align: center;
-	padding: 4vw;
-	padding-top: 6vw;
-	padding-bottom: 6vw;
+	padding: 10%;
+	padding-top: 2vw;
+	padding-bottom: 2vw;
+	margin-left: 1vw;
+	margin-right: 1vw;
 	color: #f9f9f9;
-	font-family: Tahoma
+	font-family: Tahoma, sans-serif;
+	font-size: 3vmin;
 }
 
 .choiceConsequences, .bottom {
 	font-size: 3vw;
-	font-family: Tahoma
+	font-family: Tahoma, sans-serif;
+	color: #f9f9f9;
+}
+
+#sampleTitle {
+	color:white;
+	font-size: 3vw;
+	font-family: Tahoma, sans-serif;
 }
 
 #choiceStats {
@@ -138,7 +160,7 @@ greentext {
 }
 
 #page7text {
-	color: #830101;
+	color: #d23d3d;
 }
 
 colorred {
@@ -146,14 +168,16 @@ colorred {
 }
 
 button {
+	display: inline-block;
+	vertical-align: bottom;
 	align: center;
 	text-align: center;
 	font-size: 4vw;
 	background: #000000;
 	color: #f9f9f9;
 	font-family: Verdana, Tahoma, sans-serif;
-	border: 3px solid #000000;
-	margin: 2%;
-	padding: 4%;
+	border: 1px solid #f9f9f9;
+	margin: 1%;
+	padding: 1%;
 }
 
