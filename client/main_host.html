@@ -63,7 +63,6 @@
 			var numberOfGroups = prompt("How many groups will be in each team?");
 			var numberOfPlayersInGroups = prompt("How many players are in each group?");
 			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
-			var numberOfPlayersInTeams = numberOfGroups * numberOfPlayersInGroups;
 
 			var nationscore = 20 * numberOfGroups;
 			var roundnumber = 1;
@@ -78,7 +77,6 @@
 				numberOfGroups: numberOfGroups,
 				numberOfPlayers: numberOfPlayers,
 				numberOfPlayersInGroups: numberOfPlayersInGroups,
-				numberOfPlayersInTeams: numberOfPlayersInTeams,
 				mode: mode,
 				minutes: minutes,
 				seconds: seconds

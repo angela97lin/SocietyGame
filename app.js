@@ -20,12 +20,20 @@
 	app.get('/worldend', function(req, res) {
 		res.sendFile(__dirname + '/client/worldend.html');
 	});
+	app.get('/win', function(req, res) {
+		res.sendFile(__dirname + '/client/win.html');
+	});
+	app.get('/winningteam', function(req, res) {
+		res.sendFile(__dirname + '/client/winningteam.html');
+	});
+	app.get('/lose', function(req, res) {
+		res.sendFile(__dirname + '/client/lose.html');
+	});
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
 	var totalPlayers;
 	var numberOfPlayersInGroups;
-	var numberOfPlayersInTeams;
 	var numberOfGroups;
 	var numberOfTeams;
 	var world;
@@ -37,6 +45,7 @@
 	var teamScores = {};
 	var teamNameNumbers = {};
 	var currentTeamNumber = 1;
+	var teamGroupPlayer = {};
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
@@ -71,7 +80,14 @@
 			numberOfGroups = data.numberOfGroups;
 			numberOfTeams = data.numberOfTeams;
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
-			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
+			for (var i = 1; i <= numberOfTeams; i++) {
+				teamGroupPlayer[i] = [];
+			};
+			for (var i = 1; i <= numberOfTeams; i++) {
+				for (var j = 0; j < numberOfGroups; j++) {
+					teamGroupPlayer[i].push([]);
+				};
+			};
 			if (decisionMode == "timer") {
 				TIME_LIMIT_MINUTES = data.minutes;
 				TIME_LIMIT_SECONDS = data.seconds;
@@ -116,8 +132,7 @@
 		});
 
 		socket.on('playerConnect', function(data) {
-			socket.playerNumber = data.playerNumber + ((socket.groupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			socket.teamNumber = data.teamNumber;
+			socket.playerNumber = socket.id;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
 			};
@@ -154,6 +169,7 @@
 			};
 			socket.teamNumber = teamNameNumbers[data.teamName];
 			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
+			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			};
@@ -265,9 +281,51 @@
 				emitSocket.emit('worldEnd', {});
 			};
 		} else if (roundNumber == ROUNDS) {
+			//find the winning teams
+			//will only be more than one if there is a tie
+			var winningTeamScore = Number.NEGATIVE_INFINITY;
+			for (var team in teamGroupPlayer) {
+				winningTeamScore = Math.max(winningTeamScore, teamScores[team]);
+			};
+			var winningTeams = [];
+			for (var team in teamGroupPlayer) {
+				if (teamScores[team] == winningTeamScore) {
+					winningTeams.push(team);
+				};
+			};
+			//find the players with the highest score in each group
+			var overallWinners = [];
+			var teamWinners = [];
+			for (var i = 0; i < winningTeams.length; i++) {
+				var team = teamGroupPlayer[winningTeams[i]];
+				for (var j = 0; j < team.length; j++) {
+					var group = team[j];
+					winningPlayerScore = Number.NEGATIVE_INFINITY;
+					for (var k = 0; k < group.length; k++) {
+						var player = group[k];
+						teamWinners.push(player);
+						winningPlayerScore = Math.max(winningPlayerScore, playerScores[player]);
+					};
+					for (var k = 0; k < group.length; k++) {
+						var player = group[k];
+						if (playerScores[player] == winningPlayerScore) {
+							overallWinners.push(player);
+						};
+					};
+				};
+			};
+			console.log("winning teams: " + winningTeams);
+			console.log("overall winners: " + overallWinners);
+			console.log("team winners: " + teamWinners);
 			for (var i in sockets) {
 				var emitSocket = sockets[i];
-				emitSocket.emit('worldEnd', {});
+				if (overallWinners.indexOf(emitSocket.id) >= 0) {
+					emitSocket.emit('win', {});
+				} else if (teamWinners.indexOf(emitSocket.id) >= 0) {
+					emitSocket.emit('teamWin', {});
+				} else {
+					emitSocket.emit('lose', {});
+				};
 			};
 		};
 	};

@@ -139,7 +139,19 @@
 	});
 
 	socket.on('worldEnd', function() {
-		window.location = "http://corgiorgy.com";
+		window.location = "/worldend";
+	});
+
+	socket.on('win', function() {
+		window.location = "/win";
+	});
+
+	socket.on('teamWin', function() {
+		window.location = "/winningteam";
+	});
+
+	socket.on('lose', function() {
+		window.location = "/lose";
 	});
 	
 	
