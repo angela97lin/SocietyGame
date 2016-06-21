@@ -121,16 +121,10 @@
 
 		socket.on('playerConnect', function(data) {
 			socket.playerNumber = data.playerNumber + ((socket.groupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			socket.groupNumber = data.groupNumber + ((socket.teamNumber-1) * (numberOfGroups));
 			socket.teamNumber = data.teamNumber;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
 			};
-			
-			if (!(socket.groupNumber in groupScores)){
-				groupScores[socket.groupNumber] = 20;
-			};
-			
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			};
