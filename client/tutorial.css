@@ -112,13 +112,15 @@ greentext {
 }
 
 #page6Text {
-	font-size: 8vmin;
+	font-size: 7.5vmin;
 }
 
 .boxed {
 	border: 1px solid #7c1204;
 	margin-left: 15%;
 	margin-right: 15%;
+	margin: 3.5%;
+	padding: 1%;
 	padding-left: 3vw;
 	padding-right: 3vw;
 	text-align: center;
