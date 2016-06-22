@@ -105,6 +105,7 @@
 					teamGroupPlayer[i].push([]);
 				};
 			};
+			console.log("teamGroupPlayer:" + teamGroupPlayer);
 			if (decisionMode == "timer") {
 				TIME_LIMIT_MINUTES = data.minutes;
 				TIME_LIMIT_SECONDS = data.seconds;
@@ -218,6 +219,7 @@
 			console.log(numberOfPlayersInGroups);
 			console.log(socket.teamNumber);
 			console.log(numberOfPlayersInTeams);
+			console.log("teamGroupPlayer: " + teamGroupPlayer);
 			socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 			socket.rawPlayerNumber = data.playerNumber;
 			console.log(socket.playerNumber);
