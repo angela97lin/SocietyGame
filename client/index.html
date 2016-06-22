@@ -24,6 +24,7 @@
 		</div>
 		<div class = "col-md-50" id = "info2">
 			<h4 id="timer"></h4>
+			<h4 id="username"></h4>
 			<h4 id="playerNumber"></h4>
 			<footer id="roundnumber"></footer>
 		</div>
@@ -89,6 +90,7 @@
 					  3: "Impose tariffs on international trade",
 					  4: "Give time to international disaster relief organization"}];
 	
+	var username;
 	var playerNumber;
 	var teamName;
 	var teamNumber = 0;
@@ -112,6 +114,9 @@
 		for (var i = 1; i <= numberOfGroups; i++){
 			groupPromptText += (i + ": " + GROUPS[i] + "\n");
 		};
+
+		username = prompt("What is your name?");
+		document.getElementById('username').innerHTML = username;
 		
 		teamNameInput = prompt("What nation are you on?\n" + nationPromptText);
 								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
@@ -121,7 +126,7 @@
 		createDecisions(groupNumberInput);
 		
 		teamName = NATIONS[teamNameInput];
-		socket.emit('playerConnect', {teamName: teamName, groupNumberInput: groupNumberInput});
+		socket.emit('playerConnect', {username: username, teamName: teamName, groupNumberInput: groupNumberInput});
 	});
 	
 	socket.on('getTeamNumber', function(data) {

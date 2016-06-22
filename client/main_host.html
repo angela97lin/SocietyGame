@@ -135,6 +135,13 @@
 			socket.on('timer', function(data) {
 				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 			});
+
+			socket.on('mainWinners', function() {
+				socket.emit('getTeamNames', {
+					teamNumberNames: teamNumberNames
+				});
+				window.location = "/congratulations";
+			});
 			
 			
 /*FUNCTIONS*/

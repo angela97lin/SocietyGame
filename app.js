@@ -29,6 +29,9 @@
 	app.get('/lose', function(req, res) {
 		res.sendFile(__dirname + '/client/lose.html');
 	});
+	app.get('/congratulations', function(req, res) {
+		res.sendFile(__dirname + '/client/congratulations.html');
+	});
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
@@ -45,8 +48,13 @@
 	var groupScores = {};
 	var teamScores = {};
 	var teamNameNumbers = {};
+	var teamNumberNames;
 	var currentTeamNumber = 1;
 	var teamGroupPlayer = {};
+	var usernames = {};
+
+	var winningTeams = [];
+	var winningNames = [];
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
@@ -138,6 +146,7 @@
 
 		socket.on('playerConnect', function(data) {
 			socket.playerNumber = socket.id;
+			usernames[socket.playerNumber] = data.username;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
 			};
@@ -228,6 +237,18 @@
 				};
 			}, 1000);
 		});
+
+		socket.on('getTeamNames', function(data) {
+			teamNumberNames = data.teamNumberNames;
+		});
+
+		socket.on('congratulations', function() {
+			socket.emit('mainWinners', {
+				teamNumberNames: teamNumberNames,
+				winningTeams: winningTeams,
+				winningNames: winningNames
+			});
+		});
 	});
 
 
@@ -293,7 +314,6 @@
 			for (var team in teamGroupPlayer) {
 				winningTeamScore = Math.max(winningTeamScore, teamScores[team]);
 			};
-			var winningTeams = [];
 			for (var team in teamGroupPlayer) {
 				if (teamScores[team] == winningTeamScore) {
 					winningTeams.push(team);
@@ -320,6 +340,9 @@
 					};
 				};
 			};
+			for (var i = 0; i < overallWinners.length; i++) {
+				winningNames.push(usernames[overallWinners[i]]);
+			};
 			console.log("winning teams: " + winningTeams);
 			console.log("overall winners: " + overallWinners);
 			console.log("team winners: " + teamWinners);
@@ -331,6 +354,7 @@
 					emitSocket.emit('teamWin', {});
 				} else {
 					emitSocket.emit('lose', {});
+					emitSocket.emit('mainWinners', {});
 				};
 			};
 		};
