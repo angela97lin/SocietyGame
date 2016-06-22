@@ -89,7 +89,7 @@
 					  3: "Impose tariffs on international trade",
 					  4: "Give time to international disaster relief organization"}];
 	
-	var playerNumber = playerNumberInput;
+	var playerNumber;
 	var teamName;
 	var teamNumber = 0;
 	var groupNumber = [];
@@ -113,9 +113,6 @@
 			groupPromptText += (i + ": " + GROUPS[i] + "\n");
 		};
 		
-		playerNumberInput = prompt("What player number are you?");
-		playerNumber = playerNumberInput;
-		
 		teamNameInput = prompt("What nation are you on?\n" + nationPromptText);
 								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
 								   //"5: Russia, 6: China, 7: Mexico");
@@ -124,7 +121,7 @@
 		createDecisions(groupNumberInput);
 		
 		teamName = NATIONS[teamNameInput];
-		socket.emit('playerConnect', {playerNumber: playerNumber, teamName: teamName, groupNumberInput: groupNumberInput});
+		socket.emit('playerConnect', {teamName: teamName, groupNumberInput: groupNumberInput});
 	});
 	
 	socket.on('getTeamNumber', function(data) {
@@ -133,7 +130,8 @@
 	});
 	
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
+		playerNumber = data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 	});
 

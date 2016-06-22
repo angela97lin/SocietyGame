@@ -144,9 +144,6 @@
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			};
-			socket.emit('player', {
-				number: socket.id
-			});
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 
 			});
@@ -175,6 +172,10 @@
 			socket.teamNumber = teamNameNumbers[data.teamName];
 			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
 			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
+			var playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
+			socket.emit('player', {
+				number: playerNumberInGroup
+			});
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			};
