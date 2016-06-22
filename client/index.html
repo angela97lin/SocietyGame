@@ -24,6 +24,7 @@
 		</div>
 		<div class = "col-md-50" id = "info2">
 			<h4 id="timer"></h4>
+			<h4 id="username"></h4>
 			<h4 id="playerNumber"></h4>
 			<footer id="roundnumber"></footer>
 		</div>
@@ -89,7 +90,8 @@
 					  3: "Impose tariffs on international trade",
 					  4: "Give time to international disaster relief organization"}];
 	
-	var playerNumber = playerNumberInput;
+	var username;
+	var playerNumber;
 	var teamName;
 	var teamNumber = 0;
 	var groupNumber = [];
@@ -113,8 +115,9 @@
 			groupPromptText += (i + ": " + GROUPS[i] + "\n");
 		};
 		
-		playerNumberInput = parseInt(prompt("What player number are you?"),10);
-		playerNumber = playerNumberInput;
+
+		username = prompt("What is your name?");
+		document.getElementById('username').innerHTML = username;
 		
 		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText),10);
 								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
@@ -123,9 +126,8 @@
 		
 		createDecisions(groupNumberInput);
 		
-		socket.emit('playerConnect', {playerNumber: playerNumber, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
-		
 		teamName = NATIONS[teamNameInput];
+		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
 	});
 	
 	socket.on('getTeamNumber', function(data) {
@@ -134,7 +136,8 @@
 	});
 	
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
+		playerNumber = data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
 	});
 
@@ -175,7 +178,19 @@
 	});
 
 	socket.on('worldEnd', function() {
-		window.location = "http://corgiorgy.com";
+		window.location = "/worldend";
+	});
+
+	socket.on('win', function() {
+		window.location = "/win";
+	});
+
+	socket.on('teamWin', function() {
+		window.location = "/winningteam";
+	});
+
+	socket.on('lose', function() {
+		window.location = "/lose";
 	});
 		
 	

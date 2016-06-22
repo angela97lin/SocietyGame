@@ -20,14 +20,26 @@
 	app.get('/worldend', function(req, res) {
 		res.sendFile(__dirname + '/client/worldend.html');
 	});
+	app.get('/win', function(req, res) {
+		res.sendFile(__dirname + '/client/win.html');
+	});
+	app.get('/winningteam', function(req, res) {
+		res.sendFile(__dirname + '/client/winningteam.html');
+	});
+	app.get('/lose', function(req, res) {
+		res.sendFile(__dirname + '/client/lose.html');
+	});
+	app.get('/congratulations', function(req, res) {
+		res.sendFile(__dirname + '/client/congratulations.html');
+	});
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
 	var totalPlayers;
 	var numberOfPlayersInGroups;
+	var numberOfGroups;
+	var numberOfTeams;
 	var numberOfPlayersInTeams;
-	var numberOfGroups = 0
-	var numberOfTeams = 0
 	var world;
 	var roundNumber = 1;
 	var quarter = 0;
@@ -36,11 +48,17 @@
 	var groupScores = {};
 	var teamScores = {};
 	var teamNameNumbers = {};
+	var teamNumberNames;
 	var currentTeamNumber = 1;
 	var investigationLists;
 	var numberOfInvestigations = 0;
 	var investigationCost = 12;
 	var pastActions;
+	var teamGroupPlayer = {};
+	var usernames = {};
+
+	var winningTeams = [];
+	var winningNames = [];
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
@@ -79,7 +97,14 @@
 			numberOfGroups = data.numberOfGroups;
 			numberOfTeams = data.numberOfTeams;
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
-			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
+			for (var i = 1; i <= numberOfTeams; i++) {
+				teamGroupPlayer[i] = [];
+			};
+			for (var i = 1; i <= numberOfTeams; i++) {
+				for (var j = 0; j < numberOfGroups; j++) {
+					teamGroupPlayer[i].push([]);
+				};
+			};
 			if (decisionMode == "timer") {
 				TIME_LIMIT_MINUTES = data.minutes;
 				TIME_LIMIT_SECONDS = data.seconds;
@@ -196,15 +221,13 @@
 			socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 			socket.rawPlayerNumber = data.playerNumber;
 			console.log(socket.playerNumber);
+			usernames[socket.playerNumber] = data.username;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
 			};
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			};
-			socket.emit('player', {
-				number: socket.id
-			});
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 
 			});
@@ -232,6 +255,11 @@
 			};
 			//socket.teamNumber = teamNameNumbers[data.teamName];
 			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
+			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
+			var playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
+			socket.emit('player', {
+				number: playerNumberInGroup
+			});
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
 			};
@@ -289,6 +317,18 @@
 					timerSeconds--;
 				};
 			}, 1000);
+		});
+
+		socket.on('getTeamNames', function(data) {
+			teamNumberNames = data.teamNumberNames;
+		});
+
+		socket.on('congratulations', function() {
+			socket.emit('mainWinners', {
+				teamNumberNames: teamNumberNames,
+				winningTeams: winningTeams,
+				winningNames: winningNames
+			});
 		});
 	});
 
@@ -431,9 +471,54 @@
 				emitSocket.emit('worldEnd', {});
 			};
 		} else if (roundNumber == ROUNDS) {
+			//find the winning teams
+			//will only be more than one if there is a tie
+			var winningTeamScore = Number.NEGATIVE_INFINITY;
+			for (var team in teamGroupPlayer) {
+				winningTeamScore = Math.max(winningTeamScore, teamScores[team]);
+			};
+			for (var team in teamGroupPlayer) {
+				if (teamScores[team] == winningTeamScore) {
+					winningTeams.push(team);
+				};
+			};
+			//find the players with the highest score in each group
+			var overallWinners = [];
+			var teamWinners = [];
+			for (var i = 0; i < winningTeams.length; i++) {
+				var team = teamGroupPlayer[winningTeams[i]];
+				for (var j = 0; j < team.length; j++) {
+					var group = team[j];
+					winningPlayerScore = Number.NEGATIVE_INFINITY;
+					for (var k = 0; k < group.length; k++) {
+						var player = group[k];
+						teamWinners.push(player);
+						winningPlayerScore = Math.max(winningPlayerScore, playerScores[player]);
+					};
+					for (var k = 0; k < group.length; k++) {
+						var player = group[k];
+						if (playerScores[player] == winningPlayerScore) {
+							overallWinners.push(player);
+						};
+					};
+				};
+			};
+			for (var i = 0; i < overallWinners.length; i++) {
+				winningNames.push(usernames[overallWinners[i]]);
+			};
+			console.log("winning teams: " + winningTeams);
+			console.log("overall winners: " + overallWinners);
+			console.log("team winners: " + teamWinners);
 			for (var i in sockets) {
 				var emitSocket = sockets[i];
-				emitSocket.emit('worldEnd', {});
+				if (overallWinners.indexOf(emitSocket.id) >= 0) {
+					emitSocket.emit('win', {});
+				} else if (teamWinners.indexOf(emitSocket.id) >= 0) {
+					emitSocket.emit('teamWin', {});
+				} else {
+					emitSocket.emit('lose', {});
+					emitSocket.emit('mainWinners', {});
+				};
 			};
 		};
 	};
