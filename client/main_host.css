@@ -137,3 +137,34 @@ a:hover{
    font-weight: normal;
    /*make sure to change at least one thing from your a tag definition*/
 }
+
+button {
+	font-size: 100%;
+	text-align: center;
+	border: 2px solid #9ED6DF;
+	border-radius: 7px;
+	margin-top: 1%; 
+	padding: 2%;
+	width: 100%;
+	background: radial-gradient(#000000, #000000, #20493E);
+	color: #D1E7E2;
+	box-shadow: 20 20 20px #127998;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
+}
+
+button:hover{
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
+   color: #F9F9F9;
+   background: #20493E;
+   font-weight: normal;
+   padding: 4%;
+}
+
+button:focus{
+	background: #20493E;
+	color: #f9f9f9;
+}
