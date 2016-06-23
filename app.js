@@ -200,11 +200,14 @@
 			console.log(data.groupInvolved);
 			console.log(data.playerToInvestigate);
 			console.log(data.playerInvestigating);
-			investigationLists[data.teamInvolved-1][data.groupInvolved-1][data.playerToInvestigate-1].push(data.playerInvestigating);
+			if (data.playerToInvestigate != -1) {
+				investigationLists[data.teamInvolved-1][data.groupInvolved-1][data.playerToInvestigate-1].push(data.playerInvestigating);
+			};
 			numberOfInvestigations += 1;
 			if(numberOfInvestigations == totalPlayers){
 				carryOutInvestigations(SOCKET_LIST);
 				numberOfInvestigations = 0;
+				enableAllButtons(SOCKET_LIST);
 				investigationLists = []
 				for(i=1; i<=numberOfTeams; i++){
 					thisTeam = [];
@@ -270,7 +273,7 @@
 			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
 			socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
 			socket.emit('player', {
-				number: socket.playerNumberInGroup
+				number: socket.playerNumberInGroup,
 			});
 			if (!(socket.teamNumber in teamScores)){
 				teamScores[socket.teamNumber] = 20 * numberOfGroups;
@@ -284,6 +287,10 @@
 			});
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber]
+			});
+			socket.emit('teamInitiate', {
+				playersPerGroup: numberOfPlayersInGroups,
+				p: socket.playerNumberInGroup
 			});
 
 		});
@@ -439,12 +446,17 @@
 	
 	var updatePastActions = function(socket, decision){
 		pastActions[socket.teamNumber-1][socket.groupNumber-1][socket.playerNumber-1].push(decision);
-	}
+	};
+	
+	var enableAllButtons = function(sockets) {
+		for(var i in sockets) {
+			var socket = sockets[i];
+			socket.emit('enable', {});
+		};
+	};
 
 	var updateRound = function(sockets) {
 		endGame(sockets);
-		quarterlyReport(sockets);
-		roundNumber++;
 		for(var i in sockets) {
 			var socket = sockets[i];
 			socket.emit('decisionUpdate', {
@@ -455,9 +467,11 @@
 			});
 			socket.emit('enable', {});
 			socket.emit('nextRound', {
-				roundNumber: roundNumber
+				roundNumber: roundNumber + 1
 			});
 		};
+		quarterlyReport(sockets);
+		roundNumber++;
 	};
 
 	var quarterlyReport = function(sockets) {
