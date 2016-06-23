@@ -59,6 +59,9 @@
 	var teamNameInput;
 	var groupNumberInput;
 	
+	var playersPerGroup;
+	var playersNotToInvestigate = [];
+	
 	var NATIONS = {1: "Japan",
 				   2: "Canada",
 				   3: "UK",
@@ -151,6 +154,15 @@
 
 	socket.on('team', function(data) {
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.team;
+	});
+	
+	socket.on('teamInitiate', function(data) {
+		p = data.p;
+		playersPerGroup = data.playersPerGroup;
+		playersNotToInvestigate.push(p);
+		for (i=playersPerGroup; i<5; i++) {
+			playersNotToInvestigate.push(i+1);
+		};
 	});
 	
 	socket.on('decisionUpdate', function(data) {
@@ -247,6 +259,7 @@
 			playerInvestigating: playerNumber,
 			playerToInvestigate: playerToInvestigate
 		});
+		disableButtons();
 	};
 	
 	var swapToInvestigation = function() {
@@ -267,19 +280,31 @@
 				</div> \
 				<div class = "row"> \
 					<div class="col-md-45"> \
-						<button class="decision" id="investigate1" onclick="investigate(1)">Investigate Player 1</button> \
+						<button class="decision investigate" id="investigate1" onclick="investigate(1)">Investigate Player 1</button> \
 						<h3></h3> \
-						<button class="decision" id="investigate2" onclick="investigate(2)">Investigate Player 2</button> \
+						<button class="decision investigate" id="investigate2" onclick="investigate(2)">Investigate Player 2</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigate3" onclick="investigate(3)">Investigate Player 3</button> \
 						<h3></h3> \
 					</div> \
 					<div class = "col-md-45 col-md-offset-10"> \
-						<button class="decision" id="investigate3" onclick="investigate(3)">Investigate Player 3</button> \
+						<button class="decision investigate" id="investigate4" onclick="investigate(4)">Investigate Player 4</button> \
 						<h3></h3> \
-						<button class="decision" id="investigate4" onclick="investigate(4)">Investigate Player 4</button> \
+						<button class="decision investigate" id="investigate5" onclick="investigate(5)">Investigate Player 5</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigateNone" onclick="investigate(-1)">Investigate Nobody</button> \
+						<h3></h3> \
 					</div> \
 				</div> \
 			</div>'		
 		);
+		for (i=0;i<playersNotToInvestigate.length;i++) {
+			p = "investigate" + playersNotToInvestigate[i];
+			console.log(p);
+			console.log(document.getElementById(p).className);
+			document.getElementById(p).className += ' hidden';
+			console.log(document.getElementById(p).className);
+		};
 		socket.emit('infoRequest', {});
 		console.log("SWAPPED");
 	};
