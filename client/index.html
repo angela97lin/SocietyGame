@@ -219,17 +219,19 @@
 	};
 	
 	var disableButtons = function() {
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
+		//document.getElementById('decision1').disabled = true;
+		//document.getElementById('decision2').disabled = true;
+		//document.getElementById('decision3').disabled = true;
+		//document.getElementById('decision4').disabled = true;
+		$(':button').prop('disabled', true);
 	};
 	
 	var enableButtons = function() {
-		document.getElementById('decision1').disabled = false;
-		document.getElementById('decision2').disabled = false;
-		document.getElementById('decision3').disabled = false;
-		document.getElementById('decision4').disabled = false;
+		//document.getElementById('decision1').disabled = false;
+		//document.getElementById('decision2').disabled = false;
+		//document.getElementById('decision3').disabled = false;
+		//document.getElementById('decision4').disabled = false;
+		$(':button').prop('disabled', false);
 	};
 
 	var decision1 = function() {
