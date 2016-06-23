@@ -106,11 +106,18 @@ button:hover{
 	-o-transition: all 1s ease;
    color: #F9F9F9;
    background: #20493E;
-   font-weight: normal;
-   padding: 4%;
 }
 
 button:focus{
 	background: #20493E;
 	color: #f9f9f9;
+}
+button:disabled, button[disabled]:hover{
+	border-color:grey;
+	color: grey;
+	background: none;
+	padding: 2%;
+}
+button:active {
+  transform: translateY(10px);
 }
