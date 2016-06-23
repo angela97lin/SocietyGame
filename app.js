@@ -102,13 +102,10 @@
 			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
 			for (var i = 1; i <= numberOfTeams; i++) {
 				teamGroupPlayer[i] = [];
-			};
-			for (var i = 1; i <= numberOfTeams; i++) {
 				for (var j = 0; j < numberOfGroups; j++) {
 					teamGroupPlayer[i].push([]);
 				};
 			};
-			console.log("teamGroupPlayer:" + teamGroupPlayer);
 			if (decisionMode == "timer") {
 				TIME_LIMIT_MINUTES = data.minutes;
 				TIME_LIMIT_SECONDS = data.seconds;
@@ -477,7 +474,6 @@
 				socket.emit('newQuarter', {
 					quarter: quarter
 				});
-				console.log("New Quarter");
 			};
 		};
 	};
