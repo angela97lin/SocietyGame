@@ -59,6 +59,8 @@
 
 	var winningTeams = [];
 	var winningNames = [];
+	
+	var numberOfPlayersConnectedPerGroup = [];
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
@@ -97,6 +99,7 @@
 			numberOfGroups = data.numberOfGroups;
 			numberOfTeams = data.numberOfTeams;
 			numberOfPlayersInGroups = data.numberOfPlayersInGroups;
+			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
 			for (var i = 1; i <= numberOfTeams; i++) {
 				teamGroupPlayer[i] = [];
 			};
@@ -143,6 +146,13 @@
 				pastActions.push(thisTeam);
 			};
 			console.log(pastActions);
+			for (i=0;i<numberOfTeams;i++) {
+				teamToAdd = [];
+				for (j=0;j<numberOfGroups;j++) {
+					teamToAdd.push(0);
+				}
+				numberOfPlayersConnectedPerGroup.push(teamToAdd);
+			}
 		});
 		
 		socket.on('decision1', function(data) {
@@ -154,8 +164,9 @@
 			console.log(pastActions);
 			console.log(socket.teamNumber);
 			console.log(socket.rawGroupNumber);
-			console.log(socket.rawPlayerNumber);
-			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.rawPlayerNumber-1].push(1);
+			console.log(socket.playerNumberInGroup);
+			console.log(teamGroupPlayer);
+			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(1);
 		});
 
 		socket.on('decision2', function(data) {
@@ -164,7 +175,7 @@
 			teamScores[socket.teamNumber] += 2;
 			playerScores[socket.playerNumber] += -1;
 			checkPlayers(decisionMode);
-			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.rawPlayerNumber-1].push(2);
+			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(2);
 		});
 		
 		socket.on('decision3', function(data) {
@@ -173,7 +184,7 @@
 			teamScores[socket.teamNumber] += 1;
 			playerScores[socket.playerNumber] += 1;
 			checkPlayers(decisionMode);
-			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.rawPlayerNumber-1].push(3);
+			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(3);
 		});
 
 		socket.on('decision4', function(data) {
@@ -182,7 +193,7 @@
 			teamScores[socket.teamNumber] += 0;
 			playerScores[socket.playerNumber] += -1;
 			checkPlayers(decisionMode);
-			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.rawPlayerNumber-1].push(4);
+			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
 		
 		socket.on('investigate', function(data) {
@@ -214,14 +225,17 @@
 		socket.on('playerConnect', function(data) {
 			socket.rawGroupNumber = data.groupNumberInput;
 			socket.teamNumber = data.teamNumber;
-			console.log(data.playerNumber);
+			numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
+			console.log(numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1]);
 			console.log(socket.rawGroupNumber);
 			console.log(numberOfPlayersInGroups);
 			console.log(socket.teamNumber);
 			console.log(numberOfPlayersInTeams);
 			console.log("teamGroupPlayer: " + teamGroupPlayer);
-			socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			socket.rawPlayerNumber = data.playerNumber;
+			// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+			// socket.rawPlayerNumber = data.playerNumber;
+			socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+			//socket.playerNumberInGroup = data.playerNumber;
 			console.log(socket.playerNumber);
 			usernames[socket.playerNumber] = data.username;
 			if (!(socket.playerNumber in playerScores)){
