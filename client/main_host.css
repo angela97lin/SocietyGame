@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 
-html, body, h1, h2, h3, footer {
+html, body, div, h1, h2, h3, footer {
 	margin: 5px;
 	padding: 3px;
 	font-family: Tahoma, Arial, sans-serif;
@@ -9,87 +9,24 @@ html, body, h1, h2, h3, footer {
 	line-height: 40px;
 	box-shadow: 4px, 4px, 10px, #f9f9f9;
 	display: block;
-}
-body{
-	background: url("Planetarium_Background_Prototype_Host_Violet.jpg");
+	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
 	background-repeat: no-repeat;
-	background-position: -380% 190%;
-	background-color: black;
+	background-size: 100% 800%;
+	background-position: 50% 50%
 }
-/*-----------Header---------*/
-.container{
-	width:90%;
-	margin:auto;
-}
-#quarterlyreports{
-	margin: 40px;
+
+h1 {
+	margin: 30px;
 	border: 5px;
 	padding: 10px;
 	color: #CE0003;
 	font-variant: small-caps;
-	font-size: 60px;
-	text-align: center;
-}
-.centeredInline{
-	display: flex;
-  	justify-content: space-between;
-	margin: 60px auto;
-	font-variant: small-caps;
-	font-size: 50px;
-}
-
-#roundnumber {
-	color: #CE0003;
-	font-variant: small-caps;
-	font-size: 80px;
-	text-align: left;
-}
-
-#worldscore{
-	display:inline;
-	align:center;
-}
-
-#timer {
-	margin: auto;
-	font-size: 60px;
-}
-
-/*-----------Table----------*/
-tbody{
-	border-radius: 70px;
-}
-tbody tr:first-child td {
-	border-top:none;
-}
-tr{
-	background: rgba(255,255,255,0)
-}	
-td {
-    border-left: 2px solid #9ED6DF;
-    border-top:2px solid #9ED6DF;
-}
-td:first-child {
-     border-left: none;
-}
-.cellTable{
 	font-size: 40px;
-	text-align:center;
-	margin:auto;
-	border-collapse: separate;
-	border-spacing: 0px;
-	border: 2px solid #9ED6DF;
-    border-radius:20px;
-    -moz-border-radius:20px;
-    background: rgba(255,255,255,0);
+}
 	
-}
-.col{
-	color:white;
-}
 
 #nationscore {
-	font-size: 30px;
+	font-size: 40px;
 	margin: 20px;
 }
 
@@ -99,13 +36,20 @@ td:first-child {
 	margin-left: 50px;
 }
 
-
-.scoreCell{
-	padding: 40px 60px;
-	color: #9ED6DF;
+#roundnumber {
+	font-size: 20px;
+	text-align: center
 }
 
+/*--Some messing around with visuals--*/
 
+.col{
+	margin: 20px 70px;
+}
+
+.row{
+margin: 20px 70px;
+}
 
 body{
    margin: 0px;
@@ -138,39 +82,4 @@ a:hover{
    color: #F9F9F9;
    font-weight: normal;
    /*make sure to change at least one thing from your a tag definition*/
-}
-
-/*-----------Button----------*/
-#timerButton {
-	text-align: center;
-}
-
-button {
-	font-size: 200%;
-	text-align: center;
-	border: 2px solid #9ED6DF;
-	border-radius: 7px;
-	padding: 2%;
-	width: 35%;
-	background: radial-gradient(#000000, #000000, #20493E);
-	color: #D1E7E2;
-	box-shadow: 20 20 20px #127998;
-	-webkit-transition: all 0.5s ease;
-	-moz-transition: all 0.5s ease;
-	-o-transition: all 1s ease;
-}
-
-button:hover{
-	-webkit-transition: all 0.5s ease;
-	-moz-transition: all 0.5s ease;
-	-o-transition: all 1s ease;
-   color: #F9F9F9;
-   background: #20493E;
-   font-weight: normal;
-   padding: 2.5%;
-}
-
-button:focus{
-	background: #20493E;
-	color: #f9f9f9;
 }
