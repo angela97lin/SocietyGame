@@ -15,7 +15,7 @@
 <!--<script src="node_modules/jquery/dist/jquery.min.js"></script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 
-<div id="decisionScreen" class = "container">
+<div class = "container">
 	<div class = "row" id = "info">
 		<div class = "col-md-50" id="info1">
 			<h1 id="worldscore"></h1>
@@ -24,12 +24,11 @@
 		</div>
 		<div class = "col-md-50" id = "info2">
 			<h4 id="timer"></h4>
-			<h4 id="username"></h4>
 			<h4 id="playerNumber"></h4>
 			<footer id="roundnumber"></footer>
 		</div>
 	</div>
-	<div class = "row">
+	<div  id="decisionScreen" class = "row">
 		<div class="col-md-45">
 			<button class="decision" id="decision1" onclick="decision1()"></button>
 			<h3></h3>
@@ -120,7 +119,6 @@
 		
 
 		username = prompt("What is your name?");
-		document.getElementById('username').innerHTML = username;
 		
 		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
 								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
@@ -141,7 +139,7 @@
 	socket.on('player', function(data) {
 		playerNumber = data.number;
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
-		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
+		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 	});
 
 	socket.on('timer', function(data) {
@@ -167,7 +165,7 @@
 	
 	socket.on('decisionUpdate', function(data) {
 		playerScore = data.playerScore;
-		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
+		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
@@ -218,17 +216,19 @@
 	};
 	
 	var disableButtons = function() {
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
+		//document.getElementById('decision1').disabled = true;
+		//document.getElementById('decision2').disabled = true;
+		//document.getElementById('decision3').disabled = true;
+		//document.getElementById('decision4').disabled = true;
+		$(':button').prop('disabled', true);
 	};
 	
 	var enableButtons = function() {
-		document.getElementById('decision1').disabled = false;
-		document.getElementById('decision2').disabled = false;
-		document.getElementById('decision3').disabled = false;
-		document.getElementById('decision4').disabled = false;
+		//document.getElementById('decision1').disabled = false;
+		//document.getElementById('decision2').disabled = false;
+		//document.getElementById('decision3').disabled = false;
+		//document.getElementById('decision4').disabled = false;
+		$(':button').prop('disabled', false);
 	};
 
 	var decision1 = function() {
@@ -264,20 +264,7 @@
 	var swapToInvestigation = function() {
 		console.log("SWAP TO INVESTIGATION");
 		$("#decisionScreen").replaceWith(
-			'<div id="investigationScreen" class = "container"> \
-				<div class = "row" id = "info"> \
-					<div class = "col-md-50" id="info1"> \
-						<h1 id="worldscore"></h1> \
-						<h2 id="nationscore"></h2> \
-						<h3 id="individualscore"></h3> \
-					</div> \
-					<div class = "col-md-50" id = "info2"> \
-						<h4 id="timer"></h4> \
-						<h4 id="playerNumber"></h4> \
-						<footer id="roundnumber"></footer> \
-					</div> \
-				</div> \
-				<div class = "row"> \
+				'<div id="investigationScreen" class = "row"> \
 					<div class="col-md-45"> \
 						<button class="decision investigate" id="investigate1" onclick="investigate(1)">Investigate Player 1</button> \
 						<h3></h3> \
@@ -294,8 +281,7 @@
 						<button class="decision investigate" id="investigateNone" onclick="investigate(-1)">Investigate Nobody</button> \
 						<h3></h3> \
 					</div> \
-				</div> \
-			</div>'		
+				</div>'		
 		);
 		for (i=0;i<playersNotToInvestigate.length;i++) {
 			p = "investigate" + playersNotToInvestigate[i];
@@ -310,20 +296,7 @@
 	
 	var swapToDecision = function() {
 		$("#investigationScreen").replaceWith(
-			'<div id="decisionScreen" class = "container"> \
-				<div class = "row" id = "info"> \
-					<div class = "col-md-50" id="info1"> \
-						<h1 id="worldscore"></h1> \
-						<h2 id="nationscore"></h2> \
-						<h3 id="individualscore"></h3> \
-					</div> \
-					<div class = "col-md-50" id = "info2"> \
-						<h4 id="timer"></h4> \
-						<h4 id="playerNumber"></h4> \
-						<footer id="roundnumber"></footer> \
-					</div> \
-				</div> \
-				<div class = "row"> \
+				'<div id ="decisionScreen" class = "row"> \
 					<div class="col-md-45"> \
 						<button class="decision" id="decision1" onclick="decision1()"></button> \
 						<h3></h3> \
@@ -335,8 +308,7 @@
 						<h3></h3> \
 						<button class="decision" id="decision4" onclick="decision4()"></button> \
 					</div> \
-				</div> \
-			</div>'		
+				</div>'		
 		);
 		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});

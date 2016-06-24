@@ -14,9 +14,10 @@
 		
 		<div class="container">
 			<h2 id="roundnumber">Round Number: 1</h2>
-			<div id="timerButton"><div id="starttimer"></div></div>
+			
 			<div class="centeredInline">
 				<h2 id="timer"></h2>
+				<div id="starttimer"></div>
 				<h2 id="worldscore"></h2>
 			</div>
 
@@ -121,7 +122,8 @@
 			});
 
 			socket.on('startTimer', function(data) {
-				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+				// document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
 			});
 

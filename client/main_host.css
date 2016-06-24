@@ -137,15 +137,18 @@ a:hover{
    font-weight: normal;
    /*make sure to change at least one thing from your a tag definition*/
 }
-
+#starttimer{
+	margin:0 auto;
+	display: inline;
+}
 button {
 	font-size: 100%;
 	text-align: center;
 	border: 2px solid #9ED6DF;
 	border-radius: 7px;
-	margin-top: 1%; 
+	margin:0 auto; 
 	padding: 2%;
-	width: 100%;
+	width: 33%;
 	background: radial-gradient(#000000, #000000, #20493E);
 	color: #D1E7E2;
 	box-shadow: 20 20 20px #127998;
@@ -161,7 +164,8 @@ button:hover{
    color: #F9F9F9;
    background: #20493E;
    font-weight: normal;
-   padding: 4%;
+   padding-left: 4%;
+   padding-right: 4%;
 }
 
 button:focus{
