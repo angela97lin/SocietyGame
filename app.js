@@ -192,6 +192,10 @@
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
+
+		socket.on('decision5', function(data) {
+			decision5(socket, data.groupNumber);
+		});
 		
 		socket.on('investigate', function(data) {
 			console.log(data.teamInvolved);
@@ -556,4 +560,30 @@
 		} else {
 			return minutes.toString() + ":" + seconds.toString();
 		};
+	};
+
+	function decision5(socket, groupNumber) {
+		console.log(groupNumber);
+		if (groupNumber == 1) {
+			world += 1;
+			groupScores[socket.groupNumber] += 1;
+			teamScores[socket.teamNumber] += 1;
+			playerScores[socket.playerNumber] -= 1;
+		} else if (groupNumber == 2) {
+			world += 1;
+			groupScores[socket.groupNumber] -= 2;
+			teamScores[socket.teamNumber] -= 2;
+			playerScores[socket.playerNumber] += 1;
+		} else if (groupNumber == 3) {
+			world += 2;
+			groupScores[socket.groupNumber] -= 1;
+			teamScores[socket.teamNumber] -= 1;
+		} else if (groupNumber == 4) {
+			world -= 2;
+			groupScores[socket.groupNumber] -= 1;
+			teamScores[socket.teamNumber] -= 1;
+			playerScores[socket.playerNumber] += 2;
+		};
+		checkPlayers(decisionMode);
+		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
 	};

@@ -39,6 +39,8 @@
 			<button class="decision" id="decision3" onclick="decision3()"></button>
 			<h3></h3>
 			<button class="decision" id="decision4" onclick="decision4()"></button>
+			<h3></h3>
+			<button class="decision" id="decision5" onclick="decision5()"></button>
 		</div>
 	</div>
 </div>
@@ -78,19 +80,23 @@
 	var DECISIONS = [{1: "Pocket money from school fundraiser",
 					  2: "Buy school supplies for students out of pocket",
 					  3: "Inflate students' test scores",
-					  4: "Go teach for a year to impoverished students"},
+					  4: "Go teach for a year to impoverished students",
+					  5: "Volunteer to run after-school environmental club"},
 					 {1: "Extort local families in the war zone",
 					  2: "Fight on the front lines",
 					  3: "Use biochemical warfare",
-					  4: "Give rations to starving children in war zone"},
+					  4: "Give rations to starving children in war zone",
+					  5: "Sell top-secret info"},
 					 {1: "Buy a boat with company money",
 					  2: "Come in on Saturdays",
 					  3: "Switch production to fossil fuels for a month to lower production costs",
-					  4: "Donate to charity"},
+					  4: "Donate to charity",
+					  5: "Outsource jobs to another country"},
 					 {1: "Take a bribe to lower emissions requirements",
 					  2: "Attend every voting session",
 					  3: "Impose tariffs on international trade",
-					  4: "Give time to international disaster relief organization"}];
+					  4: "Give time to international disaster relief organization",
+					  5: "Take bribe to deport criminal"}];
 	
 	var username;
 	var playerNumber;
@@ -213,6 +219,7 @@
 		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
 		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];
 		document.getElementById('decision4').innerHTML = DECISIONS[group - 1][4];
+		document.getElementById('decision5').innerHTML = DECISIONS[group - 1][5];
 	};
 	
 	var disableButtons = function() {
@@ -232,24 +239,29 @@
 	};
 
 	var decision1 = function() {
-		socket.emit('decision1', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision1', {});
 		disableButtons();
 	};
 	
 	var decision2 = function() {
-		socket.emit('decision2', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision2', {});
 		disableButtons();
 	};
 	
 	var decision3 = function() {
-		socket.emit('decision3', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision3', {});
 		disableButtons();
 	};
 	
 	var decision4 = function() {
-		socket.emit('decision4', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision4', {});
 		disableButtons();
 	};
+
+	var decision5 = function() {
+		socket.emit('decision5', {groupNumber: groupNumberInput});
+		disableButtons();
+	}
 	
 	var investigate = function(playerToInvestigate) {
 		socket.emit('investigate', {
@@ -307,6 +319,8 @@
 						<button class="decision" id="decision3" onclick="decision3()"></button> \
 						<h3></h3> \
 						<button class="decision" id="decision4" onclick="decision4()"></button> \
+						<h3></h3> \
+						<button class="decision" id="decision5" onclick="decision5()"></button> \
 					</div> \
 				</div>'		
 		);
