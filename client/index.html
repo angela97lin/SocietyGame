@@ -33,14 +33,16 @@
 			<div class ="score">
 				<h3 id="individualscore"></h3>
 				<div class = "scoreChange">
-					<h1 id = "indidualChange"></h1>
+					<h1 id = "individualChange"></h1>
 				</div>
 			</div>
 		</div>
 		<div class = "col-md-50" id = "info2">
-			<h4 id="timer"></h4>
 			<h4 id="playerNumber"></h4>
-			<footer id="roundnumber"></footer>
+			<h4 id="roundnumber">Round Number: 1</h4>
+			<h4 id="timer"></h4>
+			
+			
 		</div>
 	</div>
 	<div  id="decisionScreen" class = "row">
@@ -164,7 +166,7 @@
 	});
 
 	socket.on('timer', function(data) {
-		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+		document.getElementById('timer').innerHTML = data.timer;
 	});
 
 	socket.on('world', function(data) {
