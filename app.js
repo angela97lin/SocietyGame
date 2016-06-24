@@ -49,6 +49,8 @@
 	var teamScores = {};
 	var teamNameNumbers = {};
 	var teamNumberNames;
+	var playerNameToGroup = {};
+	var playerNameToTeam = {};
 	var currentTeamNumber = 1;
 	var investigationLists;
 	var numberOfInvestigations = 0;
@@ -102,8 +104,6 @@
 			numberOfPlayersInTeams = data.numberOfPlayersInTeams;
 			for (var i = 1; i <= numberOfTeams; i++) {
 				teamGroupPlayer[i] = [];
-			};
-			for (var i = 1; i <= numberOfTeams; i++) {
 				for (var j = 0; j < numberOfGroups; j++) {
 					teamGroupPlayer[i].push([]);
 				};
@@ -194,6 +194,10 @@
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
+
+		socket.on('decision5', function(data) {
+			decision5(socket, data.groupNumber);
+		});
 		
 		socket.on('investigate', function(data) {
 			console.log(data.teamInvolved);
@@ -233,6 +237,8 @@
 			console.log(numberOfPlayersInGroups);
 			console.log(socket.teamNumber);
 			console.log(numberOfPlayersInTeams);
+			// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+			// socket.rawPlayerNumber = data.playerNumber;
 			socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 			//socket.playerNumberInGroup = data.playerNumber;
 			console.log(socket.playerNumber);
@@ -270,6 +276,8 @@
 			};
 			//socket.teamNumber = teamNameNumbers[data.teamName];
 			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
+			playerNameToGroup[data.username] = data.groupNumberInput;
+			playerNameToTeam[data.username] = data.teamNumber;
 			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
 			socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
 			socket.emit('player', {
@@ -348,7 +356,9 @@
 			socket.emit('mainWinners', {
 				teamNumberNames: teamNumberNames,
 				winningTeams: winningTeams,
-				winningNames: winningNames
+				winningNames: winningNames,
+				playerNameToTeam: playerNameToTeam,
+				playerNameToGroup: playerNameToGroup
 			});
 		});
 	});
@@ -487,7 +497,6 @@
 				socket.emit('newQuarter', {
 					quarter: quarter
 				});
-				console.log("New Quarter");
 			};
 		};
 	};
@@ -539,9 +548,9 @@
 			console.log("team winners: " + teamWinners);
 			for (var i in sockets) {
 				var emitSocket = sockets[i];
-				if (overallWinners.indexOf(emitSocket.id) >= 0) {
+				if (overallWinners.indexOf(emitSocket.playerNumber) >= 0) {
 					emitSocket.emit('win', {});
-				} else if (teamWinners.indexOf(emitSocket.id) >= 0) {
+				} else if (teamWinners.indexOf(emitSocket.playerNumber) >= 0) {
 					emitSocket.emit('teamWin', {});
 				} else {
 					emitSocket.emit('lose', {});
@@ -557,4 +566,29 @@
 		} else {
 			return minutes.toString() + ":" + seconds.toString();
 		};
+	};
+
+	function decision5(socket, groupNumber) {
+		if (groupNumber == 1) {
+			world += 1;
+			groupScores[socket.groupNumber] += 1;
+			teamScores[socket.teamNumber] += 1;
+			playerScores[socket.playerNumber] -= 1;
+		} else if (groupNumber == 2) {
+			world += 1;
+			groupScores[socket.groupNumber] -= 2;
+			teamScores[socket.teamNumber] -= 2;
+			playerScores[socket.playerNumber] += 1;
+		} else if (groupNumber == 3) {
+			world += 2;
+			groupScores[socket.groupNumber] -= 1;
+			teamScores[socket.teamNumber] -= 1;
+		} else if (groupNumber == 4) {
+			world -= 2;
+			groupScores[socket.groupNumber] -= 1;
+			teamScores[socket.teamNumber] -= 1;
+			playerScores[socket.playerNumber] += 2;
+		};
+		checkPlayers(decisionMode);
+		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
 	};
