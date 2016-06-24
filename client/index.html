@@ -257,26 +257,39 @@
 
 	var decision1 = function() {
 		socket.emit('decision1', {});
+		document.getElementById("individualChange").innerHTML = "+2";
+		document.getElementById("nationChange").innerHTML = "-2";
+		document.getElementById("worldChange").innerHTML = "-1";
 		disableButtons();
 	};
 	
 	var decision2 = function() {
 		socket.emit('decision2', {});
+		document.getElementById("individualChange").innerHTML = "-1";
+		document.getElementById("nationChange").innerHTML = "+2";
+		document.getElementById("worldChange").innerHTML = "+0";
 		disableButtons();
 	};
 	
 	var decision3 = function() {
 		socket.emit('decision3', {});
+		document.getElementById("individualChange").innerHTML = "+1";
+		document.getElementById("nationChange").innerHTML = "+1";
+		document.getElementById("worldChange").innerHTML = "-1";
 		disableButtons();
 	};
 	
 	var decision4 = function() {
 		socket.emit('decision4', {});
+		document.getElementById("individualChange").innerHTML = "-1";
+		document.getElementById("nationChange").innerHTML = "+0";
+		document.getElementById("worldChange").innerHTML = "+2";
 		disableButtons();
 	};
 
 	var decision5 = function() {
 		socket.emit('decision5', {groupNumber: groupNumberInput});
+		displayDecision5Numbers(groupNumberInput);
 		disableButtons();
 	}
 	
@@ -344,5 +357,25 @@
 		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});
 	};
+
+	function displayDecision5Numbers(groupNumber) {
+		if (groupNumber == 1) {
+			document.getElementById("individualChange").innerHTML = "-1";
+			document.getElementById("nationChange").innerHTML = "+1";
+			document.getElementById("worldChange").innerHTML = "+1";
+		} else if (groupNumber == 2) {
+			document.getElementById("individualChange").innerHTML = "+1";
+			document.getElementById("nationChange").innerHTML = "-2";
+			document.getElementById("worldChange").innerHTML = "+1";
+		} else if (groupNumber == 3) {
+			document.getElementById("individualChange").innerHTML = "+0";
+			document.getElementById("nationChange").innerHTML = "-1";
+			document.getElementById("worldChange").innerHTML = "+2";
+		} else if (groupNumber == 4) {
+			document.getElementById("individualChange").innerHTML = "+2";
+			document.getElementById("nationChange").innerHTML = "-1";
+			document.getElementById("worldChange").innerHTML = "-2";
+		};
+	};
 	
-</script>
+</script> 
