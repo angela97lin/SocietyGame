@@ -122,10 +122,10 @@
 		username = prompt("What is your name?");
 		document.getElementById('username').innerHTML = username;
 		
-		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText),10);
+		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
 								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
 								   //"5: Russia, 6: China, 7: Mexico");
-		groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText),10);
+		groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
 		
 		createDecisions(groupNumberInput);
 		
@@ -211,7 +211,6 @@
 /*FUNCTIONS*/
 
 	function createDecisions(group) {
-		console.log(DECISIONS[group - 1]);
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
 		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
 		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];

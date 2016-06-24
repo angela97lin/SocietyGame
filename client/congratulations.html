@@ -11,8 +11,8 @@
 	</head>
 	<body>
 
-		<pre id="winningTeams"></pre>
-		<pre id="winningNames"></pre>
+		<p id="winningTeams"></p>
+		<p id="winningNames"></p>
 
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		
@@ -22,7 +22,7 @@
 			var winningTeams;
 			var winningNames;
 			var winningTeamsText = "";
-			var winningNamesText = "Special recognition is given to the following individuals for being leaders within their respective sectors:\n";
+			var winningNamesText = "Special recognition is given to the following individuals for being leaders within their respective sectors:<br><br>";
 
 			socket.emit('congratulations', {});
 
@@ -33,7 +33,7 @@
 
 				teamCongratulations(winningTeams);
 				for (var i = 0; i < winningNames.length; i++) {
-					winningNamesText += (winningNames[i] + "\n");
+					winningNamesText += (winningNames[i] + "<br>");
 				};
 
 				document.getElementById("winningTeams").innerHTML = winningTeamsText;
@@ -44,9 +44,9 @@
 				if (winningTeams.length == 1) {
 					winningTeamsText = teamNumberNames[winningTeams[0]] + " has been declared the greatest nation in the world!";
 				} else {
-					winningTeamsText = "The following nations have been declared the greatest nations in the world!:\n";
-					for (var i = 0; i < winningNames.length; i++) {
-						winningNamesText += (winningNames[i] + "\n");
+					winningTeamsText = "The following nations have been declared the greatest nations in the world!:<br><br>";
+					for (var i = 0; i < winningTeams.length; i++) {
+						winningTeamsText += (teamNumberNames[winningTeams[i]] + "<br>");
 					};
 				};
 			};

@@ -12,12 +12,12 @@ body {
 	background-color: #000000;
 }
 
-pre {
-	max-width: 500px;
+p {
 	color: #f9f9f9;
 	margin-top: 50px;
 	margin-left: 50px;
 	margin-bottom: 20px;
 	font-weight: bold;
 	font-size: 2em;
+	line-height: 100%
 }

@@ -231,7 +231,6 @@
 			console.log(numberOfPlayersInGroups);
 			console.log(socket.teamNumber);
 			console.log(numberOfPlayersInTeams);
-			console.log("teamGroupPlayer: " + teamGroupPlayer);
 			// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 			// socket.rawPlayerNumber = data.playerNumber;
 			socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
@@ -539,9 +538,9 @@
 			console.log("team winners: " + teamWinners);
 			for (var i in sockets) {
 				var emitSocket = sockets[i];
-				if (overallWinners.indexOf(emitSocket.id) >= 0) {
+				if (overallWinners.indexOf(emitSocket.playerNumber) >= 0) {
 					emitSocket.emit('win', {});
-				} else if (teamWinners.indexOf(emitSocket.id) >= 0) {
+				} else if (teamWinners.indexOf(emitSocket.playerNumber) >= 0) {
 					emitSocket.emit('teamWin', {});
 				} else {
 					emitSocket.emit('lose', {});
