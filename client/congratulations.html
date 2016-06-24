@@ -1,4 +1,4 @@
-<!doctype html>
+t<!doctype html>
 
 <!--HTML-->
 
@@ -21,8 +21,14 @@
 			var teamNumberNames;
 			var winningTeams;
 			var winningNames;
+			var playerNameToTeam;
+			var playerNameToGroup;
 			var winningTeamsText = "";
 			var winningNamesText = "Special recognition is given to the following individuals for being leaders within their respective sectors:<br><br>";
+			var GROUPS = {1: "Education",
+				  		  2: "Military",
+				  		  3: "Workforce",
+				  		  4: "Policy Makers"};
 
 			socket.emit('congratulations', {});
 
@@ -30,10 +36,12 @@
 				teamNumberNames = data.teamNumberNames;
 				winningTeams = data.winningTeams;
 				winningNames = data.winningNames;
+				playerNameToGroup = data.playerNameToGroup;
+				playerNameToTeam = data.playerNameToTeam;
 
 				teamCongratulations(winningTeams);
 				for (var i = 0; i < winningNames.length; i++) {
-					winningNamesText += (winningNames[i] + "<br>");
+					winningNamesText += ("From " + teamNumberNames[playerNameToTeam[winningNames[i]]] + "'s " + GROUPS[playerNameToGroup[winningNames[i]]] + " Sector: " + winningNames[i] + "<br>");
 				};
 
 				document.getElementById("winningTeams").innerHTML = winningTeamsText;
