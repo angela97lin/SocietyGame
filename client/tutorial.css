@@ -24,6 +24,10 @@ html, body, div, h1, p{
 	font-size: 5.75vmax
 }
 
+.page{
+	margin:4vh 6vw;
+}
+
 #Pride, #Honor, #Vice, #firstButton {
 	color: #ccbab7;
 	opacity:0;
@@ -95,6 +99,7 @@ p {
 #title {
 	color: #7c1204;
 	font-size: 8vw;
+	margin-bottom: 8px;
 }
 
 redtext {
@@ -104,7 +109,9 @@ redtext {
 greentext {
 	color: #0ff871;
 }
-
+#Mission{
+	font-size: 9vmin;
+}
 #page5Text {
 	font-size: 6vmin;
 	margin: 0;
@@ -112,7 +119,7 @@ greentext {
 }
 
 #page6Text {
-	font-size: 7.5vmin;
+	font-size: 6vmin;
 }
 
 .boxed {
@@ -168,16 +175,26 @@ colorred {
 }
 
 button {
+	position: fixed;
+	bottom: 0;
+	right: 0;
 	display: inline-block;
-	vertical-align: bottom;
-	align: center;
 	text-align: center;
-	font-size: 4vw;
+	font-size: 6vmin;
 	background: #000000;
 	color: #f9f9f9;
 	font-family: Verdana, Tahoma, sans-serif;
-	border: 1px solid #f9f9f9;
-	margin: 1%;
-	padding: 1%;
+	border: 2px solid #f9f9f9;
+	border-radius: 16px;
+	margin: 4vh 6vw;
+	padding: 30px;
+}
+button.prev{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+}
+button.next{
+	
 }
 

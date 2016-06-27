@@ -1,0 +1,64 @@
+t<!doctype html>
+
+<!--HTML-->
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Congratulations!</title>
+		<link rel="stylesheet" type="text/css" href="congratulations.css" />
+		<link rel="stylesheet" type="text/css" href="client/congratulations.css" />
+	</head>
+	<body>
+
+		<p id="winningTeams"></p>
+		<p id="winningNames"></p>
+
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		
+		<script type="text/javascript">
+			var socket = io();
+			var teamNumberNames;
+			var winningTeams;
+			var winningNames;
+			var playerNameToTeam;
+			var playerNameToGroup;
+			var winningTeamsText = "";
+			var winningNamesText = "Special recognition is given to the following individuals for being leaders within their respective sectors:<br><br>";
+			var GROUPS = {1: "Education",
+				  		  2: "Military",
+				  		  3: "Workforce",
+				  		  4: "Policy Makers"};
+
+			socket.emit('congratulations', {});
+
+			socket.on('mainWinners', function(data) {
+				teamNumberNames = data.teamNumberNames;
+				winningTeams = data.winningTeams;
+				winningNames = data.winningNames;
+				playerNameToGroup = data.playerNameToGroup;
+				playerNameToTeam = data.playerNameToTeam;
+
+				teamCongratulations(winningTeams);
+				for (var i = 0; i < winningNames.length; i++) {
+					winningNamesText += ("From " + teamNumberNames[playerNameToTeam[winningNames[i]]] + "'s " + GROUPS[playerNameToGroup[winningNames[i]]] + " Sector: " + winningNames[i] + "<br>");
+				};
+
+				document.getElementById("winningTeams").innerHTML = winningTeamsText;
+				document.getElementById("winningNames").innerHTML = winningNamesText;
+			});
+
+			function teamCongratulations(winningTeams) {
+				if (winningTeams.length == 1) {
+					winningTeamsText = teamNumberNames[winningTeams[0]] + " has been declared the greatest nation in the world!";
+				} else {
+					winningTeamsText = "The following nations have been declared the greatest nations in the world!:<br><br>";
+					for (var i = 0; i < winningTeams.length; i++) {
+						winningTeamsText += (teamNumberNames[winningTeams[i]] + "<br>");
+					};
+				};
+			};
+		</script>
+
+	</body>
+</html>

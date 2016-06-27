@@ -18,17 +18,34 @@
 <div class = "container">
 	<div class = "row" id = "info">
 		<div class = "col-md-50" id="info1">
-			<h1 id="worldscore"></h1>
-			<h2 id="nationscore"></h2>
-			<h3 id="individualscore"></h3>
+			<div class ="score">
+				<h1 id="worldscore"></h1>
+				<div class = "scoreChange">
+					<h1 id = "worldChange"></h1>
+				</div>
+			</div>
+			<div class ="score">
+				<h2 id="nationscore"></h2>
+				<div class = "scoreChange">
+					<h1 id = "nationChange"></h1>
+				</div>
+			</div>
+			<div class ="score">
+				<h3 id="individualscore"></h3>
+				<div class = "scoreChange">
+					<h1 id = "individualChange"></h1>
+				</div>
+			</div>
 		</div>
 		<div class = "col-md-50" id = "info2">
-			<h4 id="timer"></h4>
 			<h4 id="playerNumber"></h4>
-			<footer id="roundnumber"></footer>
+			<h4 id="roundnumber">Round Number: 1</h4>
+			<h4 id="timer"></h4>
+			
+			
 		</div>
 	</div>
-	<div class = "row">
+	<div  id="decisionScreen" class = "row">
 		<div class="col-md-45">
 			<button class="decision" id="decision1" onclick="decision1()"></button>
 			<h3></h3>
@@ -39,6 +56,8 @@
 			<button class="decision" id="decision3" onclick="decision3()"></button>
 			<h3></h3>
 			<button class="decision" id="decision4" onclick="decision4()"></button>
+			<h3></h3>
+			<button class="decision" id="decision5" onclick="decision5()"></button>
 		</div>
 	</div>
 </div>
@@ -58,6 +77,9 @@
 	var teamNameInput;
 	var groupNumberInput;
 	
+	var playersPerGroup;
+	var playersNotToInvestigate = [];
+	
 	var NATIONS = {1: "Japan",
 				   2: "Canada",
 				   3: "UK",
@@ -75,21 +97,26 @@
 	var DECISIONS = [{1: "Pocket money from school fundraiser",
 					  2: "Buy school supplies for students out of pocket",
 					  3: "Inflate students' test scores",
-					  4: "Go teach for a year to impoverished students"},
+					  4: "Go teach for a year to impoverished students",
+					  5: "Volunteer to run after-school environmental club"},
 					 {1: "Extort local families in the war zone",
 					  2: "Fight on the front lines",
 					  3: "Use biochemical warfare",
-					  4: "Give rations to starving children in war zone"},
+					  4: "Give rations to starving children in war zone",
+					  5: "Sell top-secret info"},
 					 {1: "Buy a boat with company money",
 					  2: "Come in on Saturdays",
 					  3: "Switch production to fossil fuels for a month to lower production costs",
-					  4: "Donate to charity"},
+					  4: "Donate to charity",
+					  5: "Outsource jobs to another country"},
 					 {1: "Take a bribe to lower emissions requirements",
 					  2: "Attend every voting session",
 					  3: "Impose tariffs on international trade",
-					  4: "Give time to international disaster relief organization"}];
+					  4: "Give time to international disaster relief organization",
+					  5: "Take bribe to deport criminal"}];
 	
-	var playerNumber = playerNumberInput;
+	var username;
+	var playerNumber;
 	var teamName;
 	var teamNumber = 0;
 	var groupNumber = [];
@@ -113,33 +140,39 @@
 			groupPromptText += (i + ": " + GROUPS[i] + "\n");
 		};
 		
-		playerNumberInput = prompt("What player number are you?");
-		playerNumber = playerNumberInput;
+
+		username = prompt("What is your name?");
 		
-		teamNameInput = prompt("What nation are you on?\n" + nationPromptText);
-								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
-								   //"5: Russia, 6: China, 7: Mexico");
-		groupNumberInput = prompt("What group are you in?\n" + groupPromptText);
+		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+		while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
+			window.alert("Please enter a valid team number");
+			teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+		};
+		groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+		while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
+			window.alert("Please enter a valid group number");
+			groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+		};
 		
 		createDecisions(groupNumberInput);
 		
-		socket.emit('playerConnect', {playerNumber: playerNumber, teamName: teamName, groupNumberInput: groupNumberInput});
-		
 		teamName = NATIONS[teamNameInput];
+		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
 	});
 	
 	socket.on('getTeamNumber', function(data) {
-		teamNumber = data.teamNameNumbers[teamName];
+		//teamNumber = data.teamNameNumbers[teamName];
 		groupNumber = data.groupNumber;
 	});
 	
 	socket.on('player', function(data) {
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + playerNumber;
-		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
+		playerNumber = data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
+		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 	});
 
 	socket.on('timer', function(data) {
-		document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+		document.getElementById('timer').innerHTML = data.timer;
 	});
 
 	socket.on('world', function(data) {
@@ -150,9 +183,18 @@
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.team;
 	});
 	
+	socket.on('teamInitiate', function(data) {
+		p = data.p;
+		playersPerGroup = data.playersPerGroup;
+		playersNotToInvestigate.push(p);
+		for (i=playersPerGroup; i<5; i++) {
+			playersNotToInvestigate.push(i+1);
+		};
+	});
+	
 	socket.on('decisionUpdate', function(data) {
 		playerScore = data.playerScore;
-		document.getElementById('individualscore').innerHTML = "Individual Score: " + playerScore;
+		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
@@ -166,11 +208,28 @@
 	});
 	
 	socket.on('newQuarter', function() {
+		console.log("New Quarter");
 		swapToInvestigation();
+	});
+	
+	socket.on('investigationOver', function() {
+		swapToDecision();
 	});
 
 	socket.on('worldEnd', function() {
-		window.location = "http://corgiorgy.com";
+		window.location = "/worldend";
+	});
+
+	socket.on('win', function() {
+		window.location = "/win";
+	});
+
+	socket.on('teamWin', function() {
+		window.location = "/winningteam";
+	});
+
+	socket.on('lose', function() {
+		window.location = "/lose";
 	});
 		
 	
@@ -179,88 +238,154 @@
 /*FUNCTIONS*/
 
 	function createDecisions(group) {
-		console.log(DECISIONS[group - 1]);
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
 		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
 		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];
 		document.getElementById('decision4').innerHTML = DECISIONS[group - 1][4];
+		document.getElementById('decision5').innerHTML = DECISIONS[group - 1][5];
 	};
 	
 	var disableButtons = function() {
-		document.getElementById('decision1').disabled = true;
-		document.getElementById('decision2').disabled = true;
-		document.getElementById('decision3').disabled = true;
-		document.getElementById('decision4').disabled = true;
+		//document.getElementById('decision1').disabled = true;
+		//document.getElementById('decision2').disabled = true;
+		//document.getElementById('decision3').disabled = true;
+		//document.getElementById('decision4').disabled = true;
+		$(':button').prop('disabled', true);
 	};
 	
 	var enableButtons = function() {
-		document.getElementById('decision1').disabled = false;
-		document.getElementById('decision2').disabled = false;
-		document.getElementById('decision3').disabled = false;
-		document.getElementById('decision4').disabled = false;
+		//document.getElementById('decision1').disabled = false;
+		//document.getElementById('decision2').disabled = false;
+		//document.getElementById('decision3').disabled = false;
+		//document.getElementById('decision4').disabled = false;
+		$(':button').prop('disabled', false);
 	};
 
 	var decision1 = function() {
-		socket.emit('decision1', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision1', {});
+		document.getElementById("individualChange").innerHTML = "+2";
+		document.getElementById("nationChange").innerHTML = "-2";
+		document.getElementById("worldChange").innerHTML = "-1";
 		disableButtons();
 	};
 	
 	var decision2 = function() {
-		socket.emit('decision2', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision2', {});
+		document.getElementById("individualChange").innerHTML = "-1";
+		document.getElementById("nationChange").innerHTML = "+2";
+		document.getElementById("worldChange").innerHTML = "+0";
 		disableButtons();
 	};
 	
 	var decision3 = function() {
-		socket.emit('decision3', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision3', {});
+		document.getElementById("individualChange").innerHTML = "+1";
+		document.getElementById("nationChange").innerHTML = "+1";
+		document.getElementById("worldChange").innerHTML = "-1";
 		disableButtons();
 	};
 	
 	var decision4 = function() {
-		socket.emit('decision4', {playerNumber: playerNumber, groupNumber: groupNumber, teamNumber: teamNumber});
+		socket.emit('decision4', {});
+		document.getElementById("individualChange").innerHTML = "-1";
+		document.getElementById("nationChange").innerHTML = "+0";
+		document.getElementById("worldChange").innerHTML = "+2";
+		disableButtons();
+	};
+
+	var decision5 = function() {
+		socket.emit('decision5', {groupNumber: groupNumberInput});
+		displayDecision5Numbers(groupNumberInput);
+		disableButtons();
+	}
+	
+	var investigate = function(playerToInvestigate) {
+		socket.emit('investigate', {
+			teamInvolved: teamNameInput,
+			groupInvolved: groupNumberInput,
+			playerInvestigating: playerNumber,
+			playerToInvestigate: playerToInvestigate
+		});
 		disableButtons();
 	};
 	
 	var swapToInvestigation = function() {
+		console.log("SWAP TO INVESTIGATION");
 		$("#decisionScreen").replaceWith(
-			'<div id="investigationScreen" style=" width: 100%; text-align: center"> \
-			<h1 id="worldscore">worldscore</h1> \
-			<h2 id="nationscore">insert number here</h2> \
-			<h3 id="individualscore">insert number here</h3> \
-			<h4 id="timer">insert number here</h4> \
-			<h4 id="playerNumber">insert number here</h4> \
-			<h2>Investigations!</h2> \
-			<footer id="roundnumber">roundnumber</footer> \
-			<button class="decision" id="investigate1" onclick="">Investigate Player 1</button> \
-			<h3></h3> \
-			<button class="decision" id="investigate2" onclick="">Investigate Player 2</button> \
-			<h3></h3> \
-			<button class="decision" id="investigate3" onclick="">Investigate Player 3</button> \
-			<h3></h3> \
-			<button class="decision" id="investigate4" onclick="">Investigate Player 4</button> \
-			</div>'
+				'<div id="investigationScreen" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision investigate" id="investigate1" onclick="investigate(1)">Investigate Player 1</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigate2" onclick="investigate(2)">Investigate Player 2</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigate3" onclick="investigate(3)">Investigate Player 3</button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision investigate" id="investigate4" onclick="investigate(4)">Investigate Player 4</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigate5" onclick="investigate(5)">Investigate Player 5</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigateNone" onclick="investigate(-1)">Investigate Nobody</button> \
+						<h3></h3> \
+					</div> \
+				</div>'		
 		);
+		for (i=0;i<playersNotToInvestigate.length;i++) {
+			p = "investigate" + playersNotToInvestigate[i];
+			console.log(p);
+			console.log(document.getElementById(p).className);
+			document.getElementById(p).className += ' hidden';
+			console.log(document.getElementById(p).className);
+		};
 		socket.emit('infoRequest', {});
+		console.log("SWAPPED");
 	};
 	
 	var swapToDecision = function() {
 		$("#investigationScreen").replaceWith(
-			'<div id="decisionScreen" style=" width: 100%; text-align: center"> \
-			<h1 id="worldscore">worldscore</h1> \
-			<h2 id="nationscore">insert number here</h2> \
-			<h3 id="individualscore">insert number here</h3> \
-			<h4 id="timer">insert number here</h4> \
-			<h4 id="playerNumber">insert number here</h4> \
-			<footer id="roundnumber">roundnumber</footer> \
-			<button class="decision" id="decision1" onclick="decision1()">Be a shithead</button> \
-			<h3></h3> \
-			<button class="decision" id="decision2" onclick="decision2()">Team Player</button> \
-			<h3></h3> \
-			<button class="decision" id="decision3" onclick="decision3()">Mi casa, tu casa</button> \
-			<h3></h3> \
-			<button class="decision" id="decision4" onclick="decision4()">I drive a hybrid, bitch</button> \
-			</div>'		
+				'<div id ="decisionScreen" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision" id="decision1" onclick="decision1()"></button> \
+						<h3></h3> \
+						<button class="decision" id="decision2" onclick="decision2()"></button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision" id="decision3" onclick="decision3()"></button> \
+						<h3></h3> \
+						<button class="decision" id="decision4" onclick="decision4()"></button> \
+						<h3></h3> \
+						<button class="decision" id="decision5" onclick="decision5()"></button> \
+					</div> \
+				</div>'		
 		);
+		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});
 	};
+
+	function displayDecision5Numbers(groupNumber) {
+		if (groupNumber == 1) {
+			document.getElementById("individualChange").innerHTML = "-1";
+			document.getElementById("nationChange").innerHTML = "+1";
+			document.getElementById("worldChange").innerHTML = "+1";
+		} else if (groupNumber == 2) {
+			document.getElementById("individualChange").innerHTML = "+1";
+			document.getElementById("nationChange").innerHTML = "-2";
+			document.getElementById("worldChange").innerHTML = "+1";
+		} else if (groupNumber == 3) {
+			document.getElementById("individualChange").innerHTML = "+0";
+			document.getElementById("nationChange").innerHTML = "-1";
+			document.getElementById("worldChange").innerHTML = "+2";
+		} else if (groupNumber == 4) {
+			document.getElementById("individualChange").innerHTML = "+2";
+			document.getElementById("nationChange").innerHTML = "-1";
+			document.getElementById("worldChange").innerHTML = "-2";
+		};
+	};
+
+	function isValidInt(int) {
+		return (int % 1 === 0 && int >= 0);
+	};
 	
-</script>
+</script> 

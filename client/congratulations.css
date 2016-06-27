@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+
+html {
+	font-family: Tahoma, Arial, sans-serif;
+	line-height: 100%;
+	display: block;
+	font-size: 120%;
+}
+
+body {
+	background-color: #000000;
+}
+
+p {
+	color: #f9f9f9;
+	margin-top: 50px;
+	margin-left: 50px;
+	margin-bottom: 20px;
+	font-weight: bold;
+	font-size: 2em;
+	line-height: 100%
+}
