@@ -144,9 +144,15 @@
 		username = prompt("What is your name?");
 		
 		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-								   //"1: Japan, 2: Canada, 3: UK, 4: Turkey\n" +
-								   //"5: Russia, 6: China, 7: Mexico");
+		while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
+			window.alert("Please enter a valid team number");
+			teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+		};
 		groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+		while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
+			window.alert("Please enter a valid group number");
+			groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+		};
 		
 		createDecisions(groupNumberInput);
 		
@@ -376,6 +382,10 @@
 			document.getElementById("nationChange").innerHTML = "-1";
 			document.getElementById("worldChange").innerHTML = "-2";
 		};
+	};
+
+	function isValidInt(int) {
+		return (int % 1 === 0 && int >= 0);
 	};
 	
 </script> 

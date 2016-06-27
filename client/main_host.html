@@ -41,6 +41,12 @@
 
 			var mode = prompt("How would you like rounds to end? \n" +
 							  "1: Timer, 2: Wait for everyone to make a decision");
+			while (mode < 1 || mode > 2 || !isValidInt(mode)) {
+				window.alert("Please enter either 1 or 2");
+				mode = prompt("How would you like rounds to end? \n" +
+							  "1: Timer, 2: Wait for everyone to make a decision");
+			};
+
 			var timeLimit;
 			var minutes;
 			var seconds;
@@ -50,10 +56,30 @@
 								   "2 minutes 30 seconds").split(":");
 				minutes = parseInt(timeLimit[0]);
 				seconds = parseInt(timeLimit[1]);
+				while (!(isValidInt(minutes)) || !(isValidInt(seconds)) || (minutes + seconds == 0)) {
+					window.alert("Please enter a valid round length");
+					timeLimit = prompt("How long should each round last? \n" +
+									   "Ex: 2:30 \n" +
+									   "2 minutes 30 seconds").split(":");
+					minutes = parseInt(timeLimit[0]);
+					seconds = parseInt(timeLimit[1]);
+				};
 			};
 			var numberOfTeams = parseInt(prompt("How many teams will there be?"),10);
+			while (!isValidInt(numberOfTeams)) {
+				window.alert("Please enter a valid number");
+				numberOfTeams = parseInt(prompt("How many teams will there be?"),10);
+			};
 			var numberOfGroups = parseInt(prompt("How many groups will be in each team?"),10);
+			while (!isValidInt(numberOfGroups)) {
+				window.alert("Please enter a valid number");
+				numberOfGroups = parseInt(prompt("How many groups will be in each team?"),10);
+			};
 			var numberOfPlayersInGroups = parseInt(prompt("How many players are in each group?"),10);
+			while (!isValidInt(numberOfPlayersInGroups)) {
+				window.alert("Please enter a valid number");
+				numberOfPlayersInGroups = parseInt(prompt("How many players are in each group?"),10);
+			}
 			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
 			var numberOfPlayersInTeams = numberOfPlayersInGroups*numberOfGroups;
 			
@@ -168,6 +194,10 @@
 			function beginGame() {
 				socket.emit('beginGame', {});
 				$("#starttimer").remove();
+			};
+
+			function isValidInt(int) {
+				return (int % 1 === 0 && int >= 0);
 			};
 
 	</script>	
