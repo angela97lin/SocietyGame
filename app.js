@@ -528,17 +528,17 @@
 				socket.emit('nextRound', {
 					roundNumber: roundNumber + 1
 				});
-			};
+			}
 			else if (roundNumber <= 6) {
 				socket.emit('nextRound', {
 					roundNumber: roundNumber
 				});
-			};
+			}
 			else if (roundNumber <= 10) {
 				socket.emit('nextRound', {
 					roundNumber: roundNumber - 1
 				});
-			};
+			}
 			else {
 				socket.emit('nextRound', {
 					roundNumber: roundNumber - 2
@@ -550,7 +550,7 @@
 	};
 
 	var quarterlyReport = function(sockets) {
-		if (roundNumber == 3 or roundNumber == 7 or roundNumber == 11) {
+		if (roundNumber == 3 || roundNumber == 7 || roundNumber == 11) {
 			quarter++;
 			for (var i in sockets) {
 				var socket = sockets[i];
@@ -564,6 +564,7 @@
 				});
 			};
 		};
+		updateRound(SOCKET_LIST);
 	};
 
 	var endGame = function(sockets) {
