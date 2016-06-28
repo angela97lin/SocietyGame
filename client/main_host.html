@@ -104,7 +104,7 @@
 				for (var i = 1; i <= numberOfTeams; i++) {
 					document.getElementById(i).innerHTML = teamNumberNames[i] + "'s Score: " + data.teamScores[i];
 					for (var j = 1; j <= numberOfGroups; j++) {
-						document.getElementById([i, j]).innerHTML = "Group Score: " + data.groupScores[[i, j]];
+						document.getElementById([i, j]).innerHTML = data.groupScores[[i, j]];
 					};
 				};
 			});

@@ -163,9 +163,6 @@ button:hover{
 	-o-transition: all 1s ease;
    color: #F9F9F9;
    background: #20493E;
-   font-weight: normal;
-   padding-left: 4%;
-   padding-right: 4%;
 }
 
 button:focus{
