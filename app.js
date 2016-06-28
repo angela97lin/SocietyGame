@@ -59,6 +59,7 @@
 	var teamGroupPlayer = {};
 	var usernames = {};
 	var usernameData = {};
+	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
 
 	var winningTeams = [];
 	var winningNames = [];
@@ -657,4 +658,32 @@
 		};
 		checkPlayers(decisionMode);
 		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
+	};
+	
+	function getRandomZeroToFour() {
+		randomOneToTen = Math.floor((Math.random() * 10) + 1);
+		randomZeroToFour = randomOneToTen % 5;
+		return randomZeroToFour;
+	};
+	
+	function getWorldEvent(chance) {
+		chosenEvent = getRandomZeroToFour();
+		if (chance == 1) {
+			if (Math.random() <= .333) {
+				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+			}
+		}
+		else {
+			if (Math.random() <= .666) {
+				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+			}
+		}
+	};
+	
+	function carryOutWorldEvent(worldEvent, chosenEvent);
+		for (var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
+			socket.emit('worldEvent', {
+			eventNumber: chosenEvent
+			});
 	};
