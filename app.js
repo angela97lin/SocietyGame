@@ -366,6 +366,14 @@
 
 /*FUNCTIONS*/
 
+	var checkWorldEvents = function() {
+		startWorldEvent(worldEventNumber);
+	};
+	
+	var startWorldEvent = function(worldEventNumber) {
+	
+	};
+
 	var carryOutInvestigations = function(sockets) {
 		var teamCount = 0;
 		console.log(pastActions);
