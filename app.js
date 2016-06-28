@@ -58,6 +58,7 @@
 	var pastActions;
 	var teamGroupPlayer = {};
 	var usernames = {};
+	var usernameData = {};
 
 	var winningTeams = [];
 	var winningNames = [];
@@ -91,7 +92,8 @@
 		playerNumber++;
 		socket.emit('indexConnect', {
 			numberOfTeams: numberOfTeams, 
-			numberOfGroups: numberOfGroups
+			numberOfGroups: numberOfGroups,
+			usernames: usernames
 		});
 
 		socket.on('start', function(data) {
@@ -229,66 +231,87 @@
 		});
 
 		socket.on('playerConnect', function(data) {
-			socket.rawGroupNumber = data.groupNumberInput;
-			socket.teamNumber = data.teamNumber;
-			numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
-			console.log(numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1]);
-			console.log(socket.rawGroupNumber);
-			console.log(numberOfPlayersInGroups);
-			console.log(socket.teamNumber);
-			console.log(numberOfPlayersInTeams);
-			// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			// socket.rawPlayerNumber = data.playerNumber;
-			socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			//socket.playerNumberInGroup = data.playerNumber;
-			console.log(socket.playerNumber);
-			usernames[socket.playerNumber] = data.username;
-			if (!(socket.playerNumber in playerScores)){
-				playerScores[socket.playerNumber] = 20;
-			};
-			if (!(socket.teamNumber in teamScores)){
-				teamScores[socket.teamNumber] = 20 * numberOfGroups;
-			};
-			socket.emit('team', {
-				team: teamScores[socket.teamNumber] 
-			});
+			if (data.username in usernameData) {
+				var userData = usernameData[data.username];
+				socket.rawGroupNumber = userData.rawGroupNumber;
+				socket.teamNumber = userData.teamNumber;
+				socket.username = data.username;
+				socket.playerNumber = userData.playerNumber;
+				socket.groupNumber = userData.groupNumber;
+				socket.playerNumberInGroup = userData.playerNumberInGroup;
+			} else {
+				socket.rawGroupNumber = data.groupNumberInput;
+				socket.teamNumber = data.teamNumber;
+				socket.username = data.username;
+				numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
+				console.log(numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1]);
+				console.log(socket.rawGroupNumber);
+				console.log(numberOfPlayersInGroups);
+				console.log(socket.teamNumber);
+				console.log(numberOfPlayersInTeams);
+				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+				// socket.rawPlayerNumber = data.playerNumber;
+				socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+				console.log("Player Number: " + socket.playerNumber);
+				//socket.playerNumberInGroup = data.playerNumber;
+				usernames[socket.playerNumber] = data.username;
+				if (!(socket.playerNumber in playerScores)){
+					playerScores[socket.playerNumber] = 20;
+				};
+				if (!(socket.teamNumber in teamScores)){
+					teamScores[socket.teamNumber] = 20 * numberOfGroups;
+				};
 
-			socket.emit('world', {
+				//associate team names and numbers
+				if (!(data.teamName in teamNameNumbers)) {
+					teamNameNumbers[data.teamName] = currentTeamNumber;
+					for (var i in SOCKET_LIST) {
+						var emitSocket = SOCKET_LIST[i];
+						emitSocket.emit('newTeam', {
+							teamName: data.teamName,
+							currentTeamNumber: currentTeamNumber
+						});
+					};
+					currentTeamNumber++;
+				};
+				//socket.teamNumber = teamNameNumbers[data.teamName];
+				socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
+				playerNameToGroup[data.username] = data.groupNumberInput;
+				playerNameToTeam[data.username] = data.teamNumber;
+				teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
+				socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
+				socket.emit('player', {
+					number: socket.playerNumberInGroup,
+				});
+				if (!(socket.teamNumber in teamScores)){
+					teamScores[socket.teamNumber] = 20 * numberOfGroups;
+				};
+				if (!(socket.groupNumber in groupScores)){
+					groupScores[socket.groupNumber] = 20;
+				};
+				usernameData[data.username] = {rawGroupNumber: socket.rawGroupNumber,
+											   teamNumber: socket.teamNumber,
+											   username: socket.username,
+											   playerNumber: socket.playerNumber,
+											   groupNumber: socket.groupNumber,
+											   playerNumberInGroup: socket.playerNumberInGroup};
+			};
+			usernames[socket.playerNumber] = data.username;
+			socket.emit("team", {
+				team: teamScores[socket.teamNumber]
+			});
+			socket.emit("world", {
 				world: world
 			});
 			if (decisionMode == "timer") {
-				socket.emit('timer', {
+				socket.emit("timer", {
 					timer: timeLimitToString(timerMinutes, timerSeconds)
 				});
 			};
-
-			//associate team names and numbers
-			if (!(data.teamName in teamNameNumbers)) {
-				teamNameNumbers[data.teamName] = currentTeamNumber;
-				for (var i in SOCKET_LIST) {
-					var emitSocket = SOCKET_LIST[i];
-					emitSocket.emit('newTeam', {
-						teamName: data.teamName,
-						currentTeamNumber: currentTeamNumber
-					});
-				};
-				currentTeamNumber++;
-			};
-			//socket.teamNumber = teamNameNumbers[data.teamName];
-			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
-			playerNameToGroup[data.username] = data.groupNumberInput;
-			playerNameToTeam[data.username] = data.teamNumber;
-			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
-			socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
-			socket.emit('player', {
+			socket.emit("player", {
 				number: socket.playerNumberInGroup,
+				playerScore: playerScores[socket.playerNumber]
 			});
-			if (!(socket.teamNumber in teamScores)){
-				teamScores[socket.teamNumber] = 20 * numberOfGroups;
-			};
-			if (!(socket.groupNumber in groupScores)){
-				groupScores[socket.groupNumber] = 20;
-			};
 			socket.emit('getTeamNumber', {
 				teamNameNumbers: teamNameNumbers,
 				groupNumber: socket.groupNumber
@@ -299,6 +322,9 @@
 			socket.emit('teamInitiate', {
 				playersPerGroup: numberOfPlayersInGroups,
 				p: socket.playerNumberInGroup
+			});
+			socket.emit("getRound", {
+				roundNumber: roundNumber
 			});
 
 		});
@@ -369,6 +395,12 @@
 				playerNameToGroup: playerNameToGroup
 			});
 		});
+
+		socket.on('disconnect', function() {
+			delete usernames[socket.playerNumber];
+			console.log("Player " + socket.playerNumber + " has been disconnected");
+		});
+
 	});
 
 

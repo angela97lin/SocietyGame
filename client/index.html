@@ -39,7 +39,7 @@
 		</div>
 		<div class = "col-md-50" id = "info2">
 			<h4 id="playerNumber"></h4>
-			<h4 id="roundnumber">Round Number: 1</h4>
+			<h4 id="roundnumber"></h4>
 			<h4 id="timer"></h4>
 			
 			
@@ -142,7 +142,23 @@
 		
 
 		username = prompt("What is your name?");
-		
+		var invalidUsername = false;
+		for (name in data.usernames) {
+			if (data.usernames[name] == username) {
+				invalidUsername = true;
+			}; 
+		};
+		while (invalidUsername) {
+			window.alert("That username has already been taken");
+			username = prompt("What is your name?");
+			invalidUsername = false;
+			for (name in data.usernames) {
+				if (data.usernames[name] == username) {
+					invalidUsername = true;
+				}; 
+			};
+		};
+		 
 		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
 		while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
 			window.alert("Please enter a valid team number");
@@ -168,7 +184,7 @@
 	socket.on('player', function(data) {
 		playerNumber = data.number;
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
-		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
+		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
 	});
 
 	socket.on('timer', function(data) {
@@ -181,6 +197,10 @@
 
 	socket.on('team', function(data) {
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.team;
+	});
+
+	socket.on("getRound", function(data) {
+		document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
 	});
 	
 	socket.on('teamInitiate', function(data) {
