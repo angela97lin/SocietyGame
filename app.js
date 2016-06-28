@@ -91,7 +91,8 @@
 		playerNumber++;
 		socket.emit('indexConnect', {
 			numberOfTeams: numberOfTeams, 
-			numberOfGroups: numberOfGroups
+			numberOfGroups: numberOfGroups,
+			usernames: usernames
 		});
 
 		socket.on('start', function(data) {
@@ -240,8 +241,8 @@
 			// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 			// socket.rawPlayerNumber = data.playerNumber;
 			socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+			console.log("Player Number: " + socket.playerNumber);
 			//socket.playerNumberInGroup = data.playerNumber;
-			console.log(socket.playerNumber);
 			usernames[socket.playerNumber] = data.username;
 			if (!(socket.playerNumber in playerScores)){
 				playerScores[socket.playerNumber] = 20;
