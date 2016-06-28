@@ -328,6 +328,14 @@
 
 		socket.on('beginGame', function() {
 			setInterval(function() {
+				if (decidedPlayers == totalPlayers) {
+					decidedPlayers = 0;
+					timerMinutes = TIME_LIMIT_MINUTES;
+					timerSeconds = TIME_LIMIT_SECONDS;
+					updateRound(SOCKET_LIST);
+					
+				};
+			
 				if (timerMinutes == 0 && timerSeconds == 0) {
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
@@ -484,16 +492,33 @@
 				world: world
 			});
 			socket.emit('enable', {});
-			socket.emit('nextRound', {
-				roundNumber: roundNumber + 1
-			});
+			if (roundNumber <= 2) {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber + 1
+				});
+			};
+			else if (roundNumber <= 6) {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber
+				});
+			};
+			else if (roundNumber <= 10) {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber - 1
+				});
+			};
+			else {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber - 2
+				});
+			};
 		};
 		quarterlyReport(sockets);
 		roundNumber++;
 	};
 
 	var quarterlyReport = function(sockets) {
-		if (roundNumber % 3 == 0) {
+		if (roundNumber == 3 or roundNumber == 7 or roundNumber == 11) {
 			quarter++;
 			for (var i in sockets) {
 				var socket = sockets[i];
