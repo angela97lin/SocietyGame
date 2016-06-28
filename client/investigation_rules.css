@@ -1,0 +1,52 @@
+/*-- CSS for Investigation --*/
+
+body {
+	color: #f9f9f9;
+	background: #000000;
+	font-family: Tahoma, sans-serif;
+	opacity:0;
+	-webkit-animation-delay: 1s;
+	-moz-animation-delay: 1s;
+	-animation-delay: 1s;
+
+	-webkit-animation:fadeIn ease-in 1;
+	-moz-animation: fadeIn ease-in 1;
+	animation: fadeIn ease-in 1;
+
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+
+	-webkit-animation-duration: 1s;
+	-moz-animation-duration: 1s;
+	animation-duration: 1s;
+}
+
+@-webkit-keyframes fadeIn { from { opacity:0; } to {opacity:1;} }
+@-moz-keyframes fadeIn { from {opacity:0;} to {opacity: 1;} }
+@keyframes fadeIn {from {opacity:0;} to {opacity:1;}}
+
+h1 {
+	font-size: 5vw;
+}
+
+p {
+	font-size: 3vw;
+}
+
+
+button {
+	position: fixed;
+	bottom: 0;
+	right: center;
+	display: inline-block;
+	text-align: center;
+	font-size: 6vmin;
+	background: #000000;
+	color: #f9f9f9;
+	font-family: Verdana, Tahoma, sans-serif;
+	border: 2px solid #f9f9f9;
+	border-radius: 16px;
+	margin: 4vh 6vw;
+	padding: 30px;
+}
