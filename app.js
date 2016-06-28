@@ -96,7 +96,7 @@
 
 		socket.on('start', function(data) {
 			decisionMode = MODES[data.mode];
-			world = data.numberOfTeams * 10;
+			world = data.worldscore;
 			totalPlayers = data.numberOfPlayers;
 			numberOfGroups = data.numberOfGroups;
 			numberOfTeams = data.numberOfTeams;
