@@ -7,7 +7,7 @@ html, body, div, h1, h2, h3, footer {
 	line-height: 100%;
 }
 
-h1, h2, h3{
+h1, h2, h3, h4{
 	margin: 3%;
 	padding: 0%;
 	text-align: center;
@@ -84,11 +84,15 @@ body{
 	display: none;
 }
 #roundnumber {
-	margin-top: 50px;
-	font-size: 200%;
+	color: #CE0003;
+	font-variant: small-caps;
+	margin-top: 70px;
+	font-size: 250%;
 }
 #timer{
-	font-size: 200%;
+	margin-top: 50px;
+	color: #D1E7E2;
+	font-size: 350%;
 }
 
 #info {

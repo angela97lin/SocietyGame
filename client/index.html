@@ -205,6 +205,10 @@
 
 	socket.on('nextRound', function(data) {
 		document.getElementById('roundnumber').innerHTML = "Round Number: " + data.roundNumber;
+		document.getElementById('individualChange').innerHTML = "";
+		document.getElementById('nationChange').innerHTML = "";
+		document.getElementById('worldChange').innerHTML = "";
+
 	});
 	
 	socket.on('newQuarter', function() {
