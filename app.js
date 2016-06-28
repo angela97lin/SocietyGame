@@ -58,6 +58,8 @@
 	var pastActions;
 	var teamGroupPlayer = {};
 	var usernames = {};
+	var usernameData = {};
+	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
 
 	var winningTeams = [];
 	var winningNames = [];
@@ -91,7 +93,8 @@
 		playerNumber++;
 		socket.emit('indexConnect', {
 			numberOfTeams: numberOfTeams, 
-			numberOfGroups: numberOfGroups
+			numberOfGroups: numberOfGroups,
+			usernames: usernames
 		});
 
 		socket.on('start', function(data) {
@@ -229,66 +232,87 @@
 		});
 
 		socket.on('playerConnect', function(data) {
-			socket.rawGroupNumber = data.groupNumberInput;
-			socket.teamNumber = data.teamNumber;
-			numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
-			console.log(numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1]);
-			console.log(socket.rawGroupNumber);
-			console.log(numberOfPlayersInGroups);
-			console.log(socket.teamNumber);
-			console.log(numberOfPlayersInTeams);
-			// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			// socket.rawPlayerNumber = data.playerNumber;
-			socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-			//socket.playerNumberInGroup = data.playerNumber;
-			console.log(socket.playerNumber);
-			usernames[socket.playerNumber] = data.username;
-			if (!(socket.playerNumber in playerScores)){
-				playerScores[socket.playerNumber] = 20;
-			};
-			if (!(socket.teamNumber in teamScores)){
-				teamScores[socket.teamNumber] = 20 * numberOfGroups;
-			};
-			socket.emit('team', {
-				team: teamScores[socket.teamNumber] 
-			});
+			if (data.username in usernameData) {
+				var userData = usernameData[data.username];
+				socket.rawGroupNumber = userData.rawGroupNumber;
+				socket.teamNumber = userData.teamNumber;
+				socket.username = data.username;
+				socket.playerNumber = userData.playerNumber;
+				socket.groupNumber = userData.groupNumber;
+				socket.playerNumberInGroup = userData.playerNumberInGroup;
+			} else {
+				socket.rawGroupNumber = data.groupNumberInput;
+				socket.teamNumber = data.teamNumber;
+				socket.username = data.username;
+				numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
+				console.log(numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1]);
+				console.log(socket.rawGroupNumber);
+				console.log(numberOfPlayersInGroups);
+				console.log(socket.teamNumber);
+				console.log(numberOfPlayersInTeams);
+				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+				// socket.rawPlayerNumber = data.playerNumber;
+				socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+				console.log("Player Number: " + socket.playerNumber);
+				//socket.playerNumberInGroup = data.playerNumber;
+				usernames[socket.playerNumber] = data.username;
+				if (!(socket.playerNumber in playerScores)){
+					playerScores[socket.playerNumber] = 20;
+				};
+				if (!(socket.teamNumber in teamScores)){
+					teamScores[socket.teamNumber] = 20 * numberOfGroups;
+				};
 
-			socket.emit('world', {
+				//associate team names and numbers
+				if (!(data.teamName in teamNameNumbers)) {
+					teamNameNumbers[data.teamName] = currentTeamNumber;
+					for (var i in SOCKET_LIST) {
+						var emitSocket = SOCKET_LIST[i];
+						emitSocket.emit('newTeam', {
+							teamName: data.teamName,
+							currentTeamNumber: currentTeamNumber
+						});
+					};
+					currentTeamNumber++;
+				};
+				//socket.teamNumber = teamNameNumbers[data.teamName];
+				socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
+				playerNameToGroup[data.username] = data.groupNumberInput;
+				playerNameToTeam[data.username] = data.teamNumber;
+				teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
+				socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
+				socket.emit('player', {
+					number: socket.playerNumberInGroup,
+				});
+				if (!(socket.teamNumber in teamScores)){
+					teamScores[socket.teamNumber] = 20 * numberOfGroups;
+				};
+				if (!(socket.groupNumber in groupScores)){
+					groupScores[socket.groupNumber] = 20;
+				};
+				usernameData[data.username] = {rawGroupNumber: socket.rawGroupNumber,
+											   teamNumber: socket.teamNumber,
+											   username: socket.username,
+											   playerNumber: socket.playerNumber,
+											   groupNumber: socket.groupNumber,
+											   playerNumberInGroup: socket.playerNumberInGroup};
+			};
+			usernames[socket.playerNumber] = data.username;
+			socket.emit("team", {
+				team: teamScores[socket.teamNumber]
+			});
+			socket.emit("world", {
 				world: world
 			});
 			if (decisionMode == "timer") {
-				socket.emit('timer', {
+				socket.emit("timer", {
 					timer: timeLimitToString(timerMinutes, timerSeconds)
 				});
 			};
-
-			//associate team names and numbers
-			if (!(data.teamName in teamNameNumbers)) {
-				teamNameNumbers[data.teamName] = currentTeamNumber;
-				for (var i in SOCKET_LIST) {
-					var emitSocket = SOCKET_LIST[i];
-					emitSocket.emit('newTeam', {
-						teamName: data.teamName,
-						currentTeamNumber: currentTeamNumber
-					});
-				};
-				currentTeamNumber++;
-			};
-			//socket.teamNumber = teamNameNumbers[data.teamName];
-			socket.groupNumber = [socket.teamNumber, data.groupNumberInput];
-			playerNameToGroup[data.username] = data.groupNumberInput;
-			playerNameToTeam[data.username] = data.teamNumber;
-			teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
-			socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
-			socket.emit('player', {
+			socket.emit("player", {
 				number: socket.playerNumberInGroup,
+				playerScore: playerScores[socket.playerNumber]
 			});
-			if (!(socket.teamNumber in teamScores)){
-				teamScores[socket.teamNumber] = 20 * numberOfGroups;
-			};
-			if (!(socket.groupNumber in groupScores)){
-				groupScores[socket.groupNumber] = 20;
-			};
 			socket.emit('getTeamNumber', {
 				teamNameNumbers: teamNameNumbers,
 				groupNumber: socket.groupNumber
@@ -299,6 +323,9 @@
 			socket.emit('teamInitiate', {
 				playersPerGroup: numberOfPlayersInGroups,
 				p: socket.playerNumberInGroup
+			});
+			socket.emit("getRound", {
+				roundNumber: roundNumber
 			});
 
 		});
@@ -328,6 +355,14 @@
 
 		socket.on('beginGame', function() {
 			setInterval(function() {
+				if (decidedPlayers == totalPlayers) {
+					decidedPlayers = 0;
+					timerMinutes = TIME_LIMIT_MINUTES;
+					timerSeconds = TIME_LIMIT_SECONDS;
+					updateRound(SOCKET_LIST);
+					
+				};
+			
 				if (timerMinutes == 0 && timerSeconds == 0) {
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
@@ -361,6 +396,12 @@
 				playerNameToGroup: playerNameToGroup
 			});
 		});
+
+		socket.on('disconnect', function() {
+			delete usernames[socket.playerNumber];
+			console.log("Player " + socket.playerNumber + " has been disconnected");
+		});
+
 	});
 
 
@@ -484,16 +525,33 @@
 				world: world
 			});
 			socket.emit('enable', {});
-			socket.emit('nextRound', {
-				roundNumber: roundNumber + 1
-			});
+			if (roundNumber <= 2) {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber + 1
+				});
+			}
+			else if (roundNumber <= 6) {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber
+				});
+			}
+			else if (roundNumber <= 10) {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber - 1
+				});
+			}
+			else {
+				socket.emit('nextRound', {
+					roundNumber: roundNumber - 2
+				});
+			};
 		};
 		quarterlyReport(sockets);
 		roundNumber++;
 	};
 
 	var quarterlyReport = function(sockets) {
-		if (roundNumber % 3 == 0) {
+		if (roundNumber == 3 || roundNumber == 7 || roundNumber == 11) {
 			quarter++;
 			for (var i in sockets) {
 				var socket = sockets[i];
@@ -507,6 +565,7 @@
 				});
 			};
 		};
+		updateRound(SOCKET_LIST);
 	};
 
 	var endGame = function(sockets) {
@@ -599,4 +658,32 @@
 		};
 		checkPlayers(decisionMode);
 		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
+	};
+	
+	function getRandomZeroToFour() {
+		randomOneToTen = Math.floor((Math.random() * 10) + 1);
+		randomZeroToFour = randomOneToTen % 5;
+		return randomZeroToFour;
+	};
+	
+	function getWorldEvent(chance) {
+		chosenEvent = getRandomZeroToFour();
+		if (chance == 1) {
+			if (Math.random() <= .333) {
+				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+			}
+		}
+		else {
+			if (Math.random() <= .666) {
+				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+			}
+		}
+	};
+	
+	function carryOutWorldEvent(worldEvent, chosenEvent);
+		for (var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
+			socket.emit('worldEvent', {
+			eventNumber: chosenEvent
+			});
 	};
