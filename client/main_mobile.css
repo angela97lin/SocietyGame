@@ -109,7 +109,7 @@ button {
 	margin-top: 1%; 
 	padding: 2%;
 	width: 100%;
-	background: radial-gradient(#000000, #000000, #20493E);
+	background: radial-gradient(rgba(0,0,0,0), rgba(0,0,0,0), #20493E);
 	color: #D1E7E2;
 	box-shadow: 20 20 20px #127998;
 	-webkit-transition: all 0.5s ease;

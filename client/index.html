@@ -217,7 +217,7 @@
 	});
 	
 	socket.on('investigationOver', function() {
-		swapToDecision();
+		swapToDecision("#investigationScreen");
 	});
 
 	socket.on('worldEnd', function() {
@@ -312,6 +312,77 @@
 		});
 		disableButtons();
 	};
+
+
+
+	var swapToWorldEvent = function(randomEvent) {
+		console.log("SWAP TO INVESTIGATION");
+		if(randomEvent == 0){
+			$("#decisionScreen").replaceWith(
+				'<div id="worldEvent" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision worldEvent" id = "sideWtihWinning" onclick="">Side with winning team</button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision worldEvent" onclick="">Side with Poland</button> \
+						<h3></h3> \
+					</div> \
+				</div>'	);
+		}
+		else if(randomEvent == 1){
+			$("#decisionScreen").replaceWith(
+				'<div id="worldEventScreen" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision worldEvent" onclick="">Close Borders to infected countries</button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision worldEvent" onclick="">Keep Borders Open</button> \
+						<h3></h3> \
+					</div> \
+				</div>');
+		}
+		else if(randomEvent == 2){
+			$("#decisionScreen").replaceWith(
+				'<div id="worldEventScreen" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision worldEvent" onclick="">Go compete in the Olympics</button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision worldEvent" onclick="">Sit on the couch</button> \
+						<h3></h3> \
+					</div> \
+				</div>');
+		}
+		else if(randomEvent == 3){
+			$("#decisionScreen").replaceWith(
+				'<div id="worldEventScreen" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision worldEvent" onclick="">Send Relief team to help the Phillipines</button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision worldEvent" onclick="">Do nothing</button> \
+						<h3></h3> \
+					</div> \
+				</div>');
+		}
+		else if(randomEvent == 4){
+			$("#decisionScreen").replaceWith(
+				'<div id="worldEventScreen" class = "row"> \
+					<div class="col-md-45"> \
+						<button class="decision worldEvent" onclick="">Donate your money to your national space program</button> \
+						<h3></h3> \
+					</div> \
+					<div class = "col-md-45 col-md-offset-10"> \
+						<button class="decision worldEvent" onclick="">Do nothing</button> \
+						<h3></h3> \
+					</div> \
+				</div>');
+		}
+	};
 	
 	var swapToInvestigation = function() {
 		console.log("SWAP TO INVESTIGATION");
@@ -346,8 +417,8 @@
 		console.log("SWAPPED");
 	};
 	
-	var swapToDecision = function() {
-		$("#investigationScreen").replaceWith(
+	var swapToDecision = function(fromhere) {
+		$(fromhere).replaceWith(
 				'<div id ="decisionScreen" class = "row"> \
 					<div class="col-md-45"> \
 						<button class="decision" id="decision1" onclick="decision1()"></button> \
