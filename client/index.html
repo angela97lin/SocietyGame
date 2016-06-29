@@ -343,20 +343,24 @@
 	
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
+		disableButtons();
 	};
 	
 	var sendRelief = function() {
 		socket.emit('sendRelief', {});
+		disableButtons();
 	};
 	
 	var donateToSpaceRace = function() {
 		socket.emit('donateToSpaceRace', {});
+		disableButtons();
 	};
 	
 	var doNothing = function(eventNumber) {
 		socket.emit('doNothing', {
 			eventNumber: eventNumber
 		});
+		disableButtons();
 	}
 
 
