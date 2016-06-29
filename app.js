@@ -863,10 +863,16 @@
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
 				worldEventChance = -1;
 			}
+			else {
+				unpauseTimer();
+			}
 		}
 		else if (worldEventChance == 2) {
 			if (Math.random() <= .666) {
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+			}
+			else {
+				unpauseTimer();
 			}
 		}
 	};
@@ -921,6 +927,7 @@
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
+			unpauseTimer();
  		};
 	};
 
@@ -944,6 +951,7 @@
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
+			unpauseTimer();
 		};
 	};
 	
@@ -952,4 +960,5 @@
 			var socket = SOCKET_LIST[i];
 			socket.emit('eventOver', {});
 		};
+		unpauseTimer();
 	};
