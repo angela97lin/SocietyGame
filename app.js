@@ -95,12 +95,13 @@
 
 	/*Variables for world war*/
 	var individualWarVotes = {};
-	var decidedTeams = 0;
 	var teamSides = [[], []];
 	var inWarState = false;
 
 	/*Variables for epidemic*/
 	var individualBorderVotes = {};
+
+	var decidedTeams = 0;
 
 
 /*LISTENERS*/
@@ -381,6 +382,8 @@
 
 		/*Listeners for world war*/
 		socket.on("castWarVote", function(data) {
+			console.log("individualWarVotes:");
+			console.log(individualWarVotes);
 			individualWarVotes[data.team][data.side] += 1;
 			checkWarVotes(data.team, data.side);
 			checkTeamSides();
@@ -388,6 +391,8 @@
 
 		/*Listeners for epidemic*/
 		socket.on("castBorderVote", function(data) {
+			console.log("individualBorderVotes:");
+			console.log(individualBorderVotes);
 			individualBorderVotes[data.team][data.side] += 1;
 			checkBorderVotes(data.team, data.side);
 		});
@@ -898,7 +903,7 @@
 	};
 
 	function checkWarVotes(team, side) {
-		var THRESHOLD = .5
+		var THRESHOLD = .5;
 		var currentPercentFor = individualWarVotes[team][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			teamSides[side].push(team);
@@ -927,12 +932,16 @@
 				};
 			};
 			inWarState = false;
-			socket.emit("endWar", {});
+			for (var i in SOCKET_LIST) {
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("endEvent", {});
+			};
+			decidedTeams = 0;
  		};
 	};
 
 	function checkBorderVotes(team, side) {
-		var THRESHOLD = .5
+		var THRESHOLD = .5;
 		var currentPercentFor = individualBorderVotes[team][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			if (side == 0) {
@@ -942,5 +951,15 @@
 				world += 20;
 				teamScores[team] -= 10;
 			};
+		};
+	};
+
+	function checkBorderSides() {
+		if (decidedTeams == numberOfTeams) {
+			for (var i in SOCKET_LIST) {
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("endEvent", {});
+			};
+			decidedTeams = 0;
 		};
 	};
