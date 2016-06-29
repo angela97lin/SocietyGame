@@ -900,8 +900,8 @@
 		var currentPercentFor = individualWarVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			teamSides[side].push(team);
-			decidedPlayers += 1;
 		};
+		decidedPlayers += 1;
 	};
 
 	function checkTeamSides() {
@@ -942,8 +942,8 @@
 				world += 20;
 				teamScores[team] -= 10;
 			};
-			decidedPlayers += 1;
 		};
+		decidedPlayers += 1;
 	};
 
 	function checkBorderSides() {
