@@ -673,6 +673,7 @@
 			var socket = sockets[i];
 			socket.emit('investigationOver', {});
 		}
+		unpauseTimer();
 	};
 	
 	var checkPlayers = function(mode) {
@@ -720,40 +721,24 @@
 				world: world
 			});
 			socket.emit('enable', {});
-			if (roundNumber <= 2) {
-				socket.emit('nextRound', {
-					roundNumber: roundNumber + 1
-				});
-			}
-			else if (roundNumber <= 6) {
-				socket.emit('nextRound', {
-					roundNumber: roundNumber
-				});
-			}
-			else if (roundNumber <= 10) {
-				socket.emit('nextRound', {
-					roundNumber: roundNumber - 1
-				});
-			}
-			else {
-				socket.emit('nextRound', {
-					roundNumber: roundNumber - 2
-				});
-			};
+			socket.emit('nextRound', {
+				roundNumber: roundNumber + 1
+			});
 		};
 		pauseTimer();
 		getWorldEvent();
 		unpauseTimer();
+		pauseTimer();
 		quarterlyReport(sockets);
 		roundNumber++;
 	};
 
 	var quarterlyReport = function(sockets) {
 		worldEventChance += 1;
-		if (roundNumber < 3 || roundNumber == 6 || roundNumber == 10 || roundNumber == 14) {
+		if (roundNumber < 3) {
 			worldEventChance = 0;
 		}
-		if (roundNumber == 3 || roundNumber == 7 || roundNumber == 11) {
+		if (roundNumber % 3 == 0) {
 			quarter++;
 			for (var i in sockets) {
 				var socket = sockets[i];
@@ -767,6 +752,9 @@
 				});
 			};
 			worldEventChance = 0;
+		}
+		else {
+			unpauseTimer();
 		};
 		//updateRound(SOCKET_LIST);
 	};
