@@ -255,6 +255,10 @@
 	socket.on('lose', function() {
 		window.location = "/lose";
 	});
+	
+	socket.on('worldEvent', function(data) {
+		swapToWorldEvent(data.eventNumber);
+	});
 		
 	
 	
@@ -332,6 +336,24 @@
 		});
 		disableButtons();
 	};
+	
+	var competeInOlympics = function() {
+		socket.emit('competeInOlympics', {});
+	};
+	
+	var sendRelief = function() {
+		socket.emit('sendRelief', {});
+	};
+	
+	var donateToSpaceRace = function() {
+		socket.emit('donateToSpaceRace', {});
+	};
+	
+	var doNothing = function(eventNumber) {
+		socket.emit('doNothing', {
+			eventNumber: eventNumber;
+		});
+	}
 
 
 
@@ -367,11 +389,11 @@
 			$("#decisionScreen").replaceWith(
 				'<div id="worldEventScreen" class = "row"> \
 					<div class="col-md-45"> \
-						<button class="decision worldEvent" onclick="">Go compete in the Olympics</button> \
+						<button class="decision worldEvent" onclick="competeInOlympics()">Go compete in the Olympics</button> \
 						<h3></h3> \
 					</div> \
 					<div class = "col-md-45 col-md-offset-10"> \
-						<button class="decision worldEvent" onclick="">Sit on the couch</button> \
+						<button class="decision worldEvent" onclick="doNothing(2)">Sit on the couch</button> \
 						<h3></h3> \
 					</div> \
 				</div>');
@@ -380,11 +402,11 @@
 			$("#decisionScreen").replaceWith(
 				'<div id="worldEventScreen" class = "row"> \
 					<div class="col-md-45"> \
-						<button class="decision worldEvent" onclick="">Send Relief team to help the Phillipines</button> \
+						<button class="decision worldEvent" onclick="sendRelief()">Send Relief team to help the Phillipines</button> \
 						<h3></h3> \
 					</div> \
 					<div class = "col-md-45 col-md-offset-10"> \
-						<button class="decision worldEvent" onclick="">Do nothing</button> \
+						<button class="decision worldEvent" onclick="doNothing(3)">Do nothing</button> \
 						<h3></h3> \
 					</div> \
 				</div>');
@@ -393,11 +415,11 @@
 			$("#decisionScreen").replaceWith(
 				'<div id="worldEventScreen" class = "row"> \
 					<div class="col-md-45"> \
-						<button class="decision worldEvent" onclick="">Donate your money to your national space program</button> \
+						<button class="decision worldEvent" onclick="donateToSpaceRace()">Donate your money to your national space program</button> \
 						<h3></h3> \
 					</div> \
 					<div class = "col-md-45 col-md-offset-10"> \
-						<button class="decision worldEvent" onclick="">Do nothing</button> \
+						<button class="decision worldEvent" onclick="doNothing(4)">Do nothing</button> \
 						<h3></h3> \
 					</div> \
 				</div>');

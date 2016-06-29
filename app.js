@@ -44,6 +44,11 @@
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
+	var spaceResearchCost = -2;
+	var reliefDonationCost = -1;
+	var reliefDonationResult = 1;
+	var totalOlympicWinnings = 6;
+	var olympicCost = -2;
 	var playerScores = {};
 	var groupScores = {};
 	var teamScores = {};
@@ -64,6 +69,10 @@
 	var winningTeams = [];
 	var winningNames = [];
 	
+	var teamDecisionCounters = {};
+	var totalYesVotes = 0;
+	var olympicCompetitors = [];
+	
 	var numberOfPlayersConnectedPerGroup = [];
 
 	//decide whether a round is over based on the timer or once all players have made a decision
@@ -77,6 +86,7 @@
 	var TIME_LIMIT_SECONDS;
 	var timerMinutes;
 	var timerSeconds;
+	var timerPaused = false;
 
 	//variables for waitForPlayers
 	var decidedPlayers = 0;
@@ -147,6 +157,11 @@
 				};
 				pastActions.push(thisTeam);
 			};
+			
+			for (i=1; i<=numberOfTeams; i++) {
+				teamDecisionCounters[i] = 0;
+			}
+			
 			console.log(pastActions);
 			for (i=0;i<numberOfTeams;i++) {
 				teamToAdd = [];
@@ -366,20 +381,26 @@
 				if (timerMinutes == 0 && timerSeconds == 0) {
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
+					decidedPlayers = 0;
 					updateRound(SOCKET_LIST);
 				};
+				
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
 					socket.emit('timer', {
 						timer: timeLimitToString(timerMinutes, timerSeconds)
 					});
 				};
-				if (timerSeconds == 0) {
-					timerSeconds = 59
-					timerMinutes--;
-				} else {
-					timerSeconds--;
+				
+				if (!timerPaused) {
+					if (timerSeconds == 0) {
+						timerSeconds = 59
+						timerMinutes--;
+					} else {
+						timerSeconds--;
+					};
 				};
+				
 			}, 1000);
 		});
 
@@ -401,11 +422,143 @@
 			delete usernames[socket.playerNumber];
 			console.log("Player " + socket.playerNumber + " has been disconnected");
 		});
+		
+		socket.on('competeInOlympics', function() {
+			olympicCompetitors.push(socket.playerNumber);
+			decidedPlayers += 1;
+			if (decidedPlayers == totalPlayers) {
+				carryOutOlympics();
+				decidedPlayers = 0;
+				olympicCompetitors = [];
+			}
+		});
+		
+		socket.on('sendRelief', function() {
+			teamDecisionCounters[socket.teamNumber] += 1;
+			totalYesVotes += 1;
+			decidedPlayers += 1;
+			if (decidedPlayers == totalPlayers) {
+				carryOutRelief();
+				decidedPlayers = 0;
+				totalYesVotes = 0;
+				for (i=1; i<=numberOfTeams; i++) {
+					teamDecisionCounters[i] = 0;
+				}
+			}
+		});
+		
+		socket.on('donateToSpaceRace', function() {
+			teamDecisionCounters[socket.teamNumber] += 1;
+			playerScores[socket.playerNumber] += spaceResearchCost;
+			decidedPlayers += 1;
+			if (decidedPlayers == totalPlayers) {
+				carryOutSpaceRace();
+				decidedPlayers = 0;
+				for (i=1; i<=numberOfTeams; i++) {
+					teamDecisionCounters[i] = 0;
+				}
+			}
+		});
+		
+		socket.on('doNothing', function(data) {
+			decidedPlayers += 1;
+			if (decidedPlayers == totalPlayers) {
+				if (data.eventNumber == 2) {
+					carryOutOlympics();
+				}
+				else if (data.eventNumber == 3) {
+					carryOutRelief();
+				}
+				else if (data.eventNumber == 4) {
+					carryOutSpaceRace();
+				}
+				decidedPlayers = 0;
+				totalYesVotes = 0;
+				olympicCompetitors = [];
+				for (i=1; i<=numberOfTeams; i++) {
+					teamDecisionCounters[i] = 0;
+				}
+			}
+		});
 
 	});
 
 
 /*FUNCTIONS*/
+
+	var pauseTimer = function() {
+		timerPaused = true;
+	};
+	
+	var unpauseTimer = function() {
+		timerPaused = false;
+	};
+
+	var carryOutOlympics = function() {
+		bestPlayers = [];
+		bestScoreSoFar = 0;
+		secondBestScoreSoFar = 0;
+		thirdBestScoreSoFar = 0;
+		
+		for (i=0; i<olympicCompetitors.length; i++) {
+			playerScores[olympicCompetitors[i]] += olympicCost;
+			thisPlayersScore = playerScores[olympicCompetitors[i]];
+			if (thisPlayersScore >= bestScoreSoFar) {
+				thirdBestScoreSoFar = secondBestScoreSoFar;
+				secondBestScoreSoFar = bestScoreSoFar;
+				bestScoreSoFar = thisPlayersScore;
+			}
+			else if (thisPlayersScore >= secondBestScoreSoFar) {
+				thirdBestScoreSoFar = secondBestScoreSoFar;
+				secondBestScoreSoFar = thisPlayersScore;
+			}
+			else if (thisPlayersScore >= thirdBestScoreSoFar) {
+				thirdBestScoreSoFar = thisPlayersScore;
+			}
+		};
+		
+		for (i=0; i<olympicCompetitors.length; i++) {
+			thisPlayersScore = playerScores[olympicCompetitors[i]];
+			if (thisPlayersScore >= thirdBestScoreSoFar) {
+				bestPlayers.push(olympicCompetitors[i]);
+			}
+		};
+		for (i=0; i<bestPlayers.length; i++) {
+			playerScores[bestPlayers[i]] += -(olympicCost);
+			playerScores[bestPlayers[i]] += Math.ceil((totalOlympicWinnings*1.0) / bestPlayers.length);
+		};
+		bestScoreSoFar = 0;
+		secondBestScoreSoFar = 0;
+		thirdBestScoreSoFar = 0;
+		scoreUpdate(SOCKET_LIST);
+	};
+
+	var carryOutRelief = function() {
+		for (i=1; i<=numberOfTeams; i++) {
+			teamScores[i] += (teamDecisionCounters[i] * reliefDonationCost);
+			world += (teamDecisionCounters[i] * reliefDonationResult);
+		};
+		scoreUpdate(SOCKET_LIST);
+	}
+
+	var carryOutSpaceRace = function() {
+		highestTeam = [];
+		bestScoreSoFar = 0;
+		for (i=1; i<=numberOfTeams; i++) {
+			if (teamDecisionCounters[i] > bestScoreSoFar) {
+				bestScoreSoFar = teamDecisionCounters[i];
+				highestTeam = [i];
+			}
+			else if (teamDecisionCounters[i] == bestScoreSoFar) {
+				highestTeam.push[i];
+			}
+		};
+		for (i=0; i<highestTeam.length; i++) {
+			teamScores[highestTeam[i]] += (spaceRaceReward/highestTeam.length);
+		}
+		bestScoreSoFar = 0;
+		scoreUpdate(SOCKET_LIST);
+	};
 
 	var checkWorldEvents = function() {
 		startWorldEvent(worldEventNumber);
@@ -510,6 +663,19 @@
 	var enableAllButtons = function(sockets) {
 		for(var i in sockets) {
 			var socket = sockets[i];
+			socket.emit('enable', {});
+		};
+	};
+	
+	var scoreUpdate = function(sockets) {
+		for(var i in sockets) {
+			var socket = sockets[i];
+			socket.emit('decisionUpdate', {
+				playerScore: playerScores[socket.playerNumber],
+				groupScore: groupScores[socket.groupNumber],
+				teamScore: teamScores[socket.teamNumber],
+				world: world
+			});
 			socket.emit('enable', {});
 		};
 	};
@@ -680,10 +846,11 @@
 		}
 	};
 	
-	function carryOutWorldEvent(worldEvent, chosenEvent);
+	function carryOutWorldEvent(worldEvent, chosenEvent) {
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('worldEvent', {
-			eventNumber: chosenEvent
+				eventNumber: chosenEvent
 			});
+		};
 	};
