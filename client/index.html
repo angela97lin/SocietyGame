@@ -263,6 +263,10 @@
 	socket.on('worldEvent', function(data) {
 		swapToWorldEvent(data.eventNumber);
 	});
+	
+	socket.on('eventOver', function() {
+		swapToDecision("#worldEventScreen");
+	});
 		
 	
 	
@@ -347,6 +351,7 @@
 			team: teamNumber,
 			side: side
 		});
+		disableButtons();
 	};
 
 	/*Functions for epidemic*/
@@ -355,18 +360,22 @@
 			team: teamNumber,
 			side: side
 		});
+		disableButtons();
 	};
 	
+	/*Functions for olympics*/
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
 		disableButtons();
 	};
 	
+	/*Functions for disaster*/
 	var sendRelief = function() {
 		socket.emit('sendRelief', {});
 		disableButtons();
 	};
 	
+	/*Functions for space race*/
 	var donateToSpaceRace = function() {
 		socket.emit('donateToSpaceRace', {});
 		disableButtons();
