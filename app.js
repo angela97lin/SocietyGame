@@ -392,6 +392,7 @@
 		socket.on("castBorderVote", function(data) {
 			individualBorderVotes[data.team - 1][data.side] += 1;
 			checkBorderVotes(data.team, data.side);
+			checkBorderSides();
 		});
 
 		socket.on('beginGame', function() {
