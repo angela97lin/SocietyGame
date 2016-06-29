@@ -44,6 +44,7 @@
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
+	var spaceRaceReward = 10;
 	var spaceResearchCost = -2;
 	var reliefDonationCost = -1;
 	var reliefDonationResult = 1;

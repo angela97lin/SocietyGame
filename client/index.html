@@ -341,6 +341,22 @@
 		disableButtons();
 	};
 	
+	/*Functions for world war*/
+	function castWarVote(side) {
+		socket.emit("castWarVote", {
+			team: teamNumber,
+			side: side
+		});
+	};
+
+	/*Functions for epidemic*/
+	function castBorderVote(side) {
+		socket.emit("castBorderVote", {
+			team: teamNumber,
+			side: side
+		});
+	};
+	
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
 		disableButtons();
@@ -487,22 +503,6 @@
 		);
 		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});
-	};
-
-	/*Functions for world war*/
-	function castWarVote(side) {
-		socket.emit("castWarVote", {
-			team: teamNumber,
-			side: side
-		});
-	};
-
-	/*Functions for epidemic*/
-	function castBorderVote(side) {
-		socket.emit("castBorderVote", {
-			team: teamNumber,
-			side: side
-		});
 	};
 
 	function displayDecision5Numbers(groupNumber) {
