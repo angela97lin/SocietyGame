@@ -736,7 +736,7 @@
 
 	var quarterlyReport = function(sockets) {
 		worldEventChance += 1;
-		if (roundNumber < 3) {
+		if (roundNumber < 3 || roundNumber == 5 || roundNumber == 8 || roundNumber == 11) {
 			worldEventChance = 0;
 		}
 		if (roundNumber % 3 == 0) {
@@ -752,7 +752,7 @@
 					quarter: quarter
 				});
 			};
-			worldEventChance = 0;
+			worldEventChance = 1;
 		}
 		else {
 			unpauseTimer();
@@ -863,6 +863,7 @@
 		if (worldEventChance == 1) {
 			if (Math.random() <= .333) {
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+				worldEventChance = -1;
 			}
 		}
 		else if (worldEventChance == 2) {
