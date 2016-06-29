@@ -97,12 +97,9 @@
 	/*Variables for world war*/
 	var individualWarVotes = [];
 	var teamSides = [[], []];
-	var inWarState = false;
 
 	/*Variables for epidemic*/
 	var individualBorderVotes = [];
-
-	var decidedTeams = 0;
 
 
 /*LISTENERS*/
@@ -876,7 +873,6 @@
 	
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
 		if (worldEvent == worldEvents[0]) {
-			inWarState = true;
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualWarVotes[i] = [0, 0];
 			};
@@ -898,12 +894,12 @@
 		var currentPercentFor = individualWarVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			teamSides[side].push(team);
-			decidedTeams += 1;
+			decidedPlayers += 1;
 		};
 	};
 
 	function checkTeamSides() {
-		if (decidedTeams == numberOfTeams) {
+		if (decidedPlayers == numberOfPlayers) {
 			var WINNING_BONUS = 10;
 			var team0Score = 0;
 			var team1Score = 0;
@@ -922,9 +918,8 @@
 					teamScores[teamSides[1][i]] += WINNING_BONUS;
 				};
 			};
-			inWarState = false;
 			eventOver();
-			decidedTeams = 0;
+			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
  		};
 	};
@@ -940,14 +935,14 @@
 				world += 20;
 				teamScores[team] -= 10;
 			};
-			decidedTeams += 1;
+			decidedPlayers += 1;
 		};
 	};
 
 	function checkBorderSides() {
-		if (decidedTeams == numberOfTeams) {
+		if (decidedPlayers == numberOfTeams) {
 			eventOver();
-			decidedTeams = 0;
+			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 		};
 	};
