@@ -240,10 +240,6 @@
 		swapToDecision("#investigationScreen");
 	});
 
-	socket.on("endWar", function() {
-		swapToDecision("#worldEventScreen");
-	});
-
 	socket.on('worldEnd', function() {
 		window.location = "/worldend";
 	});
@@ -348,7 +344,7 @@
 	/*Functions for world war*/
 	function castWarVote(side) {
 		socket.emit("castWarVote", {
-			team: teamNumber,
+			team: teamNameInput,
 			side: side
 		});
 		disableButtons();
@@ -357,7 +353,7 @@
 	/*Functions for epidemic*/
 	function castBorderVote(side) {
 		socket.emit("castBorderVote", {
-			team: teamNumber,
+			team: teamNameInput,
 			side: side
 		});
 		disableButtons();

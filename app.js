@@ -95,13 +95,14 @@
 	var decidedPlayers = 0;
 
 	/*Variables for world war*/
-	var individualWarVotes = {};
-	var decidedTeams = 0;
+	var individualWarVotes = [];
 	var teamSides = [[], []];
 	var inWarState = false;
 
 	/*Variables for epidemic*/
-	var individualBorderVotes = {};
+	var individualBorderVotes = [];
+
+	var decidedTeams = 0;
 
 
 /*LISTENERS*/
@@ -382,14 +383,14 @@
 
 		/*Listeners for world war*/
 		socket.on("castWarVote", function(data) {
-			individualWarVotes[data.team][data.side] += 1;
+			individualWarVotes[data.team - 1][data.side] += 1;
 			checkWarVotes(data.team, data.side);
 			checkTeamSides();
 		});
 
 		/*Listeners for epidemic*/
 		socket.on("castBorderVote", function(data) {
-			individualBorderVotes[data.team][data.side] += 1;
+			individualBorderVotes[data.team - 1][data.side] += 1;
 			checkBorderVotes(data.team, data.side);
 		});
 
@@ -874,11 +875,11 @@
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
 		if (worldEvent == worldEvents[0]) {
 			inWarState = true;
-			for (var i = 1; i <= numberOfTeams; i++) {
+			for (var i = 0; i < numberOfTeams; i++) {
 				individualWarVotes[i] = [0, 0];
 			};
 		} else if (worldEvent == worldEvents[1]) {
-			for (var i = 1; i <= numberOfTeams; i++) {
+			for (var i = 0; i < numberOfTeams; i++) {
 				individualBorderVotes[i] = [0, 0];
 			};
 		};
@@ -891,8 +892,8 @@
 	};
 
 	function checkWarVotes(team, side) {
-		var THRESHOLD = .5
-		var currentPercentFor = individualWarVotes[team][side] / numberOfPlayersInTeams;
+		var THRESHOLD = .5;
+		var currentPercentFor = individualWarVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			teamSides[side].push(team);
 			decidedTeams += 1;
@@ -920,14 +921,15 @@
 				};
 			};
 			inWarState = false;
-			socket.emit("endWar", {});
+			eventOver();
+			decidedTeams = 0;
 			scoreUpdate(SOCKET_LIST);
  		};
 	};
 
 	function checkBorderVotes(team, side) {
-		var THRESHOLD = .5
-		var currentPercentFor = individualBorderVotes[team][side] / numberOfPlayersInTeams;
+		var THRESHOLD = .5;
+		var currentPercentFor = individualBorderVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			if (side == 0) {
 				world -= 20;
@@ -936,6 +938,15 @@
 				world += 20;
 				teamScores[team] -= 10;
 			};
+			decidedTeams += 1;
+		};
+	};
+
+	function checkBorderSides() {
+		if (decidedTeams == numberOfTeams) {
+			eventOver();
+			decidedTeams = 0;
+			scoreUpdate(SOCKET_LIST);
 		};
 	};
 	
