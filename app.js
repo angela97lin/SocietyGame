@@ -947,7 +947,7 @@
 	};
 
 	function checkBorderSides() {
-		if (decidedPlayers == numberOfTeams) {
+		if (decidedPlayers == numberOfPlayers) {
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
