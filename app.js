@@ -44,6 +44,7 @@
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
+	var olympicTeamReward = 10;
 	var spaceRaceReward = 10;
 	var spaceResearchCost = -2;
 	var reliefDonationCost = -1;
@@ -382,8 +383,6 @@
 
 		/*Listeners for world war*/
 		socket.on("castWarVote", function(data) {
-			console.log("individualWarVotes:");
-			console.log(individualWarVotes);
 			individualWarVotes[data.team - 1][data.side] += 1;
 			checkWarVotes(data.team, data.side);
 			checkTeamSides();
@@ -391,8 +390,6 @@
 
 		/*Listeners for epidemic*/
 		socket.on("castBorderVote", function(data) {
-			console.log("individualBorderVotes:");
-			console.log(individualBorderVotes);
 			individualBorderVotes[data.team - 1][data.side] += 1;
 			checkBorderVotes(data.team, data.side);
 		});
@@ -555,11 +552,13 @@
 		for (i=0; i<bestPlayers.length; i++) {
 			playerScores[bestPlayers[i]] += -(olympicCost);
 			playerScores[bestPlayers[i]] += Math.ceil((totalOlympicWinnings*1.0) / bestPlayers.length);
+			teamScores[playerNameToTeam[usernames[bestPlayers[i]]]] += olympicTeamReward;
 		};
 		bestScoreSoFar = 0;
 		secondBestScoreSoFar = 0;
 		thirdBestScoreSoFar = 0;
 		scoreUpdate(SOCKET_LIST);
+		eventOver();
 	};
 
 	var carryOutRelief = function() {
@@ -568,6 +567,7 @@
 			world += (teamDecisionCounters[i] * reliefDonationResult);
 		};
 		scoreUpdate(SOCKET_LIST);
+		eventOver();
 	}
 
 	var carryOutSpaceRace = function() {
@@ -587,6 +587,7 @@
 		}
 		bestScoreSoFar = 0;
 		scoreUpdate(SOCKET_LIST);
+		eventOver();
 	};
 
 	var checkWorldEvents = function() {
@@ -932,11 +933,9 @@
 				};
 			};
 			inWarState = false;
-			for (var i in SOCKET_LIST) {
-				var emitSocket = SOCKET_LIST[i];
-				emitSocket.emit("endEvent", {});
-			};
+			eventOver();
 			decidedTeams = 0;
+			scoreUpdate(SOCKET_LIST);
  		};
 	};
 
@@ -951,15 +950,21 @@
 				world += 20;
 				teamScores[team] -= 10;
 			};
+			decidedTeams += 1;
 		};
 	};
 
 	function checkBorderSides() {
 		if (decidedTeams == numberOfTeams) {
-			for (var i in SOCKET_LIST) {
-				var emitSocket = SOCKET_LIST[i];
-				emitSocket.emit("endEvent", {});
-			};
+			eventOver();
 			decidedTeams = 0;
+			scoreUpdate(SOCKET_LIST);
+		};
+	};
+	
+	function eventOver() {
+		for (var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
+			socket.emit('eventOver', {});
 		};
 	};

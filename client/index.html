@@ -240,10 +240,6 @@
 		swapToDecision("#investigationScreen");
 	});
 
-	socket.on("endEvent", function() {
-		swapToDecision("#worldEventScreen");
-	});
-
 	socket.on('worldEnd', function() {
 		window.location = "/worldend";
 	});
@@ -262,6 +258,10 @@
 	
 	socket.on('worldEvent', function(data) {
 		swapToWorldEvent(data.eventNumber);
+	});
+	
+	socket.on('eventOver', function() {
+		swapToDecision("#worldEventScreen");
 	});
 		
 	
@@ -344,29 +344,34 @@
 	/*Functions for world war*/
 	function castWarVote(side) {
 		socket.emit("castWarVote", {
-			team: teamNumber,
+			team: teamNameInput,
 			side: side
 		});
+		disableButtons();
 	};
 
 	/*Functions for epidemic*/
 	function castBorderVote(side) {
 		socket.emit("castBorderVote", {
-			team: teamNumber,
+			team: teamNameInput,
 			side: side
 		});
+		disableButtons();
 	};
 	
+	/*Functions for olympics*/
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
 		disableButtons();
 	};
 	
+	/*Functions for disaster*/
 	var sendRelief = function() {
 		socket.emit('sendRelief', {});
 		disableButtons();
 	};
 	
+	/*Functions for space race*/
 	var donateToSpaceRace = function() {
 		socket.emit('donateToSpaceRace', {});
 		disableButtons();
