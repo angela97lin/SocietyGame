@@ -81,6 +81,15 @@
 	//variables for waitForPlayers
 	var decidedPlayers = 0;
 
+	/*Variables for world war*/
+	var individualWarVotes = {};
+	var decidedTeams = 0;
+	var teamSides = [[], []];
+	var inWarState = false;
+
+	/*Variables for epidemic*/
+	var individualBorderVotes = {};
+
 
 /*LISTENERS*/
 
@@ -353,6 +362,30 @@
 			});
 		});
 
+		/*Listeners for world war*/
+		socket.on("sideWithWinning", function(data) {
+			individualWarVotes[data.team][0] += 1;
+			checkWarVotes(data.team, 0);
+			checkTeamSides();
+		});
+
+		socket.on("sideWithPoland", function(data) {
+			individualWarVotes[data.team][1] += 1;
+			checkWarVotes(data.team, 1);
+			checkTeamSides();
+		});
+
+		/*Listeners for epidemic*/
+		socket.on("closeBorders", function(data) {
+			individualBorderVotes[data.team][0] += 1;
+			checkBorderVotes(data.team, 0);
+		});
+
+		socket.on("openBorders", function(data) {
+			individualBorderVotes[data.team][1] += 1;
+			checkBorderVotes(data.team, 1);
+		});
+
 		socket.on('beginGame', function() {
 			setInterval(function() {
 				if (decidedPlayers == totalPlayers) {
@@ -565,7 +598,7 @@
 				});
 			};
 		};
-		updateRound(SOCKET_LIST);
+		//updateRound(SOCKET_LIST);
 	};
 
 	var endGame = function(sockets) {
@@ -680,10 +713,69 @@
 		}
 	};
 	
-	function carryOutWorldEvent(worldEvent, chosenEvent);
+	function carryOutWorldEvent(worldEvent, chosenEvent) {
+		if (worldEvent == worldEvents[0]) {
+			inWarState = true;
+			for (var i = 1; i <= numberOfTeams; i++) {
+				individualWarVotes[i] = [0, 0];
+			};
+		} else if (worldEvent == worldEvents[1]) {
+			for (var i = 1; i <= numberOfTeams; i++) {
+				individualBorderVotes[i] = [0, 0];
+			};
+		};
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('worldEvent', {
-			eventNumber: chosenEvent
+				eventNumber: chosenEvent
 			});
+		};
+	};
+
+	function checkWarVotes(team, side) {
+		var THRESHOLD = .5
+		var currentPercentFor = individualWarVotes[team][side] / numberOfPlayersInTeams;
+		if (currentPercentFor >= THRESHOLD) {
+			teamSides[side].push(team);
+			decidedTeams += 1;
+		};
+	};
+
+	function checkTeamSides() {
+		if (decidedTeams == numberOfTeams) {
+			var WINNING_BONUS = 10;
+			var team0Score = 0;
+			var team1Score = 0;
+			for (var i = 0; i < teamSides[0].length; i++) {
+				team0Score += teamScores[teamSides[0][i]];
+			};
+			for (var i = 0; i < teamSides[1].length; i++) {
+				team1Score += teamScores[teamSides[1][i]];
+			};
+			if (team0Score > team1Score) {
+				for (var i = 0; i < teamSides[0].length; i++) {
+					teamScores[teamSides[0][i]] += WINNING_BONUS;
+				};
+			} else {
+				for (var i = 0; i < teamSides[1].length; i++) {
+					teamScores[teamSides[1][i]] += WINNING_BONUS;
+				};
+			};
+			inWarState = false;
+			socket.emit("endWar", {});
+ 		};
+	};
+
+	function checkBorderVotes(team, side) {
+		var THRESHOLD = .5
+		var currentPercentFor = individualBorderVotes[team][side] / numberOfPlayersInTeams;
+		if (currentPercentFor >= THRESHOLD) {
+			if (side == 0) {
+				world -= 20;
+				teamScores[team] += 10;
+			} else {
+				world += 20;
+				teamScores[team] -= 10;
+			};
+		};
 	};
