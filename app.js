@@ -69,6 +69,7 @@
 	var winningTeams = [];
 	var winningNames = [];
 	
+	var worldEventChance = 0;
 	var teamDecisionCounters = {};
 	var totalYesVotes = 0;
 	var olympicCompetitors = [];
@@ -712,11 +713,18 @@
 				});
 			};
 		};
+		pauseTimer();
+		getWorldEvent();
+		unpauseTimer();
 		quarterlyReport(sockets);
 		roundNumber++;
 	};
 
 	var quarterlyReport = function(sockets) {
+		worldEventChance += 1;
+		if (roundNumber < 3 || roundNumber == 6 || roundNumber == 10 || roundNumber == 14) {
+			worldEventChance = 0;
+		}
 		if (roundNumber == 3 || roundNumber == 7 || roundNumber == 11) {
 			quarter++;
 			for (var i in sockets) {
@@ -730,8 +738,9 @@
 					quarter: quarter
 				});
 			};
+			worldEventChance = 0;
 		};
-		updateRound(SOCKET_LIST);
+		//updateRound(SOCKET_LIST);
 	};
 
 	var endGame = function(sockets) {
@@ -832,14 +841,14 @@
 		return randomZeroToFour;
 	};
 	
-	function getWorldEvent(chance) {
+	function getWorldEvent() {
 		chosenEvent = getRandomZeroToFour();
-		if (chance == 1) {
+		if (worldEventChance == 1) {
 			if (Math.random() <= .333) {
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
 			}
 		}
-		else {
+		else if (worldEventChance == 2) {
 			if (Math.random() <= .666) {
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
 			}
