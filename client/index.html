@@ -5,6 +5,7 @@
 	<link href="client/grid.css" rel="stylesheet" type="text/css" />
 	<link href="main_mobile.css" rel="stylesheet" type="text/css" />
 	<link href="client/main_mobile.css" rel="stylesheet" type="text/css" />
+	<link href="client/investigation_rules.css" rel="stylesheet" type="text/css" />
 
     <title>Society</title>
 </head>
@@ -15,64 +16,13 @@
 <!--<script src="node_modules/jquery/dist/jquery.min.js"></script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 
-<div class = "container">
-	<div class = "row" id = "info">
-		<div class = "col-md-50" id="info1">
-			<div class ="score">
-				<h1 id="worldscore"></h1>
-				<div class = "scoreChange">
-					<h1 id = "worldChange"></h1>
-				</div>
-			</div>
-			<div class ="score">
-				<h2 id="nationscore"></h2>
-				<div class = "scoreChange">
-					<h1 id = "nationChange"></h1>
-				</div>
-			</div>
-			<div class ="score">
-				<h3 id="individualscore"></h3>
-				<div class = "scoreChange">
-					<h1 id = "individualChange"></h1>
-				</div>
-			</div>
-		</div>
-		<div class = "col-md-50" id = "info2">
-			<h4 id="playerNumber"></h4>
-			<h4 id="roundnumber"></h4>
-			<h4 id="timer"></h4>
-			
-			
-		</div>
-	</div>
-	<div id="decisionScreen">
-		<div class = "row">
-			<div class="col-md-48">
-				<button class="decision" id="decision1" onclick="decision1()"></button>
-				<h3></h3>
-				<button class="decision" id="decision2" onclick="decision2()"></button>
-				<h3></h3>
-			</div>
-			<div class = "col-md-48 col-md-offset-4">
-				<button class="decision" id="decision3" onclick="decision3()"></button>
-				<h3></h3>
-				<button class="decision" id="decision4" onclick="decision4()"></button>
-				<h3></h3>
-			</div>
-		</div>
-		<div class = "row">
-			<div class ="col-md-60 col-md-offset-20">
-				<button class="decision" id="decision5" onclick="decision5()"></button>
-			</div>
-		</div>
-		<div>
-</div>
-
+<div id = "empty"></div>
 
 <!-- INITIALIZATION -->
 
 <script>
-	
+	var hasdone = false;
+	var fileContents;
 	var socket = io();
 	
 	var playerScore = 20;
@@ -134,6 +84,7 @@
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
+		
 		if (data.mode == "timer" && hasStarted == false) {
 			disableButtons();
 		};
@@ -181,7 +132,8 @@
 			groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
 		};
 		
-		createDecisions(groupNumberInput);
+		swapToMainContent("#empty", true);
+		
 		
 		teamName = NATIONS[teamNameInput];
 		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
@@ -255,7 +207,13 @@
 	
 	socket.on('newQuarter', function() {
 		console.log("New Quarter");
-		swapToInvestigation();
+		if(!hasdone){
+			hasdone = true;
+			swapToInvestigation(2);	//send to investigation rules
+		}
+		else{
+			swapToInvestigation(1);	//send to investigation
+		}	
 	});
 	
 	socket.on('investigationOver', function() {
@@ -286,14 +244,16 @@
 		swapToDecision("#worldEventScreen");
 	});
 	
-	socket.on('showImpact', function(data)){
+	socket.on('showImpact', function(data){
 		delta = data.playerScore - playerScore;
-		if(delta>0){
+		if(delta>=0){
 			document.getElementById("individualChange").innerHTML = "+"+delta;
 		}
 		else{
 			document.getElementById("individualChange").innerHTML = delta;
 		}
+		document.getElementById("nationChange").innerHTML = "+0";
+		document.getElementById("worldChange").innerHTML = "+0";
 	});
 	
 	
@@ -301,6 +261,7 @@
 /*FUNCTIONS*/
 
 	function createDecisions(group) {
+		console.log("created decisions");
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
 		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
 		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];
@@ -361,7 +322,7 @@
 		disableButtons();
 	}
 	
-	var investigate = function(playerToInvestigate) {
+	function investigate(playerToInvestigate) {
 		socket.emit('investigate', {
 			teamInvolved: teamNameInput,
 			groupInvolved: groupNumberInput,
@@ -412,12 +373,12 @@
 			eventNumber: eventNumber
 		});
 		disableButtons();
-	}
+	};
 
 
 
 	var swapToWorldEvent = function(randomEvent) {
-		console.log("SWAP TO INVESTIGATION");
+		
 		if(randomEvent == 0){
 			$("#decisionScreen").replaceWith(
 				'<div id="worldEventScreen" class = "row"> \
@@ -485,9 +446,11 @@
 		}
 	};
 	
-	var swapToInvestigation = function() {
-		console.log("SWAP TO INVESTIGATION");
-		$("#decisionScreen").replaceWith(
+	var swapToInvestigation = function(whichCase) {
+		
+		if(whichCase == 1){			//Normal switch to investigation
+			console.log("SWAP TO INVESTIGATION");
+			$("#decisionScreen").replaceWith(
 				'<div id="investigationScreen" class = "row"> \
 					<div class="col-md-45"> \
 						<button class="decision investigate" id="investigate1" onclick="investigate(1)">Investigate Player 1</button> \
@@ -505,20 +468,41 @@
 						<button class="decision investigate" id="investigateNone" onclick="investigate(-1)">Investigate Nobody</button> \
 						<h3></h3> \
 					</div> \
-				</div>'		
-		);
-		for (i=0;i<playersNotToInvestigate.length;i++) {
-			p = "investigate" + playersNotToInvestigate[i];
-			console.log(p);
-			console.log(document.getElementById(p).className);
-			document.getElementById(p).className += ' hidden';
-			console.log(document.getElementById(p).className);
-		};
-		socket.emit('infoRequest', {});
-		console.log("SWAPPED");
+				</div>'	
+			);
+			for (i=0;i<playersNotToInvestigate.length;i++) {
+				p = "investigate" + playersNotToInvestigate[i];
+				console.log(p);
+				console.log(document.getElementById(p).className);
+				document.getElementById(p).className += ' hidden';
+				console.log(document.getElementById(p).className);
+			};
+			socket.emit('infoRequest', {});
+			console.log("SWAPPED");
+		}
+		else if(whichCase==2){	//Switch to investigation rules
+			console.log("SWAP TO INVESTIGATION rules");
+			$("#wholeMobilePage").replaceWith(
+				'<div id ="textie">\
+					<h1>It’s time for Quarterly Reports!</h1>\
+					<p>How did your sector do? Is everyone a team player? …No?</p>\
+					<p>Well, now’s your chance to prove it! You can investigate the teammate \
+					you find most suspicious to see if they really have been choosing to be selfish. \
+					You can place a bet on this player’s selfishness, and if you are correct, you get\
+					some of the player’s points and your own points. If you falsely accuse them, \
+					then you win nothing. </p>\
+					<button type="button" onclick="swapToInvestigation(3)">Investigate!</button>\
+				</div>'
+			);
+		}
+		else if(whichCase==3){	//Switch to investigation from rules page
+			swapToMainContent("#textie", false);
+			//socket.emit("infoRequest",{});
+			swapToInvestigation(1);
+		}
 	};
 	
-	var swapToDecision = function(fromhere) {
+	function swapToDecision(fromhere) {
 		$(fromhere).replaceWith(
 				'<div id ="decisionScreen" class = "row"> \
 					<div class="col-md-45"> \
@@ -539,7 +523,33 @@
 		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});
 	};
+	function swapToMainContent(fromhere, first) {
+		
+		if(first){
+			$.ajax({
+			    type: 'GET',
+			    url: '/client/mobile_content.html',
+			    success: function (data) {
+			    	fileContents = data;
+			    	console.log("found content");
+			    	console.log("replaced content");
+					$(fromhere).replaceWith(fileContents);
+			        // success
+			        
+			        createDecisions(groupNumberInput);
+			        
 
+			    }
+			});
+		}
+		else{
+			
+			$(fromhere).replaceWith(fileContents);
+			console.log("replaced main content");
+		}
+
+	}
+	
 	function displayDecision5Numbers(groupNumber) {
 		if (groupNumber == 1) {
 			document.getElementById("individualChange").innerHTML = "-1";

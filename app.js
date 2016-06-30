@@ -521,7 +521,7 @@
 		timerPaused = false;
 	};
 
-	var carryOutOlympics = function() {
+	function carryOutOlympics() {
 		bestPlayers = [];
 		bestScoreSoFar = 0;
 		secondBestScoreSoFar = 0;
@@ -562,7 +562,7 @@
 		eventOver();
 	};
 
-	var carryOutRelief = function() {
+	function carryOutRelief() {
 		for (i=1; i<=numberOfTeams; i++) {
 			teamScores[i] += (teamDecisionCounters[i] * reliefDonationCost);
 			world += (teamDecisionCounters[i] * reliefDonationResult);
@@ -571,7 +571,7 @@
 		eventOver();
 	}
 
-	var carryOutSpaceRace = function() {
+	function carryOutSpaceRace() {
 		highestTeam = [];
 		bestScoreSoFar = 0;
 		for (i=1; i<=numberOfTeams; i++) {
@@ -599,7 +599,7 @@
 	
 	};
 
-	var carryOutInvestigations = function(sockets) {
+	function carryOutInvestigations(sockets) {
 		var teamCount = 0;
 		console.log(pastActions);
 		for (i=0;i<pastActions.length;i++) {
@@ -754,12 +754,13 @@
 					teamScores: teamScores,
 					groupScores: groupScores
 				});
-				socket.emit('newQuarter', {
-					quarter: quarter
-				});
 				socket.emit('nextRound', {
 					roundNumber: "Investigations"
 				});
+				socket.emit('newQuarter', {
+					quarter: quarter
+				});
+				
 			};
 			worldEventChance = 1;
 		}
