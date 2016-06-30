@@ -29,6 +29,14 @@ t<!doctype html>
 				  		  2: "Military",
 				  		  3: "Workforce",
 				  		  4: "Policy Makers"};
+						  
+			var NATIONS = {1: "Japan",
+						   2: "Canada",
+						   3: "UK",
+						   4: "Turkey",
+						   5: "Russia",
+						   6: "China",
+						   7: "Mexico"};
 
 			socket.emit('congratulations', {});
 
@@ -41,7 +49,7 @@ t<!doctype html>
 
 				teamCongratulations(winningTeams);
 				for (var i = 0; i < winningNames.length; i++) {
-					winningNamesText += ("From " + teamNumberNames[playerNameToTeam[winningNames[i]]] + "'s " + GROUPS[playerNameToGroup[winningNames[i]]] + " Sector: " + winningNames[i] + "<br>");
+					winningNamesText += ("From " + NATIONS[playerNameToTeam[winningNames[i]]] + "'s " + GROUPS[playerNameToGroup[winningNames[i]]] + " Sector: " + winningNames[i] + "<br>");
 				};
 
 				document.getElementById("winningTeams").innerHTML = winningTeamsText;
@@ -50,11 +58,11 @@ t<!doctype html>
 
 			function teamCongratulations(winningTeams) {
 				if (winningTeams.length == 1) {
-					winningTeamsText = teamNumberNames[winningTeams[0]] + " has been declared the greatest nation in the world!";
+					winningTeamsText = NATIONS[winningTeams[0]] + " has been declared the greatest nation in the world!";
 				} else {
 					winningTeamsText = "The following nations have been declared the greatest nations in the world!:<br><br>";
 					for (var i = 0; i < winningTeams.length; i++) {
-						winningTeamsText += (teamNumberNames[winningTeams[i]] + "<br>");
+						winningTeamsText += (NATIONS[winningTeams[i]] + "<br>");
 					};
 				};
 			};
