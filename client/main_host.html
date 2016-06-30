@@ -157,8 +157,6 @@
 			});
 
 			socket.on('startTimer', function(data) {
-				// document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
-
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
 			});
 
@@ -199,7 +197,6 @@
 			};
 
 			function addNation(nation) {
-				console.log("nation: " + nation);
 				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), "Nation Score: " + nationscore, 'col scoreCell', nation);
 			};
 
@@ -207,7 +204,6 @@
 				var row = nations.insertRow(nations.rows.length);
 				createCell(row.insertCell(0), GROUP_NAMES[group], 'row scoreCell');
 				for (var i = 1; i < nations.rows[0].cells.length; i++) {
-					console.log("[i, group]: " + [i, group]);
 					createCell(row.insertCell(i), 20, 'row scoreCell', [i, group]);
 				};
 			};
@@ -249,7 +245,6 @@
 					addGroup(i);
 				};
 				for (var i = 1; i <= numberOfTeams; i++) {
-					console.log("i: " + i);
 					document.getElementById(i).innerHTML = teamNumberNames[i] + "'s Score: " + temporaryTeamScores[i];
 					for (var j = 1; j <= numberOfGroups; j++) {
 						document.getElementById([i, j]).innerHTML = temporaryGroupScores[[i, j]];

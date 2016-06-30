@@ -286,7 +286,7 @@
 		swapToDecision("#worldEventScreen");
 	});
 	
-	socket.on('showImpact', function(data)){
+	socket.on('showImpact', function(data) {
 		delta = data.playerScore - playerScore;
 		if(delta>0){
 			document.getElementById("individualChange").innerHTML = "+"+delta;
