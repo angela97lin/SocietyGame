@@ -44,6 +44,7 @@
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
+	var afterRoundDelayAmount = 3;
 	var olympicTeamReward = 10;
 	var spaceRaceReward = 10;
 	var spaceResearchCost = -2;
@@ -395,25 +396,27 @@
 		});
 
 		socket.on('beginGame', function() {
+			for(var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.emit("enable", {});
+			};
 			setInterval(function() {
 				if (decidedPlayers == totalPlayers) {
 					decidedPlayers = 0;
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
-					updateRound(SOCKET_LIST);
-					
+					updateRound();
 				};
 			
 				if (timerMinutes == 0 && timerSeconds == 0) {
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
 					decidedPlayers = 0;
-					updateRound(SOCKET_LIST);
+					updateRound();
 				};
 				
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
-					socket.emit("enable", {});
 					socket.emit('timer', {
 						timer: timeLimitToString(timerMinutes, timerSeconds)
 					});
@@ -519,6 +522,11 @@
 	
 	var unpauseTimer = function() {
 		timerPaused = false;
+	};
+	
+	var pauseAfterRound = function(func) {
+		pauseTimer();
+		setTimeout(func(), (afterRoundDelayAmount * 1000));
 	};
 
 	var carryOutOlympics = function() {
@@ -677,6 +685,9 @@
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
 			});
+			socket.emit('showImpact', {
+				playerScore: playerScores[socket.playerNumber]
+			});
 		}
 		unpauseTimer();
 	};
@@ -715,10 +726,10 @@
 		};
 	};
 
-	var updateRound = function(sockets) {
-		endGame(sockets);
-		for(var i in sockets) {
-			var socket = sockets[i];
+	var updateRound = function() {
+		endGame(SOCKET_LIST);
+		for(var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
 			socket.emit('decisionUpdate', {
 				playerScore: playerScores[socket.playerNumber],
 				groupScore: groupScores[socket.groupNumber],
@@ -736,7 +747,7 @@
 		getWorldEvent();
 		unpauseTimer();
 		pauseTimer();
-		quarterlyReport(sockets);
+		quarterlyReport(SOCKET_LIST);
 		roundNumber++;
 	};
 
@@ -987,12 +998,6 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
-			for (var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.emit('nextRound', {
-					roundNumber: roundNumber
-				});
-			};
  		};
 	};
 
@@ -1026,12 +1031,6 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
-			for (var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.emit('nextRound', {
-					roundNumber: roundNumber
-				});
-			};
 		};
 	};
 	
