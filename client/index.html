@@ -127,11 +127,16 @@
 	var teamNumber = 0;
 	var groupNumber = [];
 
+	var hasStarted = false;
+
 	
 	
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
+		if (data.mode == "timer" && hasStarted == false) {
+			disableButtons();
+		};
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
 		console.log("NUMBERS RECIEVED");

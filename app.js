@@ -114,7 +114,8 @@
 		socket.emit('indexConnect', {
 			numberOfTeams: numberOfTeams, 
 			numberOfGroups: numberOfGroups,
-			usernames: usernames
+			usernames: usernames,
+			mode: decisionMode
 		});
 
 		socket.on('start', function(data) {
@@ -411,6 +412,7 @@
 				
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
+					socket.emit("enable", {});
 					socket.emit('timer', {
 						timer: timeLimitToString(timerMinutes, timerSeconds)
 					});
@@ -671,6 +673,9 @@
 		for(var i in sockets) {
 			var socket = sockets[i];
 			socket.emit('investigationOver', {});
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
 		}
 		unpauseTimer();
 	};
@@ -748,6 +753,9 @@
 				});
 				socket.emit('newQuarter', {
 					quarter: quarter
+				});
+				socket.emit('nextRound', {
+					roundNumber: "Investigations"
 				});
 			};
 			worldEventChance = 1;
@@ -892,6 +900,9 @@
 			socket.emit('worldEvent', {
 				eventNumber: chosenEvent
 			});
+			socket.emit('nextRound', {
+				roundNumber: "World Event"
+			});
 		};
 	};
 
@@ -905,7 +916,7 @@
 	};
 
 	function checkTeamSides() {
-		if (decidedPlayers == numberOfPlayers) {
+		if (decidedPlayers == totalPlayers) {
 			var WINNING_BONUS = 10;
 			var team0Score = 0;
 			var team1Score = 0;
@@ -928,6 +939,9 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
  		};
 	};
 
@@ -947,11 +961,14 @@
 	};
 
 	function checkBorderSides() {
-		if (decidedPlayers == numberOfPlayers) {
+		if (decidedPlayers == totalPlayers) {
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
 		};
 	};
 	
@@ -961,4 +978,7 @@
 			socket.emit('eventOver', {});
 		};
 		unpauseTimer();
+		socket.emit('nextRound', {
+			roundNumber: roundNumber
+		});
 	};
