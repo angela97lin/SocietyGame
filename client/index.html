@@ -285,7 +285,16 @@
 	socket.on('eventOver', function() {
 		swapToDecision("#worldEventScreen");
 	});
-		
+	
+	socket.on('showImpact', function(data)){
+		delta = data.playerScore - playerScore;
+		if(delta>0){
+			document.getElementById("individualChange").innerHTML = "+"+delta;
+		}
+		else{
+			document.getElementById("individualChange").innerHTML = delta;
+		}
+	});
 	
 	
 	
@@ -314,7 +323,6 @@
 		//document.getElementById('decision4').disabled = false;
 		$(':button').prop('disabled', false);
 	};
-
 	var decision1 = function() {
 		socket.emit('decision1', {});
 		document.getElementById("individualChange").innerHTML = "+2";
