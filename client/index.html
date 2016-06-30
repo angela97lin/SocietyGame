@@ -211,7 +211,13 @@
 	});
 
 	socket.on("getRound", function(data) {
-		document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
+			document.getElementById("roundnumber").innerHTML = data.roundNumber;
+		}
+		else{
+			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		}
+		
 	});
 	
 	socket.on('teamInitiate', function(data) {
@@ -235,7 +241,12 @@
 	});
 
 	socket.on('nextRound', function(data) {
-		document.getElementById('roundnumber').innerHTML = "Round Number: " + data.roundNumber;
+		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
+			document.getElementById("roundnumber").innerHTML = data.roundNumber;
+		}
+		else{
+			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		}
 		document.getElementById('individualChange').innerHTML = "";
 		document.getElementById('nationChange').innerHTML = "";
 		document.getElementById('worldChange').innerHTML = "";
