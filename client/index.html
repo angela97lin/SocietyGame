@@ -128,7 +128,7 @@
 
 	var hasStarted = false;
 
-	var inLead = false;
+	var teamInLead;
 
 	
 	
@@ -280,11 +280,7 @@
 	
 	socket.on('worldEvent', function(data) {
 		if (data.eventNumber == 0) {
-			if (data.teamInLead == teamNameInput) {
-				inLead = true;
-			} else {
-				inLead = false;
-			};
+			teamInLead = data.teamInLead;
 		};
 		swapToWorldEvent(data.eventNumber);
 	});
@@ -426,7 +422,7 @@
 	var swapToWorldEvent = function(randomEvent) {
 		console.log("SWAP TO INVESTIGATION");
 		if(randomEvent == 0){
-			if (inLead) {
+			if (teamInLead == teamNameInput) {
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class="row"> \
 						<h2>You have decided to invade Poland!</h2> \
@@ -436,7 +432,7 @@
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class = "row"> \
 						<div class="col-md-45"> \
-							<button class="decision worldEvent" id = "sideWtihWinning" onclick="castWarVote(0)">Side with winning team</button> \
+							<button class="decision worldEvent" id = "sideWtihWinning" onclick="castWarVote(0)"></button> \
 							<h3></h3> \
 						</div> \
 						<div class = "col-md-45 col-md-offset-10"> \
@@ -444,6 +440,7 @@
 							<h3></h3> \
 						</div> \
 					</div>'	);
+				document.getElementById("sideWtihWinning").innerHTML = "Side with " + NATIONS[teamInLead];
 			};
 		}
 		else if(randomEvent == 1){
