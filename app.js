@@ -892,7 +892,9 @@
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('worldEvent', {
-				eventNumber: chosenEvent
+				eventNumber: chosenEvent,
+				teamScores: teamScores,
+				groupScores: groupScores
 			});
 		};
 	};
