@@ -67,7 +67,8 @@
 	var usernames = {};
 	var usernameData = {};
 	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
-
+	var eventsCompleted = [];
+	
 	var winningTeams = [];
 	var winningNames = [];
 	
@@ -864,8 +865,33 @@
 		return randomZeroToFour;
 	};
 	
+	function getRandomZeroToThree() {
+		randomZeroToThree = Math.floor(Math.random() * 4);
+		return randomZeroToThree;
+	};
+	
+	function getRandomZeroToTwo() {
+		randomZeroToTwo = Math.floor(Math.random() * 3);
+		return randomZeroToTwo;
+	};
+	
 	function getWorldEvent() {
+		eventUsed = false;
 		chosenEvent = getRandomZeroToFour();
+		for (i=0; i<eventsCompleted.length; i++) {
+			if (eventsCompleted[i] == chosenEvent) {
+				eventUsed = true;
+			}
+		};
+		while (eventUsed) {
+			eventUsed = false;
+			chosenEvent = getRandomZeroToFour();
+			for (i=0; i<eventsCompleted.length; i++) {
+				if (eventsCompleted[i] == chosenEvent) {
+					eventUsed = true;
+				}
+			};
+		};
 		if (worldEventChance == 1) {
 			if (Math.random() <= .333) {
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
@@ -886,6 +912,7 @@
 	};
 	
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
+		eventsCompleted.push(chosenEvent);
 		if (worldEvent == worldEvents[0]) {
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualWarVotes[i] = [0, 0];
@@ -939,9 +966,12 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
-			socket.emit('nextRound', {
-				roundNumber: roundNumber
-			});
+			for (var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.emit('nextRound', {
+					roundNumber: roundNumber
+				});
+			};
  		};
 	};
 
@@ -966,9 +996,12 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
-			socket.emit('nextRound', {
-				roundNumber: roundNumber
-			});
+			for (var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.emit('nextRound', {
+					roundNumber: roundNumber
+				});
+			};
 		};
 	};
 	
@@ -976,9 +1009,9 @@
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('eventOver', {});
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
 		};
 		unpauseTimer();
-		socket.emit('nextRound', {
-			roundNumber: roundNumber
-		});
 	};
