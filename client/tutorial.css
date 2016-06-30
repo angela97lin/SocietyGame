@@ -175,9 +175,6 @@ colorred {
 }
 
 button {
-	position: fixed;
-	bottom: 0;
-	right: 0;
 	display: inline-block;
 	text-align: center;
 	font-size: 6vmin;
@@ -195,6 +192,8 @@ button.prev{
 	left: 0;
 }
 button.next{
-	
+	position: fixed;
+	bottom: 0;
+	right: 0;
 }
 
