@@ -725,10 +725,12 @@
 				teamScore: teamScores[socket.teamNumber],
 				world: world
 			});
-			socket.emit('enable', {});
-			socket.emit('nextRound', {
-				roundNumber: roundNumber + 1
-			});
+			if (roundNumber != 12) {
+				socket.emit('enable', {});
+				socket.emit('nextRound', {
+					roundNumber: roundNumber + 1
+				});
+			};
 		};
 		pauseTimer();
 		getWorldEvent();
@@ -743,7 +745,7 @@
 		if (roundNumber < 3 || roundNumber == 5 || roundNumber == 8 || roundNumber == 11) {
 			worldEventChance = 0;
 		}
-		if (roundNumber % 3 == 0) {
+		if (roundNumber % 3 == 0 && roundNumber != 12) {
 			quarter++;
 			for (var i in sockets) {
 				var socket = sockets[i];
