@@ -948,7 +948,8 @@
 
 	function checkTeamSides() {
 		if (decidedPlayers == totalPlayers) {
-			var WINNING_BONUS = 10;
+			var WINNING_BONUS = 12;
+			var groupBonus = WINNING_BONUS / numberOfGroups;
 			var team0Score = 0;
 			var team1Score = 0;
 			for (var i = 0; i < teamSides[0].length; i++) {
@@ -960,10 +961,16 @@
 			if (team0Score > team1Score) {
 				for (var i = 0; i < teamSides[0].length; i++) {
 					teamScores[teamSides[0][i]] += WINNING_BONUS;
+					for (var j = 1; j <= numberOfGroups; j++) {
+						groupScores[[teamSides[0][i], j]] += groupBonus;
+					};
 				};
 			} else {
 				for (var i = 0; i < teamSides[1].length; i++) {
 					teamScores[teamSides[1][i]] += WINNING_BONUS;
+					for (var j = 1; j <= numberOfGroups; j++) {
+						groupScores[[teamSides[1][i], j]] += groupBonus;
+					};
 				};
 			};
 			eventOver();
@@ -981,14 +988,23 @@
 
 	function checkBorderVotes(team, side) {
 		var THRESHOLD = .5;
+		var TEAM_BONUS = 12;
+		var WORLD_BONUS = 20;
+		var groupBonus = TEAM_BONUS / numberOfGroups;
 		var currentPercentFor = individualBorderVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			if (side == 0) {
-				world -= 20;
-				teamScores[team] += 10;
+				world -= WORLD_BONUS;
+				teamScores[team] += TEAM_BONUS;
+				for (var j = 1; j <= numberOfGroups; j++) {
+					groupScores[[team, j]] += groupBonus;
+				};
 			} else {
-				world += 20;
-				teamScores[team] -= 10;
+				world += WORLD_BONUS;
+				teamScores[team] -= TEAM_BONUS;
+				for (var j = 1; j <= numberOfGroups; j++) {
+					groupScores[[team, j]] -= groupBonus;
+				};
 			};
 		};
 		decidedPlayers += 1;
