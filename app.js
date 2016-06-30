@@ -114,7 +114,8 @@
 		socket.emit('indexConnect', {
 			numberOfTeams: numberOfTeams, 
 			numberOfGroups: numberOfGroups,
-			usernames: usernames
+			usernames: usernames,
+			mode: decisionMode
 		});
 
 		socket.on('start', function(data) {
@@ -411,6 +412,7 @@
 				
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
+					socket.emit("enable", {});
 					socket.emit('timer', {
 						timer: timeLimitToString(timerMinutes, timerSeconds)
 					});
@@ -905,7 +907,7 @@
 	};
 
 	function checkTeamSides() {
-		if (decidedPlayers == numberOfPlayers) {
+		if (decidedPlayers == totalPlayers) {
 			var WINNING_BONUS = 10;
 			var team0Score = 0;
 			var team1Score = 0;
@@ -947,7 +949,7 @@
 	};
 
 	function checkBorderSides() {
-		if (decidedPlayers == numberOfPlayers) {
+		if (decidedPlayers == totalPlayers) {
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
