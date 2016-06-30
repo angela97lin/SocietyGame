@@ -915,11 +915,20 @@
 	
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
 		eventsCompleted.push(chosenEvent);
-		if (worldEvent == worldEvents[0]) {
+		var teamInLead;
+		if (chosenEvent == 0) {
+			var topScore = Number.NEGATIVE_INFINITY;
 			for (var i = 0; i < numberOfTeams; i++) {
+				if (teamScores[i + 1] > topScore) {
+					topScore = teamScores[i + 1];
+					teamInLead = i + 1;
+				};
 				individualWarVotes[i] = [0, 0];
 			};
-		} else if (worldEvent == worldEvents[1]) {
+			teamSides[0].push(teamInLead);
+			decidedPlayers += 1;
+			checkTeamSides();
+		} else if (chosenEvent == 1) {
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualBorderVotes[i] = [0, 0];
 			};
@@ -929,7 +938,8 @@
 			socket.emit('worldEvent', {
 				eventNumber: chosenEvent,
 				teamScores: teamScores,
-				groupScores: groupScores
+				groupScores: groupScores,
+				teamInLead: teamInLead
 			});
 			socket.emit('nextRound', {
 				roundNumber: "World Event"

@@ -124,10 +124,11 @@
 	var username;
 	var playerNumber;
 	var teamName;
-	var teamNumber = 0;
 	var groupNumber = [];
 
 	var hasStarted = false;
+
+	var inLead = false;
 
 	
 	
@@ -188,7 +189,6 @@
 	});
 	
 	socket.on('getTeamNumber', function(data) {
-		//teamNumber = data.teamNameNumbers[teamName];
 		groupNumber = data.groupNumber;
 	});
 	
@@ -279,6 +279,13 @@
 	});
 	
 	socket.on('worldEvent', function(data) {
+		if (data.eventNumber == 0) {
+			if (data.teamInLead == teamNameInput) {
+				inLead = true;
+			} else {
+				inLead = false;
+			};
+		};
 		swapToWorldEvent(data.eventNumber);
 	});
 	
@@ -419,17 +426,25 @@
 	var swapToWorldEvent = function(randomEvent) {
 		console.log("SWAP TO INVESTIGATION");
 		if(randomEvent == 0){
-			$("#decisionScreen").replaceWith(
-				'<div id="worldEventScreen" class = "row"> \
-					<div class="col-md-45"> \
-						<button class="decision worldEvent" id = "sideWtihWinning" onclick="castWarVote(0)">Side with winning team</button> \
-						<h3></h3> \
-					</div> \
-					<div class = "col-md-45 col-md-offset-10"> \
-						<button class="decision worldEvent" id = "sideWithPoland" onclick="castWarVote(1)">Side with Poland</button> \
-						<h3></h3> \
-					</div> \
-				</div>'	);
+			if (inLead) {
+				$("#decisionScreen").replaceWith(
+					'<div id="worldEventScreen" class="row"> \
+						<h2>You have decided to invade Poland!</h2> \
+					</div>'
+				);
+			} else {
+				$("#decisionScreen").replaceWith(
+					'<div id="worldEventScreen" class = "row"> \
+						<div class="col-md-45"> \
+							<button class="decision worldEvent" id = "sideWtihWinning" onclick="castWarVote(0)">Side with winning team</button> \
+							<h3></h3> \
+						</div> \
+						<div class = "col-md-45 col-md-offset-10"> \
+							<button class="decision worldEvent" id = "sideWithPoland" onclick="castWarVote(1)">Side with Poland</button> \
+							<h3></h3> \
+						</div> \
+					</div>'	);
+			};
 		}
 		else if(randomEvent == 1){
 			$("#decisionScreen").replaceWith(
