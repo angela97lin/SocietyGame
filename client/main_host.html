@@ -12,7 +12,7 @@
 
 	<body>
 		
-		<div class="container">
+		<div class="container" id="mainScreen">
 			<h2 id="roundnumber">Round Number: 1</h2>
 			
 			<div class="centeredInline">
@@ -126,6 +126,11 @@
 			for (var i = 1; i <= numberOfGroups; i++) {
 				addGroup(i);
 			};
+
+			/*variables for world events*/
+			var isWorldEvent = false;
+			var temporaryGroupScores;
+			var temporaryTeamScores;
 			
 			
 /*LISTENERS*/
@@ -157,17 +162,29 @@
 			});
 
 			socket.on('decisionUpdate', function(data) {
-				document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
+				if (!isWorldEvent) {
+					document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
+				};			
 			});
 
 			socket.on('startTimer', function(data) {
-				// document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
-
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
 			});
 
 			socket.on('timer', function(data) {
 				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+			});
+
+			socket.on("worldEvent", function(data) {
+				isWorldEvent = true;
+				swapToWorldEventScreen();
+				temporaryTeamScores = data.teamScores;
+				temporaryGroupScores = data.groupScores;
+			});
+
+			socket.on("eventOver", function() {
+				isWorldEvent = false;
+				swapToMainScreen();
 			});
 
 			socket.on('mainWinners', function() {
@@ -209,6 +226,53 @@
 
 			function isValidInt(int) {
 				return (int % 1 === 0 && int >= 0);
+			};
+
+			function swapToMainScreen() {
+				$("#worldEventScreen").replaceWith(
+					'<div class="container" id="mainScreen"> \
+						<h2 id="roundnumber">Round Number: 1</h2> \
+						\
+						<div class="centeredInline"> \
+							<h2 id="timer"></h2> \
+							<div id="starttimer"></div> \
+							<h2 id="worldscore"></h2> \
+						</div> \
+						\
+						<table id="nations" class ="cellTable"> \
+							<tbody> \
+								<tr></tr> \
+							</tbody> \
+						</table> \
+					</div>'
+				);
+				nations = document.getElementById('nations');
+				nations.cellSpacing = 200 / numberOfGroups;
+				createCell(nations.rows[0].insertCell(0), "Q1", 'col scoreCell', "quarterlyreports");
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addNation(i);
+				};
+				for (var i = 1; i <= numberOfGroups; i++) {
+					addGroup(i);
+				};
+				for (var i = 1; i <= numberOfTeams; i++) {
+					document.getElementById(i).innerHTML = teamNumberNames[i] + "'s Score: " + temporaryTeamScores[i];
+					for (var j = 1; j <= numberOfGroups; j++) {
+						document.getElementById([i, j]).innerHTML = temporaryGroupScores[[i, j]];
+					};
+				};
+				socket.emit("infoRequest", {});
+			};
+
+			function swapToWorldEventScreen() {
+				/*TODO
+				improve the world event screen
+				*/
+				$("#mainScreen").replaceWith(
+					'<div class="container" id="worldEventScreen"> \
+						<h2 id="worldEventText">There is a world event taking place</h2> \
+					</div>'
+				);
 			};
 
 	</script>	
