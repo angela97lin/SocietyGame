@@ -671,6 +671,9 @@
 		for(var i in sockets) {
 			var socket = sockets[i];
 			socket.emit('investigationOver', {});
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
 		}
 		unpauseTimer();
 	};
@@ -748,6 +751,9 @@
 				});
 				socket.emit('newQuarter', {
 					quarter: quarter
+				});
+				socket.emit('nextRound', {
+					roundNumber: "Investigations"
 				});
 			};
 			worldEventChance = 1;
@@ -892,6 +898,9 @@
 			socket.emit('worldEvent', {
 				eventNumber: chosenEvent
 			});
+			socket.emit('nextRound', {
+				roundNumber: "World Event"
+			});
 		};
 	};
 
@@ -928,6 +937,9 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
  		};
 	};
 
@@ -952,6 +964,9 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
 		};
 	};
 	
@@ -961,4 +976,7 @@
 			socket.emit('eventOver', {});
 		};
 		unpauseTimer();
+		socket.emit('nextRound', {
+			roundNumber: roundNumber
+		});
 	};
