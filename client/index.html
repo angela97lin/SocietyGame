@@ -45,21 +45,27 @@
 			
 		</div>
 	</div>
-	<div  id="decisionScreen" class = "row">
-		<div class="col-md-45">
-			<button class="decision" id="decision1" onclick="decision1()"></button>
-			<h3></h3>
-			<button class="decision" id="decision2" onclick="decision2()"></button>
-			<h3></h3>
+	<div id="decisionScreen">
+		<div class = "row">
+			<div class="col-md-48">
+				<button class="decision" id="decision1" onclick="decision1()"></button>
+				<h3></h3>
+				<button class="decision" id="decision2" onclick="decision2()"></button>
+				<h3></h3>
+			</div>
+			<div class = "col-md-48 col-md-offset-4">
+				<button class="decision" id="decision3" onclick="decision3()"></button>
+				<h3></h3>
+				<button class="decision" id="decision4" onclick="decision4()"></button>
+				<h3></h3>
+			</div>
 		</div>
-		<div class = "col-md-45 col-md-offset-10">
-			<button class="decision" id="decision3" onclick="decision3()"></button>
-			<h3></h3>
-			<button class="decision" id="decision4" onclick="decision4()"></button>
-			<h3></h3>
-			<button class="decision" id="decision5" onclick="decision5()"></button>
+		<div class = "row">
+			<div class ="col-md-60 col-md-offset-20">
+				<button class="decision" id="decision5" onclick="decision5()"></button>
+			</div>
 		</div>
-	</div>
+		<div>
 </div>
 
 
@@ -205,7 +211,13 @@
 	});
 
 	socket.on("getRound", function(data) {
-		document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
+			document.getElementById("roundnumber").innerHTML = data.roundNumber;
+		}
+		else{
+			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		}
+		
 	});
 	
 	socket.on('teamInitiate', function(data) {
@@ -229,7 +241,12 @@
 	});
 
 	socket.on('nextRound', function(data) {
-		document.getElementById('roundnumber').innerHTML = "Round Number: " + data.roundNumber;
+		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
+			document.getElementById("roundnumber").innerHTML = data.roundNumber;
+		}
+		else{
+			document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+		}
 		document.getElementById('individualChange').innerHTML = "";
 		document.getElementById('nationChange').innerHTML = "";
 		document.getElementById('worldChange').innerHTML = "";
@@ -268,7 +285,16 @@
 	socket.on('eventOver', function() {
 		swapToDecision("#worldEventScreen");
 	});
-		
+	
+	socket.on('showImpact', function(data)){
+		delta = data.playerScore - playerScore;
+		if(delta>0){
+			document.getElementById("individualChange").innerHTML = "+"+delta;
+		}
+		else{
+			document.getElementById("individualChange").innerHTML = delta;
+		}
+	});
 	
 	
 	
@@ -297,7 +323,6 @@
 		//document.getElementById('decision4').disabled = false;
 		$(':button').prop('disabled', false);
 	};
-
 	var decision1 = function() {
 		socket.emit('decision1', {});
 		document.getElementById("individualChange").innerHTML = "+2";
