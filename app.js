@@ -64,6 +64,7 @@
 	var BORDER_TEAM_BONUS = 4;
 	var BORDER_WORLD_BONUS = 6;
 	var WAR_WINNING_BONUS = 6;
+	var teamInLead;
 	
 	var playerScores = {};
 	var groupScores = {};
@@ -95,7 +96,6 @@
 	
 	var gameStateScreenType = "decision";
 	var playerDecisionMade = {};
-	resetPlayerDecisionMade();
 	var mostRecentWorldEvent = -1;
 
 	//decide whether a round is over based on the timer or once all players have made a decision
@@ -204,6 +204,7 @@
 				numberOfPlayersConnectedPerGroup.push(teamToAdd);
 			};
 			mainConnected = true;
+			resetPlayerDecisionMade();
 		});
 		
 		socket.on('decision1', function(data) {
@@ -397,6 +398,8 @@
 		});
 		
 		socket.on('infoRequest', function() {
+			console.log("app username: "+usernames[socket.playerNumber]);
+			console.log("app playernumber: "+socket.playerNumber);
 			socket.emit('player', {
 				number: socket.playerNumberInGroup,
 				playerScore: playerScores[socket.playerNumber],
@@ -981,7 +984,7 @@
 		gameStateScreenType = "event";
 		eventsCompleted.push(chosenEvent);
 		mostRecentWorldEvent = chosenEvent;
-		var teamInLead;
+		
 		if (chosenEvent == 0) {
 			var topScore = Number.NEGATIVE_INFINITY;
 			for (var i = 0; i < numberOfTeams; i++) {
