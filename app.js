@@ -16,8 +16,6 @@
 	app.get('/index', function(req, res) {
 		if (mainConnected) {
 			ipAddresses[req.connection.remoteAddress] = {};
-			console.log("ipAddresses:");
-			console.log(ipAddresses);
 		};
 		res.sendFile(__dirname + '/client/index.html');
 	});
@@ -131,7 +129,8 @@
 				numberOfTeams: numberOfTeams, 
 				numberOfGroups: numberOfGroups,
 				usernames: usernames,
-				mode: decisionMode
+				mode: decisionMode,
+				ipAddresses: ipAddresses
 			});
 		};
 
@@ -276,8 +275,8 @@
 		});
 
 		socket.on('playerConnect', function(data) {
-			if (data.username in usernameData) {
-				var userData = usernameData[data.username];
+			if (data.ip in ipAddresses) {
+				var userData = ipAddresses[data.ip];
 				socket.rawGroupNumber = userData.rawGroupNumber;
 				socket.teamNumber = userData.teamNumber;
 				socket.username = data.username;
@@ -334,7 +333,7 @@
 				if (!(socket.groupNumber in groupScores)){
 					groupScores[socket.groupNumber] = 20;
 				};
-				usernameData[data.username] = {rawGroupNumber: socket.rawGroupNumber,
+				ipAddresses[data.ip] = {rawGroupNumber: socket.rawGroupNumber,
 											   teamNumber: socket.teamNumber,
 											   username: socket.username,
 											   playerNumber: socket.playerNumber,
