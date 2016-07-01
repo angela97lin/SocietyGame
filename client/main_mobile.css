@@ -184,6 +184,18 @@ button.hidden{
 	font-family: Tahoma, Arial, sans-serif;
 	color: #f9f9f9;
 	line-height: 120%;
-	font-size: 9vw
+	font-size: 3vw;
+}
+
+iframe {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	z-index: -100;
 	background: black;
+	background-size: cover;
 }
