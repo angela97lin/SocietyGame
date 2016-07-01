@@ -59,22 +59,34 @@ body{
 }
 
 .scoreChange{
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
 	position: absolute;
 	left: 100%;
 	bottom: 0%;
 }
 
 #worldscore, #worldChange {
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
 	color: #D1E7E2;
 	font-size: 300%;
 	font-variant: small-caps;
 }
 
 #nationscore, #nationChange {
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
 	font-size: 350%;
 }
 
 #individualscore, #individualChange {
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 1s ease;
 	font-size: 250%;
 }
 
