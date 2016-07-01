@@ -751,7 +751,7 @@
 		};
 		pauseTimer();
 		getWorldEvent();
-		unpauseTimer();
+		//unpauseTimer();
 		pauseTimer();
 		quarterlyReport(SOCKET_LIST);
 		roundNumber++;
