@@ -389,7 +389,8 @@
 			socket.emit('gameState', {
 				screenType: gameStateScreenType,
 				decisionMade: playerDecisionMade[socket.playerNumber],
-				worldEventNumber: mostRecentWorldEvent
+				worldEventNumber: mostRecentWorldEvent,
+				teamInLead: teamInLead
 			});
 		});
 		
