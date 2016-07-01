@@ -12,6 +12,7 @@
 		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
 	});
 	app.get('/index', function(req, res) {
+		console.log(req.connection.remoteAddress);
 		res.sendFile(__dirname + '/client/index.html');
 	});
 	app.get('/main', function(req, res) {
