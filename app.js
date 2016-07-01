@@ -944,7 +944,7 @@
 				individualWarVotes[i] = [0, 0];
 			};
 			teamSides[0].push(teamInLead);
-			decidedPlayers += 1;
+			decidedPlayers += 1 * numberOfPlayersInTeams;
 		} else if (chosenEvent == 1) {
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualBorderVotes[i] = [0, 0];
