@@ -193,30 +193,18 @@
 				groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
 			};
 		};
-<<<<<<< HEAD
 
 		swapToMainContent("#empty", true);
 		teamName = NATIONS[teamNameInput];
 		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput,  ip: ip});
-=======
-		
-		swapToMainContent("#empty");
-		
-		
-		teamName = NATIONS[teamNameInput];
-		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
-
 
 		//Redirect the player to the correct place, based on gamestate
 		socket.emit('stateRequest', {});
-
->>>>>>> 603f37857b9d052f6e4262f33d1318118ad3ddbc
 	});
 	
 	socket.on('gameState',function(data) {
-			
 		gotoGameState(data.screenType, data.decisionMade, data.worldEventNumber);
-	}
+	});
 
 	socket.on('getTeamNumber', function(data) {
 		groupNumber = data.groupNumber;

@@ -14,9 +14,6 @@
 		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
 	});
 	app.get('/index', function(req, res) {
-		if (mainConnected) {
-			ipAddresses[req.connection.remoteAddress] = {};
-		};
 		res.sendFile(__dirname + '/client/index.html');
 	});
 	app.get('/main', function(req, res) {
@@ -295,6 +292,7 @@
 				socket.groupNumber = userData.groupNumber;
 				socket.playerNumberInGroup = userData.playerNumberInGroup;
 			} else {
+				ipAddresses[data.ip] = {};
 				socket.rawGroupNumber = data.groupNumberInput;
 				socket.teamNumber = data.teamNumber;
 				socket.username = data.username;
