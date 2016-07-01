@@ -90,6 +90,11 @@
 	var olympicCompetitors = [];
 	
 	var numberOfPlayersConnectedPerGroup = [];
+	
+	var gameStateScreenType = "decision";
+	var playerDecisionMade = {};
+	resetPlayerDecisionMade();
+	var mostRecentWorldEvent = -1;
 
 	//decide whether a round is over based on the timer or once all players have made a decision
 	//either timer or waitForPlayers
@@ -202,6 +207,7 @@
 		
 		socket.on('decision1', function(data) {
 			world += -1;
+			playerDecisionMade[socket.playerNumber] = true;
 			groupScores[socket.groupNumber] += -2;
 			teamScores[socket.teamNumber] += -2;
 			playerScores[socket.playerNumber] += 2;
@@ -215,6 +221,7 @@
 		});
 
 		socket.on('decision2', function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			world += 0;
 			groupScores[socket.groupNumber] += 2;
 			teamScores[socket.teamNumber] += 2;
@@ -224,6 +231,7 @@
 		});
 		
 		socket.on('decision3', function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			world += -1;
 			groupScores[socket.groupNumber] += 1;
 			teamScores[socket.teamNumber] += 1;
@@ -233,6 +241,7 @@
 		});
 
 		socket.on('decision4', function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			world += 2;
 			groupScores[socket.groupNumber] += 0;
 			teamScores[socket.teamNumber] += 0;
@@ -242,10 +251,12 @@
 		});
 
 		socket.on('decision5', function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			decision5(socket, data.groupNumber);
 		});
 		
 		socket.on('investigate', function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			console.log(data.teamInvolved);
 			console.log(data.groupInvolved);
 			console.log(data.playerToInvestigate);
@@ -373,9 +384,19 @@
 
 		});
 		
+		socket.on('stateRequest', function() {
+			socket.emit('gameState', {
+				screenType: gameStateScreenType,
+				decisionMade: playerDecisionMade[socket.playerNumber],
+				worldEventNumber: mostRecentWorldEvent
+			});
+		});
+		
 		socket.on('infoRequest', function() {
 			socket.emit('player', {
-				number: socket.playerNumberInGroup
+				number: socket.playerNumberInGroup,
+				playerScore: playerScores[socket.playerNumber],
+				username: usernames[socket.playerNumber]
 			});
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 
@@ -398,6 +419,7 @@
 
 		/*Listeners for world war*/
 		socket.on("castWarVote", function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			individualWarVotes[data.team - 1][data.side] += 1;
 			checkWarVotes(data.team, data.side);
 			checkTeamSides();
@@ -405,6 +427,7 @@
 
 		/*Listeners for epidemic*/
 		socket.on("castBorderVote", function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			individualBorderVotes[data.team - 1][data.side] += 1;
 			checkBorderVotes(data.team, data.side);
 			checkBorderSides();
@@ -418,6 +441,7 @@
 			setInterval(function() {
 				if (decidedPlayers == totalPlayers) {
 					decidedPlayers = 0;
+					resetPlayerDecisionMade();
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
 					updateRound();
@@ -427,6 +451,7 @@
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
 					decidedPlayers = 0;
+					resetPlayerDecisionMade();
 					updateRound();
 				};
 				
@@ -469,6 +494,7 @@
 		});
 		
 		socket.on('competeInOlympics', function() {
+			playerDecisionMade[socket.playerNumber] = true;
 			olympicCompetitors.push(socket.playerNumber);
 			decidedPlayers += 1;
 			if (decidedPlayers == totalPlayers) {
@@ -479,6 +505,7 @@
 		});
 		
 		socket.on('sendRelief', function() {
+			playerDecisionMade[socket.playerNumber] = true;
 			teamDecisionCounters[socket.teamNumber] += 1;
 			totalYesVotes += 1;
 			decidedPlayers += 1;
@@ -493,6 +520,7 @@
 		});
 		
 		socket.on('donateToSpaceRace', function() {
+			playerDecisionMade[socket.playerNumber] = true;
 			teamDecisionCounters[socket.teamNumber] += 1;
 			playerScores[socket.playerNumber] += spaceResearchCost;
 			decidedPlayers += 1;
@@ -506,6 +534,7 @@
 		});
 		
 		socket.on('doNothing', function(data) {
+			playerDecisionMade[socket.playerNumber] = true;
 			decidedPlayers += 1;
 			if (decidedPlayers == totalPlayers) {
 				if (data.eventNumber == 2) {
@@ -705,6 +734,8 @@
 			});
 		}
 		unpauseTimer();
+		resetPlayerDecisionMade();
+		gameStateScreenType = "decision";
 	};
 	
 	var checkPlayers = function(mode) {
@@ -712,6 +743,7 @@
 		if (mode == "waitForPlayers") {
 			if (decidedPlayers == totalPlayers) {
 				decidedPlayers = 0;
+				resetPlayerDecisionMade();
 				updateRound(SOCKET_LIST);
 			};
 		};
@@ -773,6 +805,7 @@
 		}
 		if (roundNumber % 3 == 0 && roundNumber != 12) {
 			quarter++;
+			gameStateScreenType = "investigation";
 			for (var i in sockets) {
 				var socket = sockets[i];
 				quarterTeamScores = teamScores;
@@ -941,7 +974,9 @@
 	};
 	
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
+		gameStateScreenType = "event";
 		eventsCompleted.push(chosenEvent);
+		mostRecentWorldEvent = chosenEvent;
 		var teamInLead;
 		if (chosenEvent == 0) {
 			var topScore = Number.NEGATIVE_INFINITY;
@@ -1011,6 +1046,7 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
+			resetPlayerDecisionMade();
  		};
 	};
 
@@ -1041,6 +1077,7 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
+			resetPlayerDecisionMade();
 		};
 	};
 	
@@ -1052,5 +1089,13 @@
 				roundNumber: roundNumber
 			});
 		};
+		resetPlayerDecisionMade();
 		unpauseTimer();
+		gameStateScreenType = "decision";
+	};
+	
+	function resetPlayerDecisionMade() {
+		for (i=1; i<=totalPlayers; i++) {
+			playerDecisionMade[i] = false;
+		};
 	};
