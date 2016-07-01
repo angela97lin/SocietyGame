@@ -45,13 +45,19 @@
 	var quarter = 0;
 	var ROUNDS = 12;
 	var afterRoundDelayAmount = 3;
-	var olympicTeamReward = 10;
+	
+	var olympicTeamReward = 6;
 	var spaceRaceReward = 10;
 	var spaceResearchCost = -2;
 	var reliefDonationCost = -1;
 	var reliefDonationResult = 1;
-	var totalOlympicWinnings = 6;
+	var totalOlympicWinnings = 1;
 	var olympicCost = -2;
+	var THRESHOLD = .5;
+	var BORDER_TEAM_BONUS = 4;
+	var BORDER_WORLD_BONUS = 6;
+	var WAR_WINNING_BONUS = 6;
+	
 	var playerScores = {};
 	var groupScores = {};
 	var teamScores = {};
@@ -939,7 +945,6 @@
 			};
 			teamSides[0].push(teamInLead);
 			decidedPlayers += 1;
-			checkTeamSides();
 		} else if (chosenEvent == 1) {
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualBorderVotes[i] = [0, 0];
@@ -960,7 +965,6 @@
 	};
 
 	function checkWarVotes(team, side) {
-		var THRESHOLD = .5;
 		var currentPercentFor = individualWarVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			teamSides[side].push(team);
@@ -970,8 +974,7 @@
 
 	function checkTeamSides() {
 		if (decidedPlayers == totalPlayers) {
-			var WINNING_BONUS = 12;
-			var groupBonus = WINNING_BONUS / numberOfGroups;
+			var groupBonus = WAR_WINNING_BONUS / numberOfGroups;
 			var team0Score = 0;
 			var team1Score = 0;
 			for (var i = 0; i < teamSides[0].length; i++) {
@@ -982,14 +985,14 @@
 			};
 			if (team0Score > team1Score) {
 				for (var i = 0; i < teamSides[0].length; i++) {
-					teamScores[teamSides[0][i]] += WINNING_BONUS;
+					teamScores[teamSides[0][i]] += WAR_WINNING_BONUS;
 					for (var j = 1; j <= numberOfGroups; j++) {
 						groupScores[[teamSides[0][i], j]] += groupBonus;
 					};
 				};
 			} else {
 				for (var i = 0; i < teamSides[1].length; i++) {
-					teamScores[teamSides[1][i]] += WINNING_BONUS;
+					teamScores[teamSides[1][i]] += WAR_WINNING_BONUS;
 					for (var j = 1; j <= numberOfGroups; j++) {
 						groupScores[[teamSides[1][i], j]] += groupBonus;
 					};
@@ -1003,21 +1006,18 @@
 	};
 
 	function checkBorderVotes(team, side) {
-		var THRESHOLD = .5;
-		var TEAM_BONUS = 12;
-		var WORLD_BONUS = 20;
-		var groupBonus = TEAM_BONUS / numberOfGroups;
+		var groupBonus = BORDER_TEAM_BONUS / numberOfGroups;
 		var currentPercentFor = individualBorderVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			if (side == 0) {
-				world -= WORLD_BONUS;
-				teamScores[team] += TEAM_BONUS;
+				world -= BORDER_WORLD_BONUS;
+				teamScores[team] += BORDER_TEAM_BONUS;
 				for (var j = 1; j <= numberOfGroups; j++) {
 					groupScores[[team, j]] += groupBonus;
 				};
 			} else {
-				world += WORLD_BONUS;
-				teamScores[team] -= TEAM_BONUS;
+				world += BORDER_WORLD_BONUS;
+				teamScores[team] -= BORDER_TEAM_BONUS;
 				for (var j = 1; j <= numberOfGroups; j++) {
 					groupScores[[team, j]] -= groupBonus;
 				};
