@@ -44,6 +44,7 @@
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
+	var afterRoundDelayAmount = 3;
 	var olympicTeamReward = 10;
 	var spaceRaceReward = 10;
 	var spaceResearchCost = -2;
@@ -67,7 +68,8 @@
 	var usernames = {};
 	var usernameData = {};
 	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
-
+	var eventsCompleted = [];
+	
 	var winningTeams = [];
 	var winningNames = [];
 	
@@ -394,25 +396,27 @@
 		});
 
 		socket.on('beginGame', function() {
+			for(var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.emit("enable", {});
+			};
 			setInterval(function() {
 				if (decidedPlayers == totalPlayers) {
 					decidedPlayers = 0;
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
-					updateRound(SOCKET_LIST);
-					
+					updateRound();
 				};
 			
 				if (timerMinutes == 0 && timerSeconds == 0) {
 					timerMinutes = TIME_LIMIT_MINUTES;
 					timerSeconds = TIME_LIMIT_SECONDS;
 					decidedPlayers = 0;
-					updateRound(SOCKET_LIST);
+					updateRound();
 				};
 				
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
-					socket.emit("enable", {});
 					socket.emit('timer', {
 						timer: timeLimitToString(timerMinutes, timerSeconds)
 					});
@@ -519,8 +523,13 @@
 	var unpauseTimer = function() {
 		timerPaused = false;
 	};
+	
+	var pauseAfterRound = function(func) {
+		pauseTimer();
+		setTimeout(func(), (afterRoundDelayAmount * 1000));
+	};
 
-	var carryOutOlympics = function() {
+	function carryOutOlympics() {
 		bestPlayers = [];
 		bestScoreSoFar = 0;
 		secondBestScoreSoFar = 0;
@@ -561,7 +570,7 @@
 		eventOver();
 	};
 
-	var carryOutRelief = function() {
+	function carryOutRelief() {
 		for (i=1; i<=numberOfTeams; i++) {
 			teamScores[i] += (teamDecisionCounters[i] * reliefDonationCost);
 			world += (teamDecisionCounters[i] * reliefDonationResult);
@@ -570,7 +579,7 @@
 		eventOver();
 	}
 
-	var carryOutSpaceRace = function() {
+	function carryOutSpaceRace() {
 		highestTeam = [];
 		bestScoreSoFar = 0;
 		for (i=1; i<=numberOfTeams; i++) {
@@ -598,7 +607,7 @@
 	
 	};
 
-	var carryOutInvestigations = function(sockets) {
+	function carryOutInvestigations(sockets) {
 		var teamCount = 0;
 		console.log(pastActions);
 		for (i=0;i<pastActions.length;i++) {
@@ -676,6 +685,9 @@
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
 			});
+			socket.emit('showImpact', {
+				playerScore: playerScores[socket.playerNumber]
+			});
 		}
 		unpauseTimer();
 	};
@@ -714,26 +726,28 @@
 		};
 	};
 
-	var updateRound = function(sockets) {
-		endGame(sockets);
-		for(var i in sockets) {
-			var socket = sockets[i];
+	var updateRound = function() {
+		endGame(SOCKET_LIST);
+		for(var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
 			socket.emit('decisionUpdate', {
 				playerScore: playerScores[socket.playerNumber],
 				groupScore: groupScores[socket.groupNumber],
 				teamScore: teamScores[socket.teamNumber],
 				world: world
 			});
-			socket.emit('enable', {});
-			socket.emit('nextRound', {
-				roundNumber: roundNumber + 1
-			});
+			if (roundNumber != 12) {
+				socket.emit('enable', {});
+				socket.emit('nextRound', {
+					roundNumber: roundNumber + 1
+				});
+			};
 		};
 		pauseTimer();
 		getWorldEvent();
 		unpauseTimer();
 		pauseTimer();
-		quarterlyReport(sockets);
+		quarterlyReport(SOCKET_LIST);
 		roundNumber++;
 	};
 
@@ -742,7 +756,7 @@
 		if (roundNumber < 3 || roundNumber == 5 || roundNumber == 8 || roundNumber == 11) {
 			worldEventChance = 0;
 		}
-		if (roundNumber % 3 == 0) {
+		if (roundNumber % 3 == 0 && roundNumber != 12) {
 			quarter++;
 			for (var i in sockets) {
 				var socket = sockets[i];
@@ -751,12 +765,13 @@
 					teamScores: teamScores,
 					groupScores: groupScores
 				});
-				socket.emit('newQuarter', {
-					quarter: quarter
-				});
 				socket.emit('nextRound', {
 					roundNumber: "Investigations"
 				});
+				socket.emit('newQuarter', {
+					quarter: quarter
+				});
+				
 			};
 			worldEventChance = 1;
 		}
@@ -864,8 +879,33 @@
 		return randomZeroToFour;
 	};
 	
+	function getRandomZeroToThree() {
+		randomZeroToThree = Math.floor(Math.random() * 4);
+		return randomZeroToThree;
+	};
+	
+	function getRandomZeroToTwo() {
+		randomZeroToTwo = Math.floor(Math.random() * 3);
+		return randomZeroToTwo;
+	};
+	
 	function getWorldEvent() {
+		eventUsed = false;
 		chosenEvent = getRandomZeroToFour();
+		for (i=0; i<eventsCompleted.length; i++) {
+			if (eventsCompleted[i] == chosenEvent) {
+				eventUsed = true;
+			}
+		};
+		while (eventUsed) {
+			eventUsed = false;
+			chosenEvent = getRandomZeroToFour();
+			for (i=0; i<eventsCompleted.length; i++) {
+				if (eventsCompleted[i] == chosenEvent) {
+					eventUsed = true;
+				}
+			};
+		};
 		if (worldEventChance == 1) {
 			if (Math.random() <= .333) {
 				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
@@ -886,11 +926,21 @@
 	};
 	
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
-		if (worldEvent == worldEvents[0]) {
+		eventsCompleted.push(chosenEvent);
+		var teamInLead;
+		if (chosenEvent == 0) {
+			var topScore = Number.NEGATIVE_INFINITY;
 			for (var i = 0; i < numberOfTeams; i++) {
+				if (teamScores[i + 1] > topScore) {
+					topScore = teamScores[i + 1];
+					teamInLead = i + 1;
+				};
 				individualWarVotes[i] = [0, 0];
 			};
-		} else if (worldEvent == worldEvents[1]) {
+			teamSides[0].push(teamInLead);
+			decidedPlayers += 1;
+			checkTeamSides();
+		} else if (chosenEvent == 1) {
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualBorderVotes[i] = [0, 0];
 			};
@@ -898,7 +948,10 @@
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('worldEvent', {
-				eventNumber: chosenEvent
+				eventNumber: chosenEvent,
+				teamScores: teamScores,
+				groupScores: groupScores,
+				teamInLead: teamInLead
 			});
 			socket.emit('nextRound', {
 				roundNumber: "World Event"
@@ -917,7 +970,8 @@
 
 	function checkTeamSides() {
 		if (decidedPlayers == totalPlayers) {
-			var WINNING_BONUS = 10;
+			var WINNING_BONUS = 12;
+			var groupBonus = WINNING_BONUS / numberOfGroups;
 			var team0Score = 0;
 			var team1Score = 0;
 			for (var i = 0; i < teamSides[0].length; i++) {
@@ -929,32 +983,44 @@
 			if (team0Score > team1Score) {
 				for (var i = 0; i < teamSides[0].length; i++) {
 					teamScores[teamSides[0][i]] += WINNING_BONUS;
+					for (var j = 1; j <= numberOfGroups; j++) {
+						groupScores[[teamSides[0][i], j]] += groupBonus;
+					};
 				};
 			} else {
 				for (var i = 0; i < teamSides[1].length; i++) {
 					teamScores[teamSides[1][i]] += WINNING_BONUS;
+					for (var j = 1; j <= numberOfGroups; j++) {
+						groupScores[[teamSides[1][i], j]] += groupBonus;
+					};
 				};
 			};
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
-			socket.emit('nextRound', {
-				roundNumber: roundNumber
-			});
  		};
 	};
 
 	function checkBorderVotes(team, side) {
 		var THRESHOLD = .5;
+		var TEAM_BONUS = 12;
+		var WORLD_BONUS = 20;
+		var groupBonus = TEAM_BONUS / numberOfGroups;
 		var currentPercentFor = individualBorderVotes[team - 1][side] / numberOfPlayersInTeams;
 		if (currentPercentFor >= THRESHOLD) {
 			if (side == 0) {
-				world -= 20;
-				teamScores[team] += 10;
+				world -= WORLD_BONUS;
+				teamScores[team] += TEAM_BONUS;
+				for (var j = 1; j <= numberOfGroups; j++) {
+					groupScores[[team, j]] += groupBonus;
+				};
 			} else {
-				world += 20;
-				teamScores[team] -= 10;
+				world += WORLD_BONUS;
+				teamScores[team] -= TEAM_BONUS;
+				for (var j = 1; j <= numberOfGroups; j++) {
+					groupScores[[team, j]] -= groupBonus;
+				};
 			};
 		};
 		decidedPlayers += 1;
@@ -966,9 +1032,6 @@
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
 			unpauseTimer();
-			socket.emit('nextRound', {
-				roundNumber: roundNumber
-			});
 		};
 	};
 	
@@ -976,9 +1039,9 @@
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('eventOver', {});
+			socket.emit('nextRound', {
+				roundNumber: roundNumber
+			});
 		};
 		unpauseTimer();
-		socket.emit('nextRound', {
-			roundNumber: roundNumber
-		});
 	};
