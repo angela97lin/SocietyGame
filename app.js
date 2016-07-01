@@ -338,6 +338,8 @@
 				socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
 				socket.emit('player', {
 					number: socket.playerNumberInGroup,
+					playerScore: playerScores[socket.playerNumber],
+					username: usernames[socket.playerNumber]
 				});
 				if (!(socket.teamNumber in teamScores)){
 					teamScores[socket.teamNumber] = 20 * numberOfGroups;
