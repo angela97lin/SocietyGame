@@ -365,9 +365,19 @@
 
 		});
 		
+		socket.on('stateRequest', function() {
+			socket.emit('gameState', {
+				screenType: gameStateScreenType,
+				decisionMade: playerDecisionMade[socket.playerNumber],
+				worldEventNumber: mostRecentWorldEvent
+			});
+		});
+		
 		socket.on('infoRequest', function() {
 			socket.emit('player', {
-				number: socket.playerNumberInGroup
+				number: socket.playerNumberInGroup,
+				playerScore: playerScores[socket.playerNumber],
+				username: usernames[socket.playerNumber]
 			});
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 
