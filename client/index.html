@@ -154,22 +154,22 @@
 		
 
 		username = prompt("What is your name?");
-		var invalidUsername = false;
-		for (name in data.usernames) {
-			if (data.usernames[name] == username) {
-				invalidUsername = true;
-			}; 
-		};
-		while (invalidUsername) {
-			window.alert("That username has already been taken");
-			username = prompt("What is your name?");
-			invalidUsername = false;
-			for (name in data.usernames) {
-				if (data.usernames[name] == username) {
-					invalidUsername = true;
-				}; 
-			};
-		};
+		// var invalidUsername = false;
+		// for (name in data.usernames) {
+		// 	if (data.usernames[name] == username) {
+		// 		invalidUsername = true;
+		// 	}; 
+		// };
+		// while (invalidUsername) {
+		// 	window.alert("That username has already been taken");
+		// 	username = prompt("What is your name?");
+		// 	invalidUsername = false;
+		// 	for (name in data.usernames) {
+		// 		if (data.usernames[name] == username) {
+		// 			invalidUsername = true;
+		// 		}; 
+		// 	};
+		// };
 		 
 		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
 		while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
@@ -531,6 +531,8 @@
 	};
 	
 	var swapToDecision = function(fromhere) {
+		if (fromhere == null) {alert("not here!")};
+		alert("it's fine");
 		$(fromhere).replaceWith(
 				'<div id ="decisionScreen" class = "row"> \
 					<div class="col-md-45"> \
