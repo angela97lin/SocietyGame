@@ -7,11 +7,18 @@
 	console.log('server started');
 	var SOCKET_LIST = {};
 	var io = require('socket.io')(serv, {});
+	var mainConnected = false;
+	var ipAddresses = {};
 	
 	app.get('/', function(req, res) {
 		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
 	});
 	app.get('/index', function(req, res) {
+		if (mainConnected) {
+			ipAddresses[req.connection.remoteAddress] = {};
+			console.log("ipAddresses:");
+			console.log(ipAddresses);
+		};
 		res.sendFile(__dirname + '/client/index.html');
 	});
 	app.get('/main', function(req, res) {
@@ -119,12 +126,14 @@
 		console.log('connection made');
 		console.log("Socket: " + socket.id);
 		playerNumber++;
-		socket.emit('indexConnect', {
-			numberOfTeams: numberOfTeams, 
-			numberOfGroups: numberOfGroups,
-			usernames: usernames,
-			mode: decisionMode
-		});
+		if (mainConnected) {
+			socket.emit('indexConnect', {
+				numberOfTeams: numberOfTeams, 
+				numberOfGroups: numberOfGroups,
+				usernames: usernames,
+				mode: decisionMode
+			});
+		};
 
 		socket.on('start', function(data) {
 			decisionMode = MODES[data.mode];
@@ -188,7 +197,8 @@
 					teamToAdd.push(0);
 				}
 				numberOfPlayersConnectedPerGroup.push(teamToAdd);
-			}
+			};
+			mainConnected = true;
 		});
 		
 		socket.on('decision1', function(data) {
@@ -364,9 +374,19 @@
 
 		});
 		
+		socket.on('stateRequest', function() {
+			socket.emit('gameState', {
+				screenType: gameStateScreenType,
+				decisionMade: playerDecisionMade[socket.playerNumber],
+				worldEventNumber: mostRecentWorldEvent
+			});
+		});
+		
 		socket.on('infoRequest', function() {
 			socket.emit('player', {
-				number: socket.playerNumberInGroup
+				number: socket.playerNumberInGroup,
+				playerScore: playerScores[socket.playerNumber],
+				username: usernames[socket.playerNumber]
 			});
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 

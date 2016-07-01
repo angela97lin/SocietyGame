@@ -135,6 +135,9 @@
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
+		$.get("http://ipinfo.io", function(response) {
+		    alert(response.ip);
+		}, "jsonp");
 		
 		if (data.mode == "timer" && hasStarted == false) {
 			disableButtons();
