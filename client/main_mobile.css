@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 
-html, body, div, h1, h2, h3, footer {
+html, body, div, h1, h2, h3, p, footer {
 	font-family: Tahoma, Arial, sans-serif;
 	color: #f9f9f9;
 	line-height: 100%;
@@ -11,6 +11,10 @@ h1, h2, h3, h4{
 	margin: 3%;
 	padding: 0%;
 	text-align: center;
+}
+
+p{
+	font-size: 4vw;
 }
 
 .container{ 
@@ -50,8 +54,8 @@ h1, h2, h3, h4{
 body{
 	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
 	background-repeat: repeat;
-	background-size: 100% 100%;
-	background-position: 50% 50%;
+	background-size: cover;
+	background-position: 50% 60%;
 }
 
 .score{
@@ -98,6 +102,7 @@ body{
 	font-variant: small-caps;
 	margin-top: 70px;
 	font-size: 250%;
+	line-height: 1vw
 }
 #timer{
 	margin-top: 50px;
@@ -175,9 +180,19 @@ button.hidden{
 	display:none;
 }
 
+
 /*.fade{
 	-webkit-transition: all 3s ease;
 	-moz-transition: all 3s ease;
 	-o-transition: all 3s ease;
 	color:white;
 }*/
+
+#winTeam, #lose, #gameOver, #win {
+	font-family: Tahoma, Arial, sans-serif;
+	color: #f9f9f9;
+	line-height: 120%;
+	font-size: 9vw
+	background: black;
+}
+
