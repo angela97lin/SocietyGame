@@ -22,7 +22,56 @@
 
 <script>
 	var hasdone = false;
-	var fileContents;
+	var fileContents='<div class = "container" id = "wholeMobilePage">\
+	<div class = "row" id = "info">\
+		<div class = "col-md-50" id="info1">\
+			<div class ="score">\
+				<h1 id="worldscore"></h1>\
+				<div class = "scoreChange">\
+					<h1 id = "worldChange"></h1>\
+				</div>\
+			</div>\
+			<div class ="score">\
+				<h2 id="nationscore"></h2>\
+				<div class = "scoreChange">\
+					<h1 id = "nationChange"></h1>\
+				</div>\
+			</div>\
+			<div class ="score">\
+				<h3 id="individualscore"></h3>\
+				<div class = "scoreChange">\
+					<h1 id = "individualChange"></h1>\
+				</div>\
+			</div>\
+		</div>\
+		<div class = "col-md-50" id = "info2">\
+			<h4 id="playerNumber"></h4>\
+			<h4 id="roundnumber"></h4>\
+			<h4 id="timer"></h4>\
+		</div>\
+	</div>\
+	<div id="decisionScreen">\
+		<div class = "row">\
+			<div class="col-md-48">\
+				<button class="decision" id="decision1" onclick="decision1()"></button>\
+				<h3></h3>\
+				<button class="decision" id="decision2" onclick="decision2()"></button>\
+				<h3></h3>\
+			</div>\
+			<div class = "col-md-48 col-md-offset-4">\
+				<button class="decision" id="decision3" onclick="decision3()"></button>\
+				<h3></h3>\
+				<button class="decision" id="decision4" onclick="decision4()"></button>\
+				<h3></h3>\
+			</div>\
+		</div>\
+		<div class = "row">\
+			<div class ="col-md-60 col-md-offset-20">\
+				<button class="decision" id="decision5" onclick="decision5()"></button>\
+			</div>\
+		</div>\
+		<div>\
+</div>'
 	var socket = io();
 	
 	var playerScore = 20;
@@ -251,10 +300,10 @@
 	socket.on('showImpact', function(data) {
 		delta = data.playerScore - playerScore;
 		if(delta>=0){
-			document.getElementById("individualChange").innerHTML = "+"+delta;
+			document.getElementById("individualChange").innerHTML = '<div class="fade">+'+delta+'</div>';
 		}
 		else{
-			document.getElementById("individualChange").innerHTML = delta;
+			document.getElementById("individualChange").innerHTML = '<div class="fade">'+delta+'</div>';
 		}
 		document.getElementById("nationChange").innerHTML = "+0";
 		document.getElementById("worldChange").innerHTML = "+0";
@@ -290,33 +339,33 @@
 	};
 	var decision1 = function() {
 		socket.emit('decision1', {});
-		document.getElementById("individualChange").innerHTML = "+2";
-		document.getElementById("nationChange").innerHTML = "-2";
-		document.getElementById("worldChange").innerHTML = "-1";
+		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
 		disableButtons();
 	};
 	
 	var decision2 = function() {
 		socket.emit('decision2', {});
-		document.getElementById("individualChange").innerHTML = "-1";
-		document.getElementById("nationChange").innerHTML = "+2";
-		document.getElementById("worldChange").innerHTML = "+0";
+		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
 		disableButtons();
 	};
 	
 	var decision3 = function() {
 		socket.emit('decision3', {});
-		document.getElementById("individualChange").innerHTML = "+1";
-		document.getElementById("nationChange").innerHTML = "+1";
-		document.getElementById("worldChange").innerHTML = "-1";
+		document.getElementById("individualChange").innerHTML = '<div class="fade">+1</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
 		disableButtons();
 	};
 	
 	var decision4 = function() {
 		socket.emit('decision4', {});
-		document.getElementById("individualChange").innerHTML = "-1";
-		document.getElementById("nationChange").innerHTML = "+0";
-		document.getElementById("worldChange").innerHTML = "+2";
+		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
 		disableButtons();
 	};
 
@@ -538,7 +587,7 @@
 	};
 	function swapToMainContent(fromhere, first) {
 		
-		if(first){
+		if(!true){
 			$.ajax({
 			    type: 'GET',
 			    url: '/client/mobile_content.html',
@@ -559,6 +608,7 @@
 			
 			$(fromhere).replaceWith(fileContents);
 			console.log("replaced main content");
+			createDecisions(groupNumberInput);
 		}
 
 	}

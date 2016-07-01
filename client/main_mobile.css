@@ -174,3 +174,10 @@ button:active {
 button.hidden{
 	display:none;
 }
+
+/*.fade{
+	-webkit-transition: all 3s ease;
+	-moz-transition: all 3s ease;
+	-o-transition: all 3s ease;
+	color:white;
+}*/
