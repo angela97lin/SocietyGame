@@ -80,6 +80,8 @@
 	var playersPerGroup;
 	var playersNotToInvestigate = [];
 	
+	var gameMode = "wait";
+	
 	var NATIONS = {1: "Japan",
 				   2: "Canada",
 				   3: "UK",
@@ -131,10 +133,10 @@
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
-		// alert("indexConnect");
-		if (data.mode == "timer" && hasStarted == false) {
-			disableButtons();
-		};
+		$.get("http://ipinfo.io", function(response) {
+		    alert(response.ip);
+		}, "jsonp");
+		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
 		console.log("NUMBERS RECIEVED");
@@ -341,10 +343,12 @@
 	
 	var disableButtons = function() {
 		$(':button').prop('disabled', true);
+		console.log('DISABLED' + hasStarted);
 	};
 	
 	var enableButtons = function() {
 		$(':button').prop('disabled', false);
+		console.log('ENABLED' + hasStarted);
 	};
 	var decision1 = function(sendToServer) {
 		if(sendToServer){
@@ -503,6 +507,9 @@
 	    	default:
 	        	console.log('That was not a valid decision case');
 		}
+		if (gameMode == "timer" && hasStarted == false) {
+			disableButtons();
+		};
 	}
 
 	var swapToWorldEvent = function(randomEvent) {

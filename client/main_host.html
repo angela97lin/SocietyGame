@@ -257,7 +257,7 @@
 					addGroup(i);
 				};
 				for (var i = 1; i <= numberOfTeams; i++) {
-					document.getElementById(i).innerHTML = teamNumberNames[i] + "'s Score: " + temporaryTeamScores[i];
+					document.getElementById(i).innerHTML = NATIONS[i] + "'s Score: " + temporaryTeamScores[i];
 					for (var j = 1; j <= numberOfGroups; j++) {
 						document.getElementById([i, j]).innerHTML = temporaryGroupScores[[i, j]];
 					};
