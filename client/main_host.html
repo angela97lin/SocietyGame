@@ -20,6 +20,7 @@
 				<div id="starttimer"></div>
 				<h2 id="worldscore"></h2>
 			</div>
+			<h2 id ="roundsTill">Inital Scores</h2>
 
 			<table id="nations" class ="cellTable">
 				<tbody>
@@ -92,7 +93,9 @@
 			var numberOfPlayersInTeams = numberOfPlayersInGroups*numberOfGroups;
 			
 			var nationscore = 20 * numberOfGroups;
-			var worldscore = 60;
+			var A = numberOfPlayers;
+			var worldScoreFormula = 0.00012149 * A^3 -0.03348123*A^2 + 3.8385*A - 0.3781;
+			var worldscore = Math.floor(worldScoreFormula/5.0)*5.0;
 								//Math.floor(Math.sqrt(64 * numberOfPlayers));
 			var roundnumber = 1;
 			var teamNumberNames = {};
@@ -143,6 +146,11 @@
 			
 			socket.on('nextRound', function(data) {
 				document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+				var nextQuarterlyReport = 4;
+				while(data.roundNumber > nextQuarterlyReport){
+					nextQuarterlyReport += 3;
+				}
+				document.getElementById("roundsTill").innerHTML = "Next Quarterly Report on Round: " + nextQuarterlyReport;
 			});
 
 			socket.on('quarter', function(data) {
@@ -178,7 +186,7 @@
 
 			socket.on("worldEvent", function(data) {
 				isWorldEvent = true;
-				swapToWorldEventScreen();
+				swapToWorldEventScreen(data.eventNumber);
 				temporaryTeamScores = data.teamScores;
 				temporaryGroupScores = data.groupScores;
 			});
@@ -265,15 +273,16 @@
 				socket.emit("infoRequest", {});
 			};
 
-			function swapToWorldEventScreen() {
+			function swapToWorldEventScreen(worldEventNumber) {
 				/*TODO
 				improve the world event screen
 				*/
-				$("#mainScreen").replaceWith(
-					'<div class="container" id="worldEventScreen"> \
-						<h2 id="worldEventText">There is a world event taking place</h2> \
-					</div>'
-				);
+				var worldEvents = ['warEvent','pandemicEvent','olympicsEvent','disasterEvent','energyEvent'];
+				$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
+    				$("#mainScreen").replaceWith(data);
+				});
+
+				
 			};
 
 	</script>	
