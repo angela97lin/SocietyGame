@@ -199,6 +199,7 @@
 	});
 	
 	socket.on('gameState',function(data) {
+		teamInLead = data.teamInLead;
 		gotoGameState(data.screenType, data.decisionMade, data.worldEventNumber);
 	});
 
@@ -209,6 +210,7 @@
 	socket.on('player', function(data) {
 		playerNumber = data.number;
 		username = data.username;
+		console.log("player username: " + username);
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
@@ -246,6 +248,7 @@
 	});
 	
 	socket.on('decisionUpdate', function(data) {
+		console.log("decision was updated")
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
@@ -345,6 +348,7 @@
 	};
 	var decision1 = function(sendToServer) {
 		if(sendToServer){
+			console.log("sent to server");
 			socket.emit('decision1', {});
 		}		
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
@@ -464,8 +468,40 @@
 			return;
 		}
 		disableButtons();
-		if(!decisionMade){
+		if(decisionMade== -1){
 			enableButtons();
+		}
+		else if(decisionMade == 0){	
+		//there was a decision made on world event or investigation, leave button disabled and don't show impact
+		}
+		else{
+			//a decision was made, show the impact
+
+		}
+		switch(decisionMade) {
+	    	case -1:  //no decision has been made, enable buttons
+	        	enableButtons();
+	        	break;
+	    	case 0:
+	        	//there was a decision made on world event or investigation, leave button disabled and don't show impact
+	        	break;
+	        case 1: 		//a decision was made, show the impact
+	        	decision1(false);
+	        	break;
+	        case 2:
+	        	decision2(false);
+	        	break;
+	        case 3:
+	        	decision3(false);
+	        	break;
+	        case 4:
+	        	decision4(false);
+	        	break;
+	        case 5:
+	        	decision5(false);
+	        	break;
+	    	default:
+	        	console.log('That was not a valid decision case');
 		}
 	}
 
