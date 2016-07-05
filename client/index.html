@@ -80,6 +80,8 @@
 	var playersPerGroup;
 	var playersNotToInvestigate = [];
 	
+	var gameMode = "wait";
+	
 	var NATIONS = {1: "Japan",
 				   2: "Canada",
 				   3: "UK",
@@ -133,9 +135,6 @@
 		    alert(response.ip);
 		}, "jsonp");
 		
-		if (data.mode == "timer" && hasStarted == false) {
-			disableButtons();
-		};
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
 		console.log("NUMBERS RECIEVED");
@@ -183,6 +182,10 @@
 		
 		swapToMainContent("#empty");
 		
+		if (data.mode == "timer" && hasStarted == false) {
+			disableButtons();
+			gameMode = "timer";
+		};
 		
 		teamName = NATIONS[teamNameInput];
 		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
@@ -336,10 +339,12 @@
 	
 	var disableButtons = function() {
 		$(':button').prop('disabled', true);
+		console.log('DISABLED' + hasStarted);
 	};
 	
 	var enableButtons = function() {
 		$(':button').prop('disabled', false);
+		console.log('ENABLED' + hasStarted);
 	};
 	var decision1 = function(sendToServer) {
 		if(sendToServer){
@@ -498,6 +503,9 @@
 	    	default:
 	        	console.log('That was not a valid decision case');
 		}
+		if (gameMode == "timer" && hasStarted == false) {
+			disableButtons();
+		};
 	}
 
 	var swapToWorldEvent = function(randomEvent) {
