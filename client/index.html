@@ -133,9 +133,6 @@
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
-		$.get("http://ipinfo.io", function(response) {
-		    alert(response.ip);
-		}, "jsonp");
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
