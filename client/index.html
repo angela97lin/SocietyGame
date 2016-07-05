@@ -22,56 +22,52 @@
 
 <script>
 	var hasdone = false;
-	var fileContents='<div class = "container" id = "wholeMobilePage">\
-	<div class = "row" id = "info">\
-		<div class = "col-md-50" id="info1">\
-			<div class ="score">\
-				<h1 id="worldscore"></h1>\
-				<div class = "scoreChange">\
-					<h1 id = "worldChange"></h1>\
+	var decisionString = 
+	'<div id ="decisionScreen" class = "row"> \
+		<div class="col-md-45"> \
+			<button class="decision" id="decision1" onclick="decision1(true)"></button> \
+			<h3></h3> \
+			<button class="decision" id="decision2" onclick="decision2(true)"></button> \
+			<h3></h3> \
+		</div> \
+		<div class = "col-md-45 col-md-offset-10"> \
+			<button class="decision" id="decision3" onclick="decision3(true)"></button> \
+			<h3></h3> \
+			<button class="decision" id="decision4" onclick="decision4(true)"></button> \
+			<h3></h3> \
+			<button class="decision" id="decision5" onclick="decision5(true)"></button> \
+		</div> \
+	</div>'
+	var fileContents=
+	'<div class = "container" id = "wholeMobilePage">\
+		<div class = "row" id = "info">\
+			<div class = "col-md-50" id="info1">\
+				<div class ="score">\
+					<h1 id="worldscore"></h1>\
+					<div class = "scoreChange">\
+						<h1 id = "worldChange"></h1>\
+					</div>\
+				</div>\
+				<div class ="score">\
+					<h2 id="nationscore"></h2>\
+					<div class = "scoreChange">\
+						<h1 id = "nationChange"></h1>\
+					</div>\
+				</div>\
+				<div class ="score">\
+					<h3 id="individualscore"></h3>\
+					<div class = "scoreChange">\
+						<h1 id = "individualChange"></h1>\
+					</div>\
 				</div>\
 			</div>\
-			<div class ="score">\
-				<h2 id="nationscore"></h2>\
-				<div class = "scoreChange">\
-					<h1 id = "nationChange"></h1>\
-				</div>\
+			<div class = "col-md-50" id = "info2">\
+				<h4 id="playerNumber"></h4>\
+				<h4 id="roundnumber"></h4>\
+				<h4 id="timer"></h4>\
+				<div id="waitingForPlayers"></div>\
 			</div>\
-			<div class ="score">\
-				<h3 id="individualscore"></h3>\
-				<div class = "scoreChange">\
-					<h1 id = "individualChange"></h1>\
-				</div>\
-			</div>\
-		</div>\
-		<div class = "col-md-50" id = "info2">\
-			<h4 id="playerNumber"></h4>\
-			<h4 id="roundnumber"></h4>\
-			<h4 id="timer"></h4>\
-		</div>\
-	</div>\
-	<div id="decisionScreen">\
-		<div class = "row">\
-			<div class="col-md-48">\
-				<button class="decision" id="decision1" onclick="decision1()"></button>\
-				<h3></h3>\
-				<button class="decision" id="decision2" onclick="decision2()"></button>\
-				<h3></h3>\
-			</div>\
-			<div class = "col-md-48 col-md-offset-4">\
-				<button class="decision" id="decision3" onclick="decision3()"></button>\
-				<h3></h3>\
-				<button class="decision" id="decision4" onclick="decision4()"></button>\
-				<h3></h3>\
-			</div>\
-		</div>\
-		<div class = "row">\
-			<div class ="col-md-60 col-md-offset-20">\
-				<button class="decision" id="decision5" onclick="decision5()"></button>\
-			</div>\
-		</div>\
-		<div>\
-</div>'
+		</div>'+decisionString+'</div>'
 	var socket = io();
 	
 	var playerScore = 20;
@@ -84,6 +80,8 @@
 	
 	var playersPerGroup;
 	var playersNotToInvestigate = [];
+	
+	var gameMode = "wait";
 	
 	var NATIONS = {1: "Japan",
 				   2: "Canada",
@@ -120,6 +118,8 @@
 					  4: "Give time to international disaster relief organization",
 					  5: "Take bribe to deport criminal"}];
 	
+	var ip;
+
 	var username;
 	var playerNumber;
 	var teamName;
@@ -135,67 +135,84 @@
 
 	socket.on('indexConnect', function(data) {
 		
-		if (data.mode == "timer" && hasStarted == false) {
-			disableButtons();
-		};
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
 		console.log("NUMBERS RECIEVED");
-		var nationPromptText = "";
-		var groupPromptText = "";
-		
-		for (var i = 1; i <= numberOfTeams; i++){
-			nationPromptText += (i + ": " + NATIONS[i] + "\n");
-		};
-		
-		for (var i = 1; i <= numberOfGroups; i++){
-			groupPromptText += (i + ": " + GROUPS[i] + "\n");
-		};
-		
 
-		username = prompt("What is your name?");
-		// var invalidUsername = false;
-		// for (name in data.usernames) {
-		// 	if (data.usernames[name] == username) {
-		// 		invalidUsername = true;
-		// 	}; 
-		// };
-		// while (invalidUsername) {
-		// 	window.alert("That username has already been taken");
-		// 	username = prompt("What is your name?");
-		// 	invalidUsername = false;
-		// 	for (name in data.usernames) {
-		// 		if (data.usernames[name] == username) {
-		// 			invalidUsername = true;
-		// 		}; 
-		// 	};
-		// };
-		 
-		teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-		while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
-			window.alert("Please enter a valid team number");
-			teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-		};
-		groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
-		while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
-			window.alert("Please enter a valid group number");
-			groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
-		};
-		
-		swapToMainContent("#empty", true);
-		
-		
-		teamName = NATIONS[teamNameInput];
-		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
+		$.get("http://ipinfo.io", function(response) {
+			ip = response.ip;
+			if (ip in data.ipAddresses) {
+				username = data.ipAddresses[ip].username;
+				teamNameInput = data.ipAddresses[ip].teamNumber;
+				groupNumberInput = data.ipAddresses[ip].rawGroupNumber;
+
+			} else {
+			    var nationPromptText = "";
+				var groupPromptText = "";
+				
+				for (var i = 1; i <= numberOfTeams; i++){
+					nationPromptText += (i + ": " + NATIONS[i] + "\n");
+				};
+				
+				for (var i = 1; i <= numberOfGroups; i++){
+					groupPromptText += (i + ": " + GROUPS[i] + "\n");
+				};
+				
+
+				username = prompt("What is your name?");
+				var invalidUsername = false;
+				for (name in data.usernames) {
+					if (data.usernames[name] == username) {
+						invalidUsername = true;
+					}; 
+				};
+				while (invalidUsername) {
+					window.alert("That username has already been taken");
+					username = prompt("What is your name?");
+					invalidUsername = false;
+					for (name in data.usernames) {
+						if (data.usernames[name] == username) {
+							invalidUsername = true;
+						}; 
+					};
+				};
+				 
+				teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+				while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
+					window.alert("Please enter a valid team number");
+					teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+				};
+				groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+				while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
+					window.alert("Please enter a valid group number");
+					groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+				};
+			};
+			swapToMainContent("#empty", true);
+			teamName = NATIONS[teamNameInput];
+			socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput,  ip: ip});
+
+			//Redirect the player to the correct place, based on gamestate
+			socket.emit('stateRequest', {});
+
+		}, "jsonp");
 	});
 	
+	socket.on('gameState',function(data) {
+		teamInLead = data.teamInLead;
+		gotoGameState(data.screenType, data.decisionMade, data.worldEventNumber);
+	});
+
 	socket.on('getTeamNumber', function(data) {
 		groupNumber = data.groupNumber;
 	});
 	
 	socket.on('player', function(data) {
 		playerNumber = data.number;
+		username = data.username;
+		console.log("player username: " + username);
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
+		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
 	});
 
@@ -231,6 +248,7 @@
 	});
 	
 	socket.on('decisionUpdate', function(data) {
+		console.log("decision was updated")
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
@@ -251,6 +269,7 @@
 		document.getElementById('individualChange').innerHTML = "";
 		document.getElementById('nationChange').innerHTML = "";
 		document.getElementById('worldChange').innerHTML = "";
+		document.getElementById("waitingForPlayers").innerHTML = "";
 
 	});
 	
@@ -314,7 +333,6 @@
 /*FUNCTIONS*/
 
 	function createDecisions(group) {
-		console.log("created decisions");
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
 		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
 		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];
@@ -323,55 +341,65 @@
 	};
 	
 	var disableButtons = function() {
-		//document.getElementById('decision1').disabled = true;
-		//document.getElementById('decision2').disabled = true;
-		//document.getElementById('decision3').disabled = true;
-		//document.getElementById('decision4').disabled = true;
 		$(':button').prop('disabled', true);
+		console.log('DISABLED' + hasStarted);
 	};
 	
 	var enableButtons = function() {
-		//document.getElementById('decision1').disabled = false;
-		//document.getElementById('decision2').disabled = false;
-		//document.getElementById('decision3').disabled = false;
-		//document.getElementById('decision4').disabled = false;
 		$(':button').prop('disabled', false);
+		console.log('ENABLED' + hasStarted);
 	};
-	var decision1 = function() {
-		socket.emit('decision1', {});
+	var decision1 = function(sendToServer) {
+		if(sendToServer){
+			console.log("sent to server");
+			socket.emit('decision1', {});
+		}		
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
-	var decision2 = function() {
-		socket.emit('decision2', {});
+	var decision2 = function(sendToServer) {
+		if(sendToServer){
+			socket.emit('decision2', {});
+		}	
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
-	var decision3 = function() {
-		socket.emit('decision3', {});
+	var decision3 = function(sendToServer) {
+		if(sendToServer){
+			socket.emit('decision3', {});
+		}	
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
-	var decision4 = function() {
-		socket.emit('decision4', {});
+	var decision4 = function(sendToServer) {
+		if(sendToServer){
+			socket.emit('decision4', {});
+		}	
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
-	var decision5 = function() {
-		socket.emit('decision5', {groupNumber: groupNumberInput});
+	var decision5 = function(sendToServer) {
+		if(sendToServer){
+			socket.emit('decision5', {groupNumber: groupNumberInput});
+		}
 		displayDecision5Numbers(groupNumberInput);
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	}
 	
@@ -382,6 +410,7 @@
 			playerInvestigating: playerNumber,
 			playerToInvestigate: playerToInvestigate
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -391,6 +420,7 @@
 			team: teamNameInput,
 			side: side
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
@@ -400,24 +430,28 @@
 			team: teamNameInput,
 			side: side
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
 	/*Functions for olympics*/
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
 	/*Functions for disaster*/
 	var sendRelief = function() {
 		socket.emit('sendRelief', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
 	/*Functions for space race*/
 	var donateToSpaceRace = function() {
 		socket.emit('donateToSpaceRace', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -425,10 +459,69 @@
 		socket.emit('doNothing', {
 			eventNumber: eventNumber
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
 
+
+	function gotoGameState(screenType, decisionMade, eventNum) {
+		
+		swapToMainContent("#empty");
+		socket.emit('infoRequest', {});
+		
+
+		if(screenType == "investigation"){
+			swapToInvestigation(1);
+			
+		}
+		else if(screenType == "event"){
+			swapToWorldEvent(eventNum);
+		}
+		else if(screenType != "decision"){
+			console.log("Not a valid Game State")
+			return;
+		}
+		disableButtons();
+		if(decisionMade== -1){
+			enableButtons();
+		}
+		else if(decisionMade == 0){	
+		//there was a decision made on world event or investigation, leave button disabled and don't show impact
+		}
+		else{
+			//a decision was made, show the impact
+
+		}
+		switch(decisionMade) {
+	    	case -1:  //no decision has been made, enable buttons
+	        	enableButtons();
+	        	break;
+	    	case 0:
+	        	//there was a decision made on world event or investigation, leave button disabled and don't show impact
+	        	break;
+	        case 1: 		//a decision was made, show the impact
+	        	decision1(false);
+	        	break;
+	        case 2:
+	        	decision2(false);
+	        	break;
+	        case 3:
+	        	decision3(false);
+	        	break;
+	        case 4:
+	        	decision4(false);
+	        	break;
+	        case 5:
+	        	decision5(false);
+	        	break;
+	    	default:
+	        	console.log('That was not a valid decision case');
+		}
+		if (gameMode == "timer" && hasStarted == false) {
+			disableButtons();
+		};
+	}
 
 	var swapToWorldEvent = function(randomEvent) {
 		
@@ -439,6 +532,11 @@
 						<h2>You have decided to invade Poland!</h2> \
 					</div>'
 				);
+				if (numberOfTeams == 1) {
+					setTimeout(function() {
+						socket.emit("oneTeamWar", {});
+					}, 2500);
+				};
 			} else {
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class = "row"> \
@@ -511,7 +609,6 @@
 	var swapToInvestigation = function(whichCase) {
 		
 		if(whichCase == 1){			//Normal switch to investigation
-			console.log("SWAP TO INVESTIGATION");
 			$("#decisionScreen").replaceWith(
 				'<div id="investigationScreen" class = "row"> \
 					<div class="col-md-45"> \
@@ -534,16 +631,11 @@
 			);
 			for (i=0;i<playersNotToInvestigate.length;i++) {
 				p = "investigate" + playersNotToInvestigate[i];
-				console.log(p);
-				console.log(document.getElementById(p).className);
 				document.getElementById(p).className += ' hidden';
-				console.log(document.getElementById(p).className);
 			};
 			socket.emit('infoRequest', {});
-			console.log("SWAPPED");
 		}
 		else if(whichCase==2){	//Switch to investigation rules
-			console.log("SWAP TO INVESTIGATION rules");
 			$("#wholeMobilePage").replaceWith(
 				'<div id ="textie">\
 					<h1>It’s time for Quarterly Reports!</h1>\
@@ -558,60 +650,21 @@
 			);
 		}
 		else if(whichCase==3){	//Switch to investigation from rules page
-			swapToMainContent("#textie", false);
-			//socket.emit("infoRequest",{});
+			swapToMainContent("#textie");
 			swapToInvestigation(1);
 		}
 	};
 	
 	function swapToDecision(fromhere) {
-		$(fromhere).replaceWith(
-				'<div id ="decisionScreen" class = "row"> \
-					<div class="col-md-45"> \
-						<button class="decision" id="decision1" onclick="decision1()"></button> \
-						<h3></h3> \
-						<button class="decision" id="decision2" onclick="decision2()"></button> \
-						<h3></h3> \
-					</div> \
-					<div class = "col-md-45 col-md-offset-10"> \
-						<button class="decision" id="decision3" onclick="decision3()"></button> \
-						<h3></h3> \
-						<button class="decision" id="decision4" onclick="decision4()"></button> \
-						<h3></h3> \
-						<button class="decision" id="decision5" onclick="decision5()"></button> \
-					</div> \
-				</div>'		
-		);
+		$(fromhere).replaceWith(decisionString);
 		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});
 	};
-	function swapToMainContent(fromhere, first) {
-		
-		if(!true){
-			$.ajax({
-			    type: 'GET',
-			    url: '/client/mobile_content.html',
-			    success: function (data) {
-			    	fileContents = data;
-			    	console.log("found content");
-			    	console.log("replaced content");
-					$(fromhere).replaceWith(fileContents);
-			        // success
-			        
-			        createDecisions(groupNumberInput);
-			        
 
-			    }
-			});
-		}
-		else{
-			
-			$(fromhere).replaceWith(fileContents);
-			console.log("replaced main content");
-			createDecisions(groupNumberInput);
-		}
-
-	}
+	function swapToMainContent(fromhere) {
+		$(fromhere).replaceWith(fileContents);
+		createDecisions(groupNumberInput);
+	};
 	
 	function displayDecision5Numbers(groupNumber) {
 		if (groupNumber == 1) {

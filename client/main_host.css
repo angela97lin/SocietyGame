@@ -53,6 +53,13 @@ body{
 	align:center;
 }
 
+#roundsTill{
+	margin: -20px 0px 40px 0px;
+	font-variant: small-caps;
+	font-size: 60px;
+	text-align: left;
+}
+
 /*-----------Table----------*/
 tbody{
 	border-radius: 70px;
