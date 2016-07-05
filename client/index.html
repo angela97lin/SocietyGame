@@ -410,6 +410,7 @@
 			playerInvestigating: playerNumber,
 			playerToInvestigate: playerToInvestigate
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -419,6 +420,7 @@
 			team: teamNameInput,
 			side: side
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
@@ -428,24 +430,28 @@
 			team: teamNameInput,
 			side: side
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
 	/*Functions for olympics*/
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
 	/*Functions for disaster*/
 	var sendRelief = function() {
 		socket.emit('sendRelief', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
 	/*Functions for space race*/
 	var donateToSpaceRace = function() {
 		socket.emit('donateToSpaceRace', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -453,6 +459,7 @@
 		socket.emit('doNothing', {
 			eventNumber: eventNumber
 		});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
