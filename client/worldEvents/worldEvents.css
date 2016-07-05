@@ -1,0 +1,73 @@
+body, p {
+	position:absolute;
+	height:100%;
+	width:100%;
+	font-family: Tahoma, Arial, sans-serif;
+	color: #f9f9f9;
+}
+
+.container {
+    background-color: black;
+    height: 100%;
+    width: 80%;
+    padding: 1.3vw;
+    padding-top: 3vw;
+    text-align: left;
+}
+
+.box {
+    width: 60%;
+    display: inline-block;
+}
+
+#olympicsEvent, #disasterEvent, #energyEvent, #warEvent {
+	font-size: 3vw;
+	letter-spacing: 0.045em;
+	line-height: 1.25em
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#pandemicEvent {
+	font-size: 2.5vw;
+	letter-spacing: 0.045em;
+	line-height: 1.25em;
+	background-image: url("pandemic.jpg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#olympicsEvent {
+	color: black;
+	padding-top: 20vw;
+	background-image: url("olympics.jpg");
+	background-width: 10vw;
+	padding-left: 2vw;
+	padding-right: 5vw;
+}
+
+#disasterEvent {
+	background-image: url("Vesuvius.jpg");
+}
+
+#energyEvent {
+	background-image: url("fusion.jpg")
+}
+
+#warEvent {
+	color:black;
+	background-image: url("wartime.jpg");
+	background-size: 100%;
+	background-size: cover;
+}
+
+/*
+	background-image: url("Planetarium_Mobile_Prototype_Background.jpg");
+
+	fusion.jpg
+	olympics.jpg
+	pandemic.jpg
+	Vesuvius.jpg
+	wartime.jpg*/
