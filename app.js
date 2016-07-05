@@ -348,6 +348,7 @@
 											   playerNumber: socket.playerNumber,
 											   groupNumber: socket.groupNumber,
 											   playerNumberInGroup: socket.playerNumberInGroup};
+				console.log(ipAddresses);
 			};
 			usernames[socket.playerNumber] = data.username;
 			socket.emit("team", {

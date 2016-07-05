@@ -116,6 +116,7 @@
 					  5: "Take bribe to deport criminal"}];
 	
 	var ip;
+
 	var username;
 	var playerNumber;
 	var teamName;
@@ -130,10 +131,7 @@
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
-		$.get("http://ipinfo.io", function(response) {
-		    ip = response.ip;
-		}, "jsonp");
-
+		// alert("indexConnect");
 		if (data.mode == "timer" && hasStarted == false) {
 			disableButtons();
 		};
@@ -141,59 +139,63 @@
 		numberOfGroups = data.numberOfGroups;
 		console.log("NUMBERS RECIEVED");
 
-		if (ip in data.ipAddresses) {
-			username = data.ipAddresses.username;
-			teamNameInput = data.ipAddresses.teamNumber;
-			groupNumberInput = data.ipAddresses.groupNumberInput;
-		} else {
-			var nationPromptText = "";
-			var groupPromptText = "";
-			
-			for (var i = 1; i <= numberOfTeams; i++){
-				nationPromptText += (i + ": " + NATIONS[i] + "\n");
-			};
-			
-			for (var i = 1; i <= numberOfGroups; i++){
-				groupPromptText += (i + ": " + GROUPS[i] + "\n");
-			};
-			
+		$.get("http://ipinfo.io", function(response) {
+			ip = response.ip;
+			if (ip in data.ipAddresses) {
+				username = data.ipAddresses[ip].username;
+				teamNameInput = data.ipAddresses[ip].teamNumber;
+				groupNumberInput = data.ipAddresses[ip].rawGroupNumber;
 
-			username = prompt("What is your name?");
-			var invalidUsername = false;
-			for (name in data.usernames) {
-				if (data.usernames[name] == username) {
-					invalidUsername = true;
-				}; 
-			};
-			while (invalidUsername) {
-				window.alert("That username has already been taken");
+			} else {
+			    var nationPromptText = "";
+				var groupPromptText = "";
+				
+				for (var i = 1; i <= numberOfTeams; i++){
+					nationPromptText += (i + ": " + NATIONS[i] + "\n");
+				};
+				
+				for (var i = 1; i <= numberOfGroups; i++){
+					groupPromptText += (i + ": " + GROUPS[i] + "\n");
+				};
+				
+
 				username = prompt("What is your name?");
-				invalidUsername = false;
+				var invalidUsername = false;
 				for (name in data.usernames) {
 					if (data.usernames[name] == username) {
 						invalidUsername = true;
 					}; 
 				};
-			};
-			 
-			teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-			while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
-				window.alert("Please enter a valid team number");
+				while (invalidUsername) {
+					window.alert("That username has already been taken");
+					username = prompt("What is your name?");
+					invalidUsername = false;
+					for (name in data.usernames) {
+						if (data.usernames[name] == username) {
+							invalidUsername = true;
+						}; 
+					};
+				};
+				 
 				teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-			};
-			groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
-			while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
-				window.alert("Please enter a valid group number");
+				while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
+					window.alert("Please enter a valid team number");
+					teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+				};
 				groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+				while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
+					window.alert("Please enter a valid group number");
+					groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+				};
 			};
-		};
+			swapToMainContent("#empty", true);
+			teamName = NATIONS[teamNameInput];
+			socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput,  ip: ip});
 
-		swapToMainContent("#empty", true);
-		teamName = NATIONS[teamNameInput];
-		socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput,  ip: ip});
+			//Redirect the player to the correct place, based on gamestate
+			socket.emit('stateRequest', {});
 
-		//Redirect the player to the correct place, based on gamestate
-		socket.emit('stateRequest', {});
+		}, "jsonp");
 	});
 	
 	socket.on('gameState',function(data) {
@@ -599,12 +601,11 @@
 		createDecisions(groupNumberInput);
 		socket.emit('infoRequest', {});
 	};
-	function swapToMainContent(fromhere) {
 
+	function swapToMainContent(fromhere) {
 		$(fromhere).replaceWith(fileContents);
 		createDecisions(groupNumberInput);
-
-	}
+	};
 	
 	function displayDecision5Numbers(groupNumber) {
 		if (groupNumber == 1) {
