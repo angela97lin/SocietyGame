@@ -14,11 +14,6 @@
 		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
 	});
 	app.get('/index', function(req, res) {
-		if (mainConnected) {
-			ipAddresses[req.connection.remoteAddress] = {};
-			console.log("ipAddresses:");
-			console.log(ipAddresses);
-		};
 		res.sendFile(__dirname + '/client/index.html');
 	});
 	app.get('/main', function(req, res) {
@@ -136,7 +131,8 @@
 				numberOfTeams: numberOfTeams, 
 				numberOfGroups: numberOfGroups,
 				usernames: usernames,
-				mode: decisionMode
+				mode: decisionMode,
+				ipAddresses: ipAddresses
 			});
 		};
 
@@ -288,8 +284,8 @@
 		});
 
 		socket.on('playerConnect', function(data) {
-			if (data.username in usernameData) {
-				var userData = usernameData[data.username];
+			if (data.ip in ipAddresses) {
+				var userData = ipAddresses[data.ip];
 				socket.rawGroupNumber = userData.rawGroupNumber;
 				socket.teamNumber = userData.teamNumber;
 				socket.username = data.username;
@@ -297,6 +293,7 @@
 				socket.groupNumber = userData.groupNumber;
 				socket.playerNumberInGroup = userData.playerNumberInGroup;
 			} else {
+				ipAddresses[data.ip] = {};
 				socket.rawGroupNumber = data.groupNumberInput;
 				socket.teamNumber = data.teamNumber;
 				socket.username = data.username;
@@ -348,12 +345,13 @@
 				if (!(socket.groupNumber in groupScores)){
 					groupScores[socket.groupNumber] = 20;
 				};
-				usernameData[data.username] = {rawGroupNumber: socket.rawGroupNumber,
+				ipAddresses[data.ip] = {rawGroupNumber: socket.rawGroupNumber,
 											   teamNumber: socket.teamNumber,
 											   username: socket.username,
 											   playerNumber: socket.playerNumber,
 											   groupNumber: socket.groupNumber,
 											   playerNumberInGroup: socket.playerNumberInGroup};
+				console.log(ipAddresses);
 			};
 			usernames[socket.playerNumber] = data.username;
 			socket.emit("team", {
