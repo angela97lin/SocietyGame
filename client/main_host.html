@@ -135,7 +135,7 @@
 			var isWorldEvent = false;
 			var temporaryGroupScores;
 			var temporaryTeamScores;
-			
+			var winningTeam;
 			
 /*LISTENERS*/
 			
@@ -189,6 +189,7 @@
 				swapToWorldEventScreen(data.eventNumber);
 				temporaryTeamScores = data.teamScores;
 				temporaryGroupScores = data.groupScores;
+				winningTeam = NATIONS[data.teamInLead];
 			});
 
 			socket.on("eventOver", function() {
@@ -278,9 +279,18 @@
 				improve the world event screen
 				*/
 				var worldEvents = ['warEvent','pandemicEvent','olympicsEvent','disasterEvent','energyEvent'];
-				$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
-    				$("#mainScreen").replaceWith(data);
-				});
+				if(worldEventNumber==0){
+					$("#mainScreen").replaceWith(
+						'<div id = "worldEventScreen">\
+							<p id="warEvent">' + winningTeam + 'declared war on Switzerland! Which side will you take?</p>\
+						</div>'
+					);
+				}
+				else{
+					$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
+	    				$("#mainScreen").replaceWith(data);
+					});
+				}
 
 				
 			};
