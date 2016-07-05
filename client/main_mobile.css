@@ -110,6 +110,11 @@ body{
 	font-size: 350%;
 }
 
+#waitingForPlayers {
+	margin-top: 50px;
+	font-size: 150%;
+}
+
 #info {
 	margin-bottom: 20px;
 }

@@ -65,6 +65,7 @@
 				<h4 id="playerNumber"></h4>\
 				<h4 id="roundnumber"></h4>\
 				<h4 id="timer"></h4>\
+				<div id="waitingForPlayers"></div>\
 			</div>\
 		</div>'+decisionString+'</div>'
 	var socket = io();
@@ -268,6 +269,7 @@
 		document.getElementById('individualChange').innerHTML = "";
 		document.getElementById('nationChange').innerHTML = "";
 		document.getElementById('worldChange').innerHTML = "";
+		document.getElementById("waitingForPlayers").innerHTML = "";
 
 	});
 	
@@ -355,6 +357,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -365,6 +368,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -375,6 +379,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -385,6 +390,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
@@ -393,6 +399,7 @@
 			socket.emit('decision5', {groupNumber: groupNumberInput});
 		}
 		displayDecision5Numbers(groupNumberInput);
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	}
 	
