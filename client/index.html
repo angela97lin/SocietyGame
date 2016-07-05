@@ -514,6 +514,11 @@
 						<h2>You have decided to invade Poland!</h2> \
 					</div>'
 				);
+				if (numberOfTeams == 1) {
+					setTimeout(function() {
+						socket.emit("oneTeamWar", {});
+					}, 2500);
+				};
 			} else {
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class = "row"> \
