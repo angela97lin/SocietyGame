@@ -76,6 +76,7 @@
 	var teamGroupPlayer = {};
 	var usernames = {};
 	var usernameData = {};
+	var groupmatesDict = {};
 	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
 	var eventsCompleted = [];
 	
@@ -403,6 +404,11 @@
 				playerScore: playerScores[socket.playerNumber],
 				username: usernames[socket.playerNumber]
 			});
+			
+			socket.emit("groupmates", {
+				groupmates: groupmatesDict[socket.playerNumber]
+			});
+		
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber] 
 			});
@@ -447,6 +453,26 @@
 				var socket = SOCKET_LIST[i];
 				socket.emit("enable", {});
 			};
+			
+			for(var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				groupmates = {};
+				groupmatesLowerBound = (numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*(socket.rawGroupNumber-1)) + 1;
+				groupmatesUpperBound = (numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*socket.rawGroupNumber);
+				for(i=groupmatesLowerBound; i<=groupmatesUpperBound; i++){
+					groupmates[i - ((numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*(socket.rawGroupNumber-1)))] = usernames[i];
+				};
+				delete groupmates[socket.playerNumberInGroup];
+				groupmatesDict[socket.playerNumber] = groupmates;
+			};
+			
+			for(var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.emit("groupmates", {
+					groupmates: groupmatesDict[socket.playerNumber]
+				});
+			};
+			
 			setInterval(function() {
 				if (decidedPlayers == totalPlayers) {
 					decidedPlayers = 0;
