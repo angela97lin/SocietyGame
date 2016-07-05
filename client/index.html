@@ -65,6 +65,7 @@
 				<h4 id="playerNumber"></h4>\
 				<h4 id="roundnumber"></h4>\
 				<h4 id="timer"></h4>\
+				<div id="waitingForPlayers"></div>\
 			</div>\
 		</div>'+decisionString+'</div>'
 	var socket = io();
@@ -133,9 +134,6 @@
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
-		$.get("http://ipinfo.io", function(response) {
-		    alert(response.ip);
-		}, "jsonp");
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
@@ -271,6 +269,7 @@
 		document.getElementById('individualChange').innerHTML = "";
 		document.getElementById('nationChange').innerHTML = "";
 		document.getElementById('worldChange').innerHTML = "";
+		document.getElementById("waitingForPlayers").innerHTML = "";
 
 	});
 	
@@ -358,6 +357,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -368,6 +368,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -378,6 +379,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 	
@@ -388,6 +390,7 @@
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	};
 
@@ -396,6 +399,7 @@
 			socket.emit('decision5', {groupNumber: groupNumberInput});
 		}
 		displayDecision5Numbers(groupNumberInput);
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
 	}
 	
@@ -521,6 +525,11 @@
 						<h2>You have decided to invade Poland!</h2> \
 					</div>'
 				);
+				if (numberOfTeams == 1) {
+					setTimeout(function() {
+						socket.emit("oneTeamWar", {});
+					}, 2500);
+				};
 			} else {
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class = "row"> \

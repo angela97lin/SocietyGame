@@ -430,6 +430,10 @@
 			checkTeamSides();
 		});
 
+		socket.on("oneTeamWar", function() {
+			checkTeamSides();
+		});
+
 		/*Listeners for epidemic*/
 		socket.on("castBorderVote", function(data) {
 			playerDecisionMade[socket.playerNumber] = 0;
@@ -993,7 +997,7 @@
 				individualWarVotes[i] = [0, 0];
 			};
 			teamSides[0].push(teamInLead);
-			decidedPlayers += 1 * numberOfPlayersInTeams;
+			decidedPlayers += numberOfPlayersInTeams;
 		} else if (chosenEvent == 1) {
 			for (var i = 0; i < numberOfTeams; i++) {
 				individualBorderVotes[i] = [0, 0];
