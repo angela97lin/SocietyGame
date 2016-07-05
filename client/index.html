@@ -78,6 +78,7 @@
 	
 	var playersPerGroup;
 	var playersNotToInvestigate = [];
+	var groupmates = {};
 	
 	var gameMode = "wait";
 	
@@ -194,6 +195,9 @@
 			socket.emit('stateRequest', {});
 
 		}, "jsonp");
+		
+		gameMode = data.mode;
+		console.log(gameMode);
 	});
 	
 	socket.on('gameState',function(data) {
@@ -243,6 +247,11 @@
 		for (i=playersPerGroup; i<5; i++) {
 			playersNotToInvestigate.push(i+1);
 		};
+	});
+	
+	socket.on('groupmates', function(data) {
+		groupmates = data.groupmates;
+		hasStarted = true;
 	});
 	
 	socket.on('decisionUpdate', function(data) {
@@ -630,6 +639,12 @@
 			for (i=0;i<playersNotToInvestigate.length;i++) {
 				p = "investigate" + playersNotToInvestigate[i];
 				document.getElementById(p).className += ' hidden';
+			};
+			for (i=1; i<=(Object.keys(groupmates).length + 1); i++) {
+				if(i in groupmates) {
+					p = ("investigate" + i);
+					document.getElementById(p).innerHTML = "Investigate " + groupmates[i];
+				};
 			};
 			socket.emit('infoRequest', {});
 		}
