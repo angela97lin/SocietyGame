@@ -251,7 +251,10 @@
 	
 	socket.on('groupmates', function(data) {
 		groupmates = data.groupmates;
-		hasStarted = true;
+	});
+	
+	socket.on('hasStarted', function(data) {
+		hasStarted = data.hasStarted;
 	});
 	
 	socket.on('decisionUpdate', function(data) {
