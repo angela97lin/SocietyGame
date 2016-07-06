@@ -32,6 +32,7 @@
 	<!--socket-->
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<!-- test comment -->
 
 	
 <!-- INITIALIZATION -->
@@ -94,7 +95,7 @@
 			
 			var nationscore = 20 * numberOfGroups;
 			var A = numberOfPlayers;
-			var worldScoreFormula = 0.00012149 * A^3 -0.03348123*A^2 + 3.8385*A - 0.3781;
+			var worldScoreFormula = (0.00012149 * (Math.pow(A,3))) - (0.03348123*(Math.pow(A,2))) + (3.8385*A) - 0.3781;
 			var worldscore = Math.floor(worldScoreFormula/5.0)*5.0;
 								//Math.floor(Math.sqrt(64 * numberOfPlayers));
 			var roundnumber = 1;

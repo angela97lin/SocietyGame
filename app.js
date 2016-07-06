@@ -57,7 +57,7 @@
 	var spaceResearchCost = -2;
 	var reliefDonationCost = -1;
 	var reliefDonationResult = 1;
-	var totalOlympicWinnings = 1;
+	var totalOlympicWinnings = 3;
 	var olympicCost = -2;
 	var THRESHOLD = .5;
 	var BORDER_TEAM_BONUS = 4;
