@@ -26,18 +26,18 @@ t<!doctype html>
 			var winningTeamsText = "";
 			var winningNamesText = "Special recognition is given to the following individuals for being leaders within their respective sectors:<br><br>";
 			var GROUPS = {1: "Education",
-				  2: "Workforce",
-				  3: "Intelligence Agency",
-				  4: "Policy Makers"};
+				  		  2: "Military",
+				  		  3: "Workforce",
+				  		  4: "Policy Makers"};
 						  
-			var NATIONS = {1: "Russia",
-						   2: "India",
-						   3: "Japan",
-						   4: "Mexico",
-						   5: "Germany",
+			var NATIONS = {1: "Japan",
+						   2: "Canada",
+						   3: "UK",
+						   4: "Turkey",
+						   5: "Russia",
 						   6: "China",
-						   7: "UK"};
-						   
+						   7: "Mexico"};
+
 			socket.emit('congratulations', {});
 
 			socket.on('mainWinners', function(data) {
