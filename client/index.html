@@ -129,13 +129,13 @@
 	var teamInLead;
 
 	
-	
 /*LISTENERS*/
 
 	socket.on('indexConnect', function(data) {
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
+		console.log("NUMBERS RECIEVED");
 
 		$.get("http://ipinfo.io", function(response) {
 			if (typeof(Storage) !== "undefined") {
@@ -206,6 +206,7 @@
 		}, "jsonp");
 		
 		gameMode = data.mode;
+		console.log(gameMode);
 	});
 	
 	socket.on('gameState',function(data) {
@@ -220,6 +221,7 @@
 	socket.on('player', function(data) {
 		playerNumber = data.number;
 		username = data.username;
+		console.log("player username: " + username);
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
@@ -251,13 +253,14 @@
 		p = data.p;
 		playersPerGroup = data.playersPerGroup;
 		playersNotToInvestigate.push(p);
-		for (i=playersPerGroup; i<6; i++) {
+		for (i=playersPerGroup; i<5; i++) {
 			playersNotToInvestigate.push(i+1);
 		};
 	});
 	
 	socket.on('groupmates', function(data) {
 		groupmates = data.groupmates;
+		console.log("groupmates: "+groupmates);
 	});
 	
 	socket.on('hasStarted', function(data) {
@@ -265,6 +268,7 @@
 	});
 	
 	socket.on('decisionUpdate', function(data) {
+		console.log("decision was updated")
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
@@ -290,6 +294,7 @@
 	});
 	
 	socket.on('newQuarter', function() {
+		console.log("New Quarter");
 		if(!hasdone){
 			hasdone = true;
 			swapToInvestigation(2);	//send to investigation rules
@@ -357,13 +362,16 @@
 	
 	var disableButtons = function() {
 		$(':button').prop('disabled', true);
+		console.log('DISABLED' + hasStarted);
 	};
 	
 	var enableButtons = function() {
 		$(':button').prop('disabled', false);
+		console.log('ENABLED' + hasStarted);
 	};
 	var decision1 = function(sendToServer) {
 		if(sendToServer){
+			console.log("sent to server");
 			socket.emit('decision1', {});
 		}		
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
@@ -635,8 +643,6 @@
 						<button class="decision investigate" id="investigate4" onclick="investigate(4)">Investigate Player 4</button> \
 						<h3></h3> \
 						<button class="decision investigate" id="investigate5" onclick="investigate(5)">Investigate Player 5</button> \
-						<h3></h3> \
-						<button class="decision investigate" id="investigate6" onclick="investigate(6)">Investigate Player 6</button> \
 						<h3></h3> \
 						<button class="decision investigate" id="investigateNone" onclick="investigate(-1)">Investigate Nobody</button> \
 						<h3></h3> \
