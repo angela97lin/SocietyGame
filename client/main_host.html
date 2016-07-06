@@ -99,7 +99,6 @@
 			var worldscore = Math.floor(worldScoreFormula/5.0)*5.0;
 								//Math.floor(Math.sqrt(64 * numberOfPlayers));
 			var roundnumber = 1;
-			var teamNumberNames = {};
 			var GROUP_NAMES = {1: "Education",
 							  2: "Intelligence Agency",
 							  3: "Workforce",
@@ -114,7 +113,8 @@
 				mode: mode,
 				minutes: minutes,
 				seconds: seconds,
-				worldscore: worldscore
+				worldscore: worldscore,
+				NATIONS: NATIONS
 			});
 
 			document.getElementById('worldscore').innerHTML = "World Score: " + worldscore;
@@ -139,11 +139,6 @@
 			var winningTeam;
 			
 /*LISTENERS*/
-			
-			socket.on('newTeam', function(data) {
-				//teamNumberNames[data.currentTeamNumber] = data.teamName;
-				//document.getElementById(data.currentTeamNumber).innerHTML = data.teamName + "'s Score: " + nationscore;
-			});
 			
 			socket.on('nextRound', function(data) {
 				document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
@@ -201,9 +196,6 @@
 			});
 
 			socket.on('mainWinners', function() {
-				socket.emit('getTeamNames', {
-					teamNumberNames: teamNumberNames
-				});
 				window.location = "/congratulations";
 			});
 			
