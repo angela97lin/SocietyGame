@@ -672,7 +672,7 @@
 		console.log("These teams have the most advanced space program:");
 		for (i=0; i<highestTeam.length; i++) {
 			console.log(NATIONS[highestTeam[i]]);
-			teamScores[highestTeam[i]] += (spaceRaceReward/highestTeam.length);
+			teamScores[highestTeam[i]] += Math.ceil((spaceRaceReward/highestTeam.length));
 		}
 		bestScoreSoFar = 0;
 		scoreUpdate(SOCKET_LIST);
@@ -702,16 +702,16 @@
 					if (counter == 0) {
 						for (m=0;m<investigationLists[i][j][k].length;m++) {
 							playerToLosePointsNumber = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + parseInt(investigationLists[i][j][k][m], 10);
-							playerScores[playerToLosePointsNumber] += -((investigationCost)/(investigationLists[i][j][k].length));
+							playerScores[playerToLosePointsNumber] += -(Math.floor(((investigationCost)/(investigationLists[i][j][k].length))));
 						}
 					}
 					else {
 						for (m=0;m<investigationLists[i][j][k].length;m++) {
-							playerCaught = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + k + 1;
 							playerToGainPointsNumber = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + parseInt(investigationLists[i][j][k][m], 10);
-							playerScores[playerCaught] += (-2 * counter);
-							playerScores[playerToGainPointsNumber] += ((2*counter)/(investigationLists[i][j][k].length));
-						}
+							playerScores[playerToGainPointsNumber] += Math.ceil(((2*counter)/(investigationLists[i][j][k].length)));
+						};
+						playerCaught = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + k + 1;
+						playerScores[playerCaught] += (-2 * counter);
 					}
 				}
 			}
