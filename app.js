@@ -684,7 +684,7 @@
 				highestTeam = [i];
 			}
 			else if (teamDecisionCounters[i] == bestScoreSoFar) {
-				highestTeam.push[i];
+				highestTeam.push(i);
 			}
 		};
 		for (i=0; i<highestTeam.length; i++) {
