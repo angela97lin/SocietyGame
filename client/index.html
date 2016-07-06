@@ -141,7 +141,6 @@
 		$.get("http://ipinfo.io", function(response) {
 			if (typeof(Storage) !== "undefined") {
 				if (localStorage.getItem("ip") !== null) {
-					alert(localStorage.getItem("ip"));
 					ip = localStorage.getItem("ip");
 				} else {
 					ip = response.ip;
@@ -201,7 +200,7 @@
 				//Redirect the player to the correct place, based on gamestate
 				socket.emit('stateRequest', {});
 			} else {
-				alert("Please use a different browser");
+				alert("Please use a different browser or update your current browser");
 			};
 			
 
