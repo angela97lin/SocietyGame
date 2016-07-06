@@ -1029,6 +1029,9 @@
 				unpauseTimer();
 			}
 		}
+		else{
+			unpauseTimer();
+		};
 	};
 	
 	function carryOutWorldEvent(worldEvent, chosenEvent) {
