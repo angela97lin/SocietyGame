@@ -1078,7 +1078,6 @@
 	};
 
 	function checkBorderVotes(team, side) {
-		var groupBonus = BORDER_TEAM_BONUS / numberOfGroups;
 		var currentPercentFor = individualBorderVotes[team - 1][side] / numberOfPlayersInTeams;
 		var teamNotPlaced = true;
 		for (var i = 0; i < borderSides[side].length; i++) {
@@ -1099,7 +1098,8 @@
 
 	function checkBorderSides() {
 		if (decidedPlayers == totalPlayers) {
-			for (var i = 0; borderSides[0].length; i++) {
+			var groupBonus = BORDER_TEAM_BONUS / numberOfGroups;
+			for (var i = 0; i < borderSides[0].length; i++) {
 				var team = borderSides[0][i];
 				world -= BORDER_WORLD_BONUS;
 				teamScores[team] += BORDER_TEAM_BONUS;
@@ -1107,7 +1107,7 @@
 					groupScores[[team, j]] += groupBonus;
 				};
 			};
-			for (var i = 0; borderSides[1].length; i++) {
+			for (var i = 0; i < borderSides[1].length; i++) {
 				var team = borderSides[1][i];
 				world += BORDER_WORLD_BONUS;
 				teamScores[team] -= BORDER_TEAM_BONUS;
