@@ -182,12 +182,12 @@
 						};
 					};
 					 
-					teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+					teamNameInput = parseInt(prompt("What nation are you on? Please type a number\n" + nationPromptText), 10);
 					while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
 						window.alert("Please enter a valid team number");
 						teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
 					};
-					groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+					groupNumberInput = parseInt(prompt("What group are you in? Please type a number\n" + groupPromptText), 10);
 					while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
 						window.alert("Please enter a valid group number");
 						groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
