@@ -135,7 +135,7 @@
 			var isWorldEvent = false;
 			var temporaryGroupScores;
 			var temporaryTeamScores;
-			
+			var winningTeam;
 			
 /*LISTENERS*/
 			
@@ -146,11 +146,11 @@
 			
 			socket.on('nextRound', function(data) {
 				document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
-				var nextQuarterlyReport = 4;
+				var nextQuarterlyReport = 3;
 				while(data.roundNumber > nextQuarterlyReport){
 					nextQuarterlyReport += 3;
 				}
-				document.getElementById("roundsTill").innerHTML = "Next Quarterly Report on Round: " + nextQuarterlyReport;
+				document.getElementById("roundsTill").innerHTML = "Next Quarterly Report After Round: " + nextQuarterlyReport;
 			});
 
 			socket.on('quarter', function(data) {
@@ -187,9 +187,11 @@
 
 			socket.on("worldEvent", function(data) {
 				isWorldEvent = true;
+				winningTeam = NATIONS[data.teamInLead];
 				swapToWorldEventScreen(data.eventNumber);
 				temporaryTeamScores = data.teamScores;
 				temporaryGroupScores = data.groupScores;
+				
 			});
 
 			socket.on("eventOver", function() {
@@ -279,9 +281,18 @@
 				improve the world event screen
 				*/
 				var worldEvents = ['warEvent','pandemicEvent','olympicsEvent','disasterEvent','energyEvent'];
-				$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
-    				$("#mainScreen").replaceWith(data);
-				});
+				if(worldEventNumber==0){
+					$("#mainScreen").replaceWith(
+						'<div id = "worldEventScreen">\
+							<p id="warEvent">' + winningTeam + ' declared war on Switzerland! Which side will you take?</p>\
+						</div>'
+					);
+				}
+				else{
+					$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
+	    				$("#mainScreen").replaceWith(data);
+					});
+				}
 
 				
 			};
