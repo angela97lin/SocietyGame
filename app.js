@@ -1006,9 +1006,9 @@
 				}
 			};
 		};
-		if (worldEventChance == 1) {
-			if (Math.random() <= .333) {
-				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent);
+		if (worldEventChance == 1) {	//search for this
+			if (Math.random() <= .333) {	//should say <= .333 instead of 1
+				carryOutWorldEvent(worldEvents[chosenEvent], chosenEvent); //should say, chosenEvent instead of 0
 				worldEventChance = -1;
 			}
 			else {
@@ -1029,7 +1029,6 @@
 		gameStateScreenType = "event";
 		eventsCompleted.push(chosenEvent);
 		mostRecentWorldEvent = chosenEvent;
-		
 		if (chosenEvent == 0) {
 			var topScore = Number.NEGATIVE_INFINITY;
 			for (var i = 0; i < numberOfTeams; i++) {
@@ -1046,6 +1045,7 @@
 				individualBorderVotes[i] = [0, 0];
 			};
 		};
+		console.log("teamInLead: "+teamInLead);
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('worldEvent', {

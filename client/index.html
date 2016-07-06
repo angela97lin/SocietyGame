@@ -251,6 +251,7 @@
 	
 	socket.on('groupmates', function(data) {
 		groupmates = data.groupmates;
+		console.log("groupmates: "+groupmates);
 	});
 	
 	socket.on('hasStarted', function(data) {
