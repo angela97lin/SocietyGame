@@ -146,11 +146,11 @@
 			
 			socket.on('nextRound', function(data) {
 				document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
-				var nextQuarterlyReport = 4;
+				var nextQuarterlyReport = 3;
 				while(data.roundNumber > nextQuarterlyReport){
 					nextQuarterlyReport += 3;
 				}
-				document.getElementById("roundsTill").innerHTML = "Next Quarterly Report on Round: " + nextQuarterlyReport;
+				document.getElementById("roundsTill").innerHTML = "Next Quarterly Report After Round: " + nextQuarterlyReport;
 			});
 
 			socket.on('quarter', function(data) {
@@ -187,10 +187,11 @@
 
 			socket.on("worldEvent", function(data) {
 				isWorldEvent = true;
+				winningTeam = NATIONS[data.teamInLead];
 				swapToWorldEventScreen(data.eventNumber);
 				temporaryTeamScores = data.teamScores;
 				temporaryGroupScores = data.groupScores;
-				winningTeam = NATIONS[data.teamInLead];
+				
 			});
 
 			socket.on("eventOver", function() {
