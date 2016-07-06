@@ -116,6 +116,8 @@
 
 	/*Variables for epidemic*/
 	var individualBorderVotes = [];
+	
+	var hasStarted = false;
 
 
 /*LISTENERS*/
@@ -377,6 +379,11 @@
 			socket.emit('team', {
 				team: teamScores[socket.teamNumber]
 			});
+			
+			socket.emit("hasStarted", {
+					hasStarted: hasStarted
+				});
+			
 			socket.emit('teamInitiate', {
 				playersPerGroup: numberOfPlayersInGroups,
 				p: socket.playerNumberInGroup
@@ -449,9 +456,19 @@
 		});
 
 		socket.on('beginGame', function() {
+			
+			hasStarted = true;
+		
 			for(var i in SOCKET_LIST) {
 				var socket = SOCKET_LIST[i];
 				socket.emit("enable", {});
+			};
+			
+			for(var i in SOCKET_LIST) {
+				var socket = SOCKET_LIST[i];
+				socket.emit("hasStarted", {
+					hasStarted: hasStarted
+				});
 			};
 			
 			for(var i in SOCKET_LIST) {
