@@ -83,9 +83,9 @@
 	var gameMode = "wait";
 	
 	var NATIONS = {1: "Japan",
-				   2: "Canada",
+				   2: "Poland",
 				   3: "UK",
-				   4: "Turkey",
+				   4: "India",
 				   5: "Russia",
 				   6: "China",
 				   7: "Mexico"};
@@ -139,60 +139,70 @@
 		console.log("NUMBERS RECIEVED");
 
 		$.get("http://ipinfo.io", function(response) {
-			ip = response.ip;
-			if (ip in data.ipAddresses) {
-				username = data.ipAddresses[ip].username;
-				teamNameInput = data.ipAddresses[ip].teamNumber;
-				groupNumberInput = data.ipAddresses[ip].rawGroupNumber;
+			if (typeof(Storage) !== "undefined") {
+				if (localStorage.getItem("ip") !== null) {
+					ip = localStorage.getItem("ip");
+				} else {
+					ip = response.ip;
+					localStorage.setItem("ip", ip);
+				};
+				if (ip in data.ipAddresses) {
+					username = data.ipAddresses[ip].username;
+					teamNameInput = data.ipAddresses[ip].teamNumber;
+					groupNumberInput = data.ipAddresses[ip].rawGroupNumber;
 
-			} else {
-			    var nationPromptText = "";
-				var groupPromptText = "";
-				
-				for (var i = 1; i <= numberOfTeams; i++){
-					nationPromptText += (i + ": " + NATIONS[i] + "\n");
-				};
-				
-				for (var i = 1; i <= numberOfGroups; i++){
-					groupPromptText += (i + ": " + GROUPS[i] + "\n");
-				};
-				
+				} else {
+				    var nationPromptText = "";
+					var groupPromptText = "";
+					
+					for (var i = 1; i <= numberOfTeams; i++){
+						nationPromptText += (i + ": " + NATIONS[i] + "\n");
+					};
+					
+					for (var i = 1; i <= numberOfGroups; i++){
+						groupPromptText += (i + ": " + GROUPS[i] + "\n");
+					};
+					
 
-				username = prompt("What is your name?");
-				var invalidUsername = false;
-				for (name in data.usernames) {
-					if (data.usernames[name] == username) {
-						invalidUsername = true;
-					}; 
-				};
-				while (invalidUsername) {
-					window.alert("That username has already been taken");
 					username = prompt("What is your name?");
-					invalidUsername = false;
+					var invalidUsername = false;
 					for (name in data.usernames) {
-						if (data.usernames[name] == username) {
+						if (data.usernames[name] == username || username.toLowerCase() == "nobody") {
 							invalidUsername = true;
 						}; 
 					};
+					while (invalidUsername) {
+						window.alert("That username has already been taken");
+						username = prompt("What is your name?");
+						invalidUsername = false;
+						for (name in data.usernames) {
+							if (data.usernames[name] == username) {
+								invalidUsername = true;
+							}; 
+						};
+					};
+					 
+					teamNameInput = parseInt(prompt("What nation are you on? Please type a number\n" + nationPromptText), 10);
+					while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
+						window.alert("Please enter a valid team number");
+						teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
+					};
+					groupNumberInput = parseInt(prompt("What group are you in? Please type a number\n" + groupPromptText), 10);
+					while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
+						window.alert("Please enter a valid group number");
+						groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
+					};
 				};
-				 
-				teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-				while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
-					window.alert("Please enter a valid team number");
-					teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-				};
-				groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
-				while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
-					window.alert("Please enter a valid group number");
-					groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
-				};
-			};
-			swapToMainContent("#empty", true);
-			teamName = NATIONS[teamNameInput];
-			socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput,  ip: ip});
+				swapToMainContent("#empty", true);
+				teamName = NATIONS[teamNameInput];
+				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput,  ip: ip});
 
-			//Redirect the player to the correct place, based on gamestate
-			socket.emit('stateRequest', {});
+				//Redirect the player to the correct place, based on gamestate
+				socket.emit('stateRequest', {});
+			} else {
+				alert("Please use a different browser or update your current browser");
+			};
+			
 
 		}, "jsonp");
 		
@@ -300,7 +310,7 @@
 	});
 
 	socket.on('worldEnd', function() {
-		window.location = "/worldend";
+		window.location = "/game_over";
 	});
 
 	socket.on('win', function() {
@@ -540,7 +550,7 @@
 			if (teamInLead == teamNameInput) {
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class="row"> \
-						<h2>You have decided to invade Poland!</h2> \
+						<h2>You have decided to invade Switzerland!</h2> \
 					</div>'
 				);
 				if (numberOfTeams == 1) {
@@ -556,7 +566,7 @@
 							<h3></h3> \
 						</div> \
 						<div class = "col-md-45 col-md-offset-10"> \
-							<button class="decision worldEvent" id = "sideWithPoland" onclick="castWarVote(1)">Side with Poland</button> \
+							<button class="decision worldEvent" id = "sideWithPoland" onclick="castWarVote(1)">Side with Switzerland</button> \
 							<h3></h3> \
 						</div> \
 					</div>'	);
@@ -593,7 +603,7 @@
 			$("#decisionScreen").replaceWith(
 				'<div id="worldEventScreen" class = "row"> \
 					<div class="col-md-45"> \
-						<button class="decision worldEvent" onclick="sendRelief()">Send Relief team to help the Phillipines</button> \
+						<button class="decision worldEvent" onclick="sendRelief()">Send Relief team to help Naples</button> \
 						<h3></h3> \
 					</div> \
 					<div class = "col-md-45 col-md-offset-10"> \
@@ -606,7 +616,7 @@
 			$("#decisionScreen").replaceWith(
 				'<div id="worldEventScreen" class = "row"> \
 					<div class="col-md-45"> \
-						<button class="decision worldEvent" onclick="donateToSpaceRace()">Donate your money to your national space program</button> \
+						<button class="decision worldEvent" onclick="donateToSpaceRace()">Donate your money to your national fusion program</button> \
 						<h3></h3> \
 					</div> \
 					<div class = "col-md-45 col-md-offset-10"> \
@@ -656,12 +666,8 @@
 			$("#wholeMobilePage").replaceWith(
 				'<div id ="textie">\
 					<h1>It’s time for Quarterly Reports!</h1>\
-					<p>How did your sector do? Is everyone a team player? …No?</p>\
-					<p>Well, now’s your chance to prove it! You can investigate the teammate \
-					you find most suspicious to see if they really have been choosing to be selfish. \
-					You can place a bet on this player’s selfishness, and if you are correct, you get\
-					some of the player’s points and your own points. If you falsely accuse them, \
-					then you win nothing. </p>\
+					<p>Is your team scoring less than it should?</p>\
+					<p>Well, investigate your teammates to find the selfish ones! </p>\
 					<button type="button" onclick="swapToInvestigation(3)">Investigate!</button>\
 				</div>'
 			);
