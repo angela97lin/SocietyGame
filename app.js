@@ -1092,6 +1092,7 @@
 						groupScores[[teamSides[0][i], j]] += groupBonus;
 					};
 				};
+				console.log("Here is the winning team: \n" + teamSides[0]);
 			} else {
 				for (var i = 0; i < teamSides[1].length; i++) {
 					teamScores[teamSides[1][i]] += WAR_WINNING_BONUS;
@@ -1099,6 +1100,7 @@
 						groupScores[[teamSides[1][i], j]] += groupBonus;
 					};
 				};
+				console.log("Here is the winning team: \n" + teamSides[1]);
 			};
 			eventOver();
 			decidedPlayers = 0;
