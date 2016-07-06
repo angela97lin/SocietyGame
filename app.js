@@ -794,6 +794,12 @@
 		decidedPlayers++;
 		if (mode == "waitForPlayers") {
 			if (decidedPlayers == totalPlayers) {
+				for(var i in SOCKET_LIST) {
+					var socket = SOCKET_LIST[i];
+					socket.emit("groupmates", {
+						groupmates: groupmatesDict[socket.playerNumber]
+					});
+				};
 				decidedPlayers = 0;
 				resetPlayerDecisionMade();
 				updateRound(SOCKET_LIST);
