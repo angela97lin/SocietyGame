@@ -491,13 +491,13 @@
 			};
 			
 			setInterval(function() {
-				if (decidedPlayers == totalPlayers) {
-					decidedPlayers = 0;
-					resetPlayerDecisionMade();
-					timerMinutes = TIME_LIMIT_MINUTES;
-					timerSeconds = TIME_LIMIT_SECONDS;
-					updateRound();
-				};
+				//if (decidedPlayers == totalPlayers) {
+					//decidedPlayers = 0;
+					//resetPlayerDecisionMade();
+					//timerMinutes = TIME_LIMIT_MINUTES;
+					//timerSeconds = TIME_LIMIT_SECONDS;
+					//updateRound();
+				//};
 			
 				if (timerMinutes == 0 && timerSeconds == 0) {
 					timerMinutes = TIME_LIMIT_MINUTES;
@@ -845,7 +845,6 @@
 		pauseTimer();
 		getWorldEvent();
 		//unpauseTimer();
-		pauseTimer();
 		quarterlyReport(SOCKET_LIST);
 		roundNumber++;
 	};
@@ -856,6 +855,7 @@
 			worldEventChance = 0;
 		}
 		if (roundNumber % 3 == 0 && roundNumber != 12) {
+			pauseTimer();
 			quarter++;
 			gameStateScreenType = "investigation";
 			for (var i in sockets) {
@@ -876,7 +876,7 @@
 			worldEventChance = 1;
 		}
 		else {
-			unpauseTimer();
+			//unpauseTimer();
 		};
 		//updateRound(SOCKET_LIST);
 	};
