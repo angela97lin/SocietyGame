@@ -562,7 +562,7 @@
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class = "row"> \
 						<div class="col-md-45"> \
-							<button class="decision worldEvent" id = "sideWtihWinning" onclick="castWarVote(0)"></button> \
+							<button class="decision worldEvent" id = "sideWithWinning" onclick="castWarVote(0)"></button> \
 							<h3></h3> \
 						</div> \
 						<div class = "col-md-45 col-md-offset-10"> \
@@ -570,7 +570,7 @@
 							<h3></h3> \
 						</div> \
 					</div>'	);
-				document.getElementById("sideWtihWinning").innerHTML = "Side with " + NATIONS[teamInLead];
+				document.getElementById("sideWithWinning").innerHTML = "Side with " + NATIONS[teamInLead];
 			};
 		}
 		else if(randomEvent == 1){
