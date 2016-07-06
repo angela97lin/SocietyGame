@@ -212,3 +212,8 @@ iframe {
 	background: black;
 	background-size: cover;
 }
+
+#textie{
+	width: 80%;
+	margin: 10% auto;
+}
