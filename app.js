@@ -591,7 +591,7 @@
 				olympicCompetitors = [];
 				for (i=1; i<=numberOfTeams; i++) {
 					teamDecisionCounters[i] = 0;
-				}
+				};
 			}
 		});
 
@@ -599,6 +599,7 @@
 		socket.on('advanceRoundGM', function() {
 			advanceRoundGM();
 		});
+		
 		socket.on("gameMasterConnect", function(data) {
 			socket.emit("giveGameMasterData", {
 				NATIONS: NATIONS,
@@ -607,6 +608,7 @@
 				numberOfGroups: numberOfGroups
 			});
 		});
+	});
 
 	
 
@@ -1214,11 +1216,12 @@
 				};
 
 			}
-			/*socket.emit('gameStateDisplay', {
+			/* socket.emit('gameStateDisplay', {
 				screenType: gameStateScreenType,
 				decisionMade: playerDecisionMade[socket.playerNumber],
 				worldEventNumber: mostRecentWorldEvent,
 				teamInLead: teamInLead
-			});*/
+			}); */
 
 	};
+	
