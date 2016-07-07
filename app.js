@@ -383,6 +383,7 @@
 			socket.emit("getRound", {
 				roundNumber: roundNumber
 			});
+
 			for (var i in SOCKET_LIST) {
 				emitSocket = SOCKET_LIST[i];
 					emitSocket.emit("putPlayerInGameMasterTable", {
@@ -437,11 +438,11 @@
 			playerDecisionMade[socket.playerNumber] = 0;
 			individualWarVotes[data.team - 1][data.side] += 1;
 			checkWarVotes(data.team, data.side);
-			checkTeamSides();
+			checkTeamSides(false);
 		});
 
 		socket.on("oneTeamWar", function() {
-			checkTeamSides();
+			checkTeamSides(false);
 		});
 
 		/*Listeners for epidemic*/
@@ -595,10 +596,15 @@
 				olympicCompetitors = [];
 				for (i=1; i<=numberOfTeams; i++) {
 					teamDecisionCounters[i] = 0;
-				}
+				};
 			}
 		});
 
+
+		socket.on('advanceRoundGM', function() {
+			advanceRoundGM();
+		});
+		
 		socket.on("gameMasterConnect", function(data) {
 			socket.emit("giveGameMasterData", {
 				NATIONS: NATIONS,
@@ -607,8 +613,9 @@
 				numberOfGroups: numberOfGroups
 			});
 		});
-
 	});
+
+	
 
 
 /*FUNCTIONS*/
@@ -1054,8 +1061,8 @@
 		decidedPlayers += 1;
 	};
 
-	function checkTeamSides() {
-		if (decidedPlayers == totalPlayers) {
+	function checkTeamSides(gmoverride) {
+		if (decidedPlayers == totalPlayers || gmoverride) {
 			var groupBonus = WAR_WINNING_BONUS / numberOfGroups;
 			var team0Score = 0;
 			var team1Score = 0;
@@ -1117,8 +1124,8 @@
 		decidedPlayers += 1;
 	};
 
-	function checkBorderSides() {
-		if (decidedPlayers == totalPlayers) {
+	function checkBorderSides(gmoverride) {
+		if (decidedPlayers == totalPlayers || gmoverride) {
 			var groupBonus = BORDER_TEAM_BONUS / numberOfGroups;
 			for (var i = 0; i < borderSides[0].length; i++) {
 				var team = borderSides[0][i];
@@ -1162,3 +1169,64 @@
 			playerDecisionMade[i] = -1;
 		};
 	};
+
+	function advanceRoundGM(){
+		console.log("Gamemaster has advanced to the next round");
+			if(gameStateScreenType=="decision"){
+				console.log("Gamemaster is not allowed to advance from decision screen")
+
+			}
+			else if(gameStateScreenType=="investigation"){
+				carryOutInvestigations(SOCKET_LIST);
+				numberOfInvestigations = 0;
+				enableAllButtons(SOCKET_LIST);
+				investigationLists = [];
+				for(i=1; i<=numberOfTeams; i++){
+					thisTeam = [];
+					for(j=1; j<=numberOfGroups; j++){
+						thisGroup = [];
+						for(k=1; k<=numberOfPlayersInGroups; k++){
+							thisPlayer = [];
+							thisGroup.push(thisPlayer);
+						};
+						thisTeam.push(thisGroup);
+					};
+					investigationLists.push(thisTeam);
+				};
+			}
+
+			else if(gameStateScreenType=="event"){
+				switch(mostRecentWorldEvent){
+					case 0:
+						checkTeamSides(true);
+						break;
+					case 1:
+						checkBorderSides(true);
+						break;
+					case 2:
+						carryOutOlympics();
+						break;
+					case 3:
+						carryOutRelief();
+						break;
+					case 4:
+						carryOutSpaceRace();
+						break;
+				};
+				decidedPlayers = 0;
+				totalYesVotes = 0;
+				olympicCompetitors = [];
+				for (i=1; i<=numberOfTeams; i++) {
+					teamDecisionCounters[i] = 0;
+				};
+
+			}
+			/* socket.emit('gameStateDisplay', {
+				screenType: gameStateScreenType,
+				decisionMade: playerDecisionMade[socket.playerNumber],
+				worldEventNumber: mostRecentWorldEvent,
+				teamInLead: teamInLead
+			}); */
+
+	};
+	

@@ -90,7 +90,7 @@ html, body, div, h1, p{
 
 p {
 	color: #9dbceb;
-	font-size: 10vmin;
+	font-size: 8vmin;
 	font-family: Courier;
 	margin: 0px;
 	padding: 2%;
@@ -110,7 +110,7 @@ greentext {
 	color: #0ff871;
 }
 #Mission{
-	font-size: 9vmin;
+	font-size: 8vmin;
 }
 #page5Text {
 	font-size: 6vmin;
@@ -185,6 +185,7 @@ button {
 	border-radius: 16px;
 	margin: 4vh 6vw;
 	padding: 30px;
+	cursor: pointer;
 }
 button.prev{
 	position: fixed;

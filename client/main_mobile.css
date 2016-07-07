@@ -14,7 +14,7 @@ h1, h2, h3, h4{
 }
 
 p{
-	font-size: 4vw;
+	font-size: 100%;
 }
 
 .container{ 
@@ -46,7 +46,7 @@ p{
 	width: 50%;
 	min-width: 590px;
 	display: inline-block;
-	margin-left:0px;
+	margin-left: 0px;
 }
 
 
@@ -122,7 +122,7 @@ body{
 
 
 button {
-	font-size: 300%;
+	font-size: 200%;
 	text-align: center;
 	border: 2px solid #9ED6DF;
 	border-radius: 7px;
