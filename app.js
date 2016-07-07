@@ -384,7 +384,7 @@
 				roundNumber: roundNumber
 			});
 			socket.emit("putPlayerInGameMasterTable", {
-				groupNumber: socket.groupNumber;
+				groupNumber: socket.groupNumber
 			});
 
 		});
@@ -1173,7 +1173,7 @@
 				carryOutInvestigations(SOCKET_LIST);
 				numberOfInvestigations = 0;
 				enableAllButtons(SOCKET_LIST);
-				investigationLists = []
+				investigationLists = [];
 				for(i=1; i<=numberOfTeams; i++){
 					thisTeam = [];
 					for(j=1; j<=numberOfGroups; j++){
@@ -1205,13 +1205,13 @@
 					case 4:
 						carryOutSpaceRace();
 						break;
-				}
+				};
 				decidedPlayers = 0;
 				totalYesVotes = 0;
 				olympicCompetitors = [];
 				for (i=1; i<=numberOfTeams; i++) {
 					teamDecisionCounters[i] = 0;
-				}
+				};
 
 			}
 			/*socket.emit('gameStateDisplay', {
@@ -1221,4 +1221,4 @@
 				teamInLead: teamInLead
 			});*/
 
-	}
+	};
