@@ -1,0 +1,97 @@
+<!doctype html>
+
+<!-- HTML -->
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>GameMaster</title>
+	</head>
+
+	<body>
+	
+		
+		<button onclick="advanceRound()">Advance Round</button>
+
+
+
+		<table id="playerTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
+
+
+
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script type="text/javascript">
+			var socket = io();
+
+			var NATIONS;
+			var GROUP_NAMES;
+			var numberOfTeams;
+			var numberOfGroups;
+
+			socket.emit("gameMasterConnect", {});
+
+			socket.on("giveGameMasterData", function(data) {
+				NATIONS = data.NATIONS;
+				GROUP_NAMES = data.GROUP_NAMES;
+				numberOfTeams = data.numberOfTeams;
+				numberOfGroups = data.numberOfGroups;
+				var playerTable = document.getElementById("playerTable");
+				playerTable.cellSpacing = 200 / numberOfGroups;
+				createCell(playerTable.rows[0].insertCell(0), "Player Table", 'col scoreCell');
+				alert(numberOfTeams);
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addNation(i);
+				};
+				for (var i = 1; i <= numberOfGroups; i++) {
+					addGroup(i);
+				};
+			});
+
+			socket.on("putPlayerInGameMasterTable", function() {});
+
+			function createCell(cell, text, style, id=null) {
+				var div = document.createElement('div');
+				var txt = document.createTextNode(text);
+				div.appendChild(txt);
+				div.setAttribute('class', style);
+				div.setAttribute('className', style);
+				div.setAttribute('id', id);
+				cell.appendChild(div);
+			};
+
+			function addNation(nation) {
+				createCell(playerTable.rows[0].insertCell(playerTable.rows[0].cells.length), NATIONS[nation], 'col scoreCell', nation);
+			};
+
+			function addGroup(group) {
+				var row = playerTable.insertRow(playerTable.rows.length);
+				createCell(row.insertCell(0), GROUP_NAMES[group], 'row scoreCell');
+				for (var i = 1; i < playerTable.rows[0].cells.length; i++) {
+					createCell(row.insertCell(i), "", 'row scoreCell', [i, group]);
+				};
+			};
+
+
+
+
+
+			function advanceRound(){
+<<<<<<< HEAD
+				socket.emit('advanceRoundGM', {});
+			}
+=======
+
+			};
+>>>>>>> 800fd284e5714eee7bde17c758fb5f5618fea720
+
+
+
+		</script>
+	</body>
+</html>

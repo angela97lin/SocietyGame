@@ -34,6 +34,12 @@
 	app.get('/congratulations', function(req, res) {
 		res.sendFile(__dirname + '/client/congratulations.html');
 	});
+	app.get('/game_over', function(req, res) {
+		res.sendFile(__dirname + '/client/game_over.html');
+	});
+	app.get('/gamemaster', function(req, res) {
+		res.sendFile(__dirname + '/client/gamemaster.html');
+	});
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
@@ -43,6 +49,8 @@
 	var numberOfTeams;
 	var numberOfPlayersInTeams;
 	var world;
+	var NATIONS;
+	var GROUP_NAMES;
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
@@ -53,7 +61,7 @@
 	var spaceResearchCost = -2;
 	var reliefDonationCost = -1;
 	var reliefDonationResult = 1;
-	var totalOlympicWinnings = 1;
+	var totalOlympicWinnings = 3;
 	var olympicCost = -2;
 	var THRESHOLD = .5;
 	var BORDER_TEAM_BONUS = 4;
@@ -65,7 +73,6 @@
 	var groupScores = {};
 	var teamScores = {};
 	var teamNameNumbers = {};
-	var teamNumberNames;
 	var playerNameToGroup = {};
 	var playerNameToTeam = {};
 	var currentTeamNumber = 1;
@@ -116,6 +123,7 @@
 
 	/*Variables for epidemic*/
 	var individualBorderVotes = [];
+	var borderSides = [[], []];
 	
 	var hasStarted = false;
 
@@ -126,8 +134,6 @@
 
 		socket.id = playerNumber;
 		SOCKET_LIST[socket.id] = socket;
-		console.log('connection made');
-		console.log("Socket: " + socket.id);
 		playerNumber++;
 		if (mainConnected) {
 			socket.emit('indexConnect', {
@@ -141,6 +147,8 @@
 
 		socket.on('start', function(data) {
 			decisionMode = MODES[data.mode];
+			NATIONS = data.NATIONS;
+			GROUP_NAMES = data.GROUP_NAMES;
 			world = data.worldscore;
 			totalPlayers = data.numberOfPlayers;
 			numberOfGroups = data.numberOfGroups;
@@ -194,7 +202,6 @@
 				teamDecisionCounters[i] = 0;
 			}
 			
-			console.log(pastActions);
 			for (i=0;i<numberOfTeams;i++) {
 				teamToAdd = [];
 				for (j=0;j<numberOfGroups;j++) {
@@ -213,11 +220,6 @@
 			teamScores[socket.teamNumber] += -2;
 			playerScores[socket.playerNumber] += 2;
 			checkPlayers(decisionMode);
-			console.log(pastActions);
-			console.log(socket.teamNumber);
-			console.log(socket.rawGroupNumber);
-			console.log(socket.playerNumberInGroup);
-			console.log(teamGroupPlayer);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(1);
 		});
 
@@ -258,10 +260,6 @@
 		
 		socket.on('investigate', function(data) {
 			playerDecisionMade[socket.playerNumber] = 0;
-			console.log(data.teamInvolved);
-			console.log(data.groupInvolved);
-			console.log(data.playerToInvestigate);
-			console.log(data.playerInvestigating);
 			if (data.playerToInvestigate != -1) {
 				investigationLists[data.teamInvolved-1][data.groupInvolved-1][data.playerToInvestigate-1].push(data.playerInvestigating);
 			};
@@ -301,15 +299,10 @@
 				socket.teamNumber = data.teamNumber;
 				socket.username = data.username;
 				numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
-				console.log(numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1]);
-				console.log(socket.rawGroupNumber);
-				console.log(numberOfPlayersInGroups);
-				console.log(socket.teamNumber);
-				console.log(numberOfPlayersInTeams);
 				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 				// socket.rawPlayerNumber = data.playerNumber;
 				socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-				console.log("Player Number: " + socket.playerNumber);
+				console.log("Player " + socket.playerNumber + " connected");
 				//socket.playerNumberInGroup = data.playerNumber;
 				usernames[socket.playerNumber] = data.username;
 				if (!(socket.playerNumber in playerScores)){
@@ -354,7 +347,6 @@
 											   playerNumber: socket.playerNumber,
 											   groupNumber: socket.groupNumber,
 											   playerNumberInGroup: socket.playerNumberInGroup};
-				console.log(ipAddresses);
 			};
 			usernames[socket.playerNumber] = data.username;
 			socket.emit("team", {
@@ -391,6 +383,9 @@
 			socket.emit("getRound", {
 				roundNumber: roundNumber
 			});
+			socket.emit("putPlayerInGameMasterTable", {
+				groupNumber: socket.groupNumber
+			});
 
 		});
 		
@@ -404,8 +399,6 @@
 		});
 		
 		socket.on('infoRequest', function() {
-			console.log("app username: "+usernames[socket.playerNumber]);
-			console.log("app playernumber: "+socket.playerNumber);
 			socket.emit('player', {
 				number: socket.playerNumberInGroup,
 				playerScore: playerScores[socket.playerNumber],
@@ -440,11 +433,11 @@
 			playerDecisionMade[socket.playerNumber] = 0;
 			individualWarVotes[data.team - 1][data.side] += 1;
 			checkWarVotes(data.team, data.side);
-			checkTeamSides();
+			checkTeamSides(false);
 		});
 
 		socket.on("oneTeamWar", function() {
-			checkTeamSides();
+			checkTeamSides(false);
 		});
 
 		/*Listeners for epidemic*/
@@ -526,13 +519,8 @@
 			}, 1000);
 		});
 
-		socket.on('getTeamNames', function(data) {
-			teamNumberNames = data.teamNumberNames;
-		});
-
 		socket.on('congratulations', function() {
 			socket.emit('mainWinners', {
-				teamNumberNames: teamNumberNames,
 				winningTeams: winningTeams,
 				winningNames: winningNames,
 				playerNameToTeam: playerNameToTeam,
@@ -607,7 +595,20 @@
 			}
 		});
 
-	});
+
+		socket.on('advanceRoundGM', function() {
+			advanceRoundGM();
+		});
+		socket.on("gameMasterConnect", function(data) {
+			socket.emit("giveGameMasterData", {
+				NATIONS: NATIONS,
+				GROUP_NAMES: GROUP_NAMES,
+				numberOfTeams: numberOfTeams,
+				numberOfGroups: numberOfGroups
+			});
+		});
+
+	
 
 
 /*FUNCTIONS*/
@@ -654,7 +655,9 @@
 				bestPlayers.push(olympicCompetitors[i]);
 			}
 		};
+		console.log("Here are the winners of the Olympics:");
 		for (i=0; i<bestPlayers.length; i++) {
+			console.log(usernames[bestPlayers[i]] + " from " + NATIONS[playerNameToTeam[usernames[bestPlayers[i]]]]);
 			playerScores[bestPlayers[i]] += -(olympicCost);
 			playerScores[bestPlayers[i]] += Math.ceil((totalOlympicWinnings*1.0) / bestPlayers.length);
 			teamScores[playerNameToTeam[usernames[bestPlayers[i]]]] += olympicTeamReward;
@@ -684,11 +687,13 @@
 				highestTeam = [i];
 			}
 			else if (teamDecisionCounters[i] == bestScoreSoFar) {
-				highestTeam.push[i];
+				highestTeam.push(i);
 			}
 		};
+		console.log("These teams have the most advanced space program:");
 		for (i=0; i<highestTeam.length; i++) {
-			teamScores[highestTeam[i]] += (spaceRaceReward/highestTeam.length);
+			console.log(NATIONS[highestTeam[i]]);
+			teamScores[highestTeam[i]] += Math.ceil((spaceRaceReward/highestTeam.length));
 		}
 		bestScoreSoFar = 0;
 		scoreUpdate(SOCKET_LIST);
@@ -698,66 +703,36 @@
 	var checkWorldEvents = function() {
 		startWorldEvent(worldEventNumber);
 	};
-	
-	var startWorldEvent = function(worldEventNumber) {
-	
-	};
 
 	function carryOutInvestigations(sockets) {
 		var teamCount = 0;
-		console.log(pastActions);
 		for (i=0;i<pastActions.length;i++) {
-			console.log(pastActions[i]);
 			teamCount += 1;
 			groupCount = 0;
 			for (j=0;j<pastActions[i].length;j++) {
-				console.log(pastActions[i][j]);
 				groupCount += 1;
 				playerCount = 0;
 				for (k=0;k<pastActions[i][j].length;k++) {
-					console.log(pastActions[i][j][k]);
 					playerCount += 1;
 					var counter = 0;
 					for (l=0;l<pastActions[i][j][k].length;l++) {
-						console.log("ACTION: " + pastActions[i][j][k][l]);
 						if (pastActions[i][j][k][l] == 1) {
 							counter += 1;
 						}
 					}
 					if (counter == 0) {
-						console.log("Team: " + teamCount);
-						console.log("Group: " + groupCount);
-						console.log("Player: " + playerCount);
-						console.log(investigationLists);
-						console.log(investigationLists[i]);
-						console.log(investigationLists[i][j]);
-						console.log(investigationLists[i][j][k]);
 						for (m=0;m<investigationLists[i][j][k].length;m++) {
 							playerToLosePointsNumber = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + parseInt(investigationLists[i][j][k][m], 10);
-							console.log("PTLPN: " + playerToLosePointsNumber);
-							console.log("i: " + i);
-							console.log("j: " + j);
-							console.log("k: " + k);
-							console.log("m: " + m);
-							console.log(playerScores)
-							console.log(playerScores[playerToLosePointsNumber]);
-							playerScores[playerToLosePointsNumber] += -((investigationCost)/(investigationLists[i][j][k].length));
-							console.log(playerScores[playerToLosePointsNumber]);
+							playerScores[playerToLosePointsNumber] += -(Math.floor(((investigationCost)/(investigationLists[i][j][k].length))));
 						}
 					}
 					else {
 						for (m=0;m<investigationLists[i][j][k].length;m++) {
-							playerCaught = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + k + 1;
 							playerToGainPointsNumber = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + parseInt(investigationLists[i][j][k][m], 10);
-							console.log("PC: " + playerCaught);
-							console.log(playerScores[playerCaught]);
-							playerScores[playerCaught] += (-2 * counter);
-							console.log(playerScores[playerCaught]);
-							console.log("PTGPN: " + playerToGainPointsNumber);
-							console.log(playerScores[playerToGainPointsNumber]);
-							playerScores[playerToGainPointsNumber] += ((2*counter)/(investigationLists[i][j][k].length));
-							console.log(playerScores[playerToGainPointsNumber]);
-						}
+							playerScores[playerToGainPointsNumber] += Math.ceil(((2*counter)/(investigationLists[i][j][k].length)));
+						};
+						playerCaught = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + k + 1;
+						playerScores[playerCaught] += (-2 * counter);
 					}
 				}
 			}
@@ -929,9 +904,6 @@
 			for (var i = 0; i < overallWinners.length; i++) {
 				winningNames.push(usernames[overallWinners[i]]);
 			};
-			console.log("winning teams: " + winningTeams);
-			console.log("overall winners: " + overallWinners);
-			console.log("team winners: " + teamWinners);
 			for (var i in sockets) {
 				var emitSocket = sockets[i];
 				if (overallWinners.indexOf(emitSocket.playerNumber) >= 0) {
@@ -1054,7 +1026,6 @@
 				individualBorderVotes[i] = [0, 0];
 			};
 		};
-		console.log("teamInLead: "+teamInLead);
 		for (var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
 			socket.emit('worldEvent', {
@@ -1071,14 +1042,20 @@
 
 	function checkWarVotes(team, side) {
 		var currentPercentFor = individualWarVotes[team - 1][side] / numberOfPlayersInTeams;
-		if (currentPercentFor >= THRESHOLD) {
+		var teamNotPlaced = true;
+		for (var i = 0; i < teamSides[side].length; i++) {
+			if (teamSides[side][i] == team) {
+				teamNotPlaced = false;
+			};
+		};
+		if (currentPercentFor >= THRESHOLD && teamNotPlaced) {
 			teamSides[side].push(team);
 		};
 		decidedPlayers += 1;
 	};
 
-	function checkTeamSides() {
-		if (decidedPlayers == totalPlayers) {
+	function checkTeamSides(gmoverride) {
+		if (decidedPlayers == totalPlayers || gmoverride) {
 			var groupBonus = WAR_WINNING_BONUS / numberOfGroups;
 			var team0Score = 0;
 			var team1Score = 0;
@@ -1095,12 +1072,22 @@
 						groupScores[[teamSides[0][i], j]] += groupBonus;
 					};
 				};
+				console.log("Winning score: " + team1Score);
+				console.log("Here is the winning team:");
+				for (var i = 0; i < teamSides[0].length; i++) {
+					console.log(NATIONS[teamSides[0][i]]);
+				};
 			} else {
 				for (var i = 0; i < teamSides[1].length; i++) {
 					teamScores[teamSides[1][i]] += WAR_WINNING_BONUS;
 					for (var j = 1; j <= numberOfGroups; j++) {
 						groupScores[[teamSides[1][i], j]] += groupBonus;
 					};
+				};
+				console.log("Winning score: " + team1Score);
+				console.log("Here is the winning team:");
+				for (var i = 0; i < teamSides[1].length; i++) {
+					console.log(NATIONS[teamSides[1][i]]);
 				};
 			};
 			eventOver();
@@ -1112,28 +1099,43 @@
 	};
 
 	function checkBorderVotes(team, side) {
-		var groupBonus = BORDER_TEAM_BONUS / numberOfGroups;
 		var currentPercentFor = individualBorderVotes[team - 1][side] / numberOfPlayersInTeams;
-		if (currentPercentFor >= THRESHOLD) {
+		var teamNotPlaced = true;
+		for (var i = 0; i < borderSides[side].length; i++) {
+			if (borderSides[side][i] == team) {
+				teamNotPlaced = false;
+			};
+		};
+		if (currentPercentFor >= THRESHOLD && teamNotPlaced) {
+			borderSides[side].push(team);
 			if (side == 0) {
+				console.log(NATIONS[team] + " has closed their borders!");
+			} else {
+				console.log(NATIONS[team] + " has left their borders open!");
+			};
+		};
+		decidedPlayers += 1;
+	};
+
+	function checkBorderSides(gmoverride) {
+		if (decidedPlayers == totalPlayers || gmoverride) {
+			var groupBonus = BORDER_TEAM_BONUS / numberOfGroups;
+			for (var i = 0; i < borderSides[0].length; i++) {
+				var team = borderSides[0][i];
 				world -= BORDER_WORLD_BONUS;
 				teamScores[team] += BORDER_TEAM_BONUS;
 				for (var j = 1; j <= numberOfGroups; j++) {
 					groupScores[[team, j]] += groupBonus;
 				};
-			} else {
+			};
+			for (var i = 0; i < borderSides[1].length; i++) {
+				var team = borderSides[1][i];
 				world += BORDER_WORLD_BONUS;
 				teamScores[team] -= BORDER_TEAM_BONUS;
 				for (var j = 1; j <= numberOfGroups; j++) {
 					groupScores[[team, j]] -= groupBonus;
 				};
 			};
-		};
-		decidedPlayers += 1;
-	};
-
-	function checkBorderSides() {
-		if (decidedPlayers == totalPlayers) {
 			eventOver();
 			decidedPlayers = 0;
 			scoreUpdate(SOCKET_LIST);
@@ -1159,4 +1161,64 @@
 		for (i=1; i<=totalPlayers; i++) {
 			playerDecisionMade[i] = -1;
 		};
+	};
+
+	function advanceRoundGM(){
+		console.log("Gamemaster has advanced to the next round");
+			if(gameStateScreenType=="decision"){
+				console.log("Gamemaster is not allowed to advance from decision screen")
+
+			}
+			else if(gameStateScreenType=="investigation"){
+				carryOutInvestigations(SOCKET_LIST);
+				numberOfInvestigations = 0;
+				enableAllButtons(SOCKET_LIST);
+				investigationLists = [];
+				for(i=1; i<=numberOfTeams; i++){
+					thisTeam = [];
+					for(j=1; j<=numberOfGroups; j++){
+						thisGroup = [];
+						for(k=1; k<=numberOfPlayersInGroups; k++){
+							thisPlayer = [];
+							thisGroup.push(thisPlayer);
+						};
+						thisTeam.push(thisGroup);
+					};
+					investigationLists.push(thisTeam);
+				};
+			}
+
+			else if(gameStateScreenType=="event"){
+				switch(mostRecentWorldEvent){
+					case 0:
+						checkTeamSides(true);
+						break;
+					case 1:
+						checkBorderSides(true);
+						break;
+					case 2:
+						carryOutOlympics();
+						break;
+					case 3:
+						carryOutRelief();
+						break;
+					case 4:
+						carryOutSpaceRace();
+						break;
+				};
+				decidedPlayers = 0;
+				totalYesVotes = 0;
+				olympicCompetitors = [];
+				for (i=1; i<=numberOfTeams; i++) {
+					teamDecisionCounters[i] = 0;
+				};
+
+			}
+			/*socket.emit('gameStateDisplay', {
+				screenType: gameStateScreenType,
+				decisionMade: playerDecisionMade[socket.playerNumber],
+				worldEventNumber: mostRecentWorldEvent,
+				teamInLead: teamInLead
+			});*/
+
 	};

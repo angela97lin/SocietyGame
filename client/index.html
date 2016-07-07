@@ -91,8 +91,8 @@
 				   7: "UK"};
 	
 	var GROUPS = {1: "Education",
-				  2: "Intelligence Agency",
-				  3: "Workforce",
+				  2: "Workforce",
+				  3: "Intelligence Agency",
 				  4: "Policy Makers"};
 
 
@@ -101,21 +101,21 @@
 					  3: "Inflate students' test scores",
 					  4: "Go teach for a year to impoverished students",
 					  5: "Volunteer to run after-school environmental club"},
-					 {1: "Sell fake identities on the black market",
-					  2: "Become an undercover agent",
-					  3: "Censor the nation's failed health and safety inspection reports",
-					  4: "Sell top secret info to enemy countries",
-					  5: "Fabricate conspiracy theories"},
 					 {1: "Buy a boat with company money",
 					  2: "Come in on Saturdays",
 					  3: "Switch production to fossil fuels for a month to lower production costs",
 					  4: "Donate to charity",
 					  5: "Outsource jobs to another country"},
+					  {1: "Sell fake identities on the black market",
+					  2: "Become an undercover agent to reduce crime in your cities",
+					  3: "Take bribe to censor the nation's failed safety inspections",	//wasn't clear how it benefits individual
+					  4: "Risk your career to reveal a world terrorist orginization", 	//why is it bad for you? why isnt it bad for your country? why is it good for the world?
+					  5: "Start propaganda campaign claiming your nation is best"},	//unclear as what type of conspiracy theories...how do they help you? +,++,--
 					 {1: "Take a bribe to lower emissions requirements",
 					  2: "Attend every voting session",
 					  3: "Impose tariffs on international trade",
 					  4: "Give time to international disaster relief organization",
-					  5: "Take bribe to deport criminal"}];
+					  5: "Take bribe to deport criminal"}]; 	//doesnt seem less selfish than 1
 	
 	var ip;
 
@@ -136,7 +136,6 @@
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
-		console.log("NUMBERS RECIEVED");
 
 		$.get("http://ipinfo.io", function(response) {
 			if (typeof(Storage) !== "undefined") {
@@ -207,7 +206,6 @@
 		}, "jsonp");
 		
 		gameMode = data.mode;
-		console.log(gameMode);
 	});
 	
 	socket.on('gameState',function(data) {
@@ -222,7 +220,6 @@
 	socket.on('player', function(data) {
 		playerNumber = data.number;
 		username = data.username;
-		console.log("player username: " + username);
 		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
@@ -254,14 +251,13 @@
 		p = data.p;
 		playersPerGroup = data.playersPerGroup;
 		playersNotToInvestigate.push(p);
-		for (i=playersPerGroup; i<5; i++) {
+		for (i=playersPerGroup; i<6; i++) {
 			playersNotToInvestigate.push(i+1);
 		};
 	});
 	
 	socket.on('groupmates', function(data) {
 		groupmates = data.groupmates;
-		console.log("groupmates: "+groupmates);
 	});
 	
 	socket.on('hasStarted', function(data) {
@@ -269,7 +265,6 @@
 	});
 	
 	socket.on('decisionUpdate', function(data) {
-		console.log("decision was updated")
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + playerScore;
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.teamScore;
@@ -295,7 +290,6 @@
 	});
 	
 	socket.on('newQuarter', function() {
-		console.log("New Quarter");
 		if(!hasdone){
 			hasdone = true;
 			swapToInvestigation(2);	//send to investigation rules
@@ -363,16 +357,13 @@
 	
 	var disableButtons = function() {
 		$(':button').prop('disabled', true);
-		console.log('DISABLED' + hasStarted);
 	};
 	
 	var enableButtons = function() {
 		$(':button').prop('disabled', false);
-		console.log('ENABLED' + hasStarted);
 	};
 	var decision1 = function(sendToServer) {
 		if(sendToServer){
-			console.log("sent to server");
 			socket.emit('decision1', {});
 		}		
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
@@ -562,7 +553,7 @@
 				$("#decisionScreen").replaceWith(
 					'<div id="worldEventScreen" class = "row"> \
 						<div class="col-md-45"> \
-							<button class="decision worldEvent" id = "sideWtihWinning" onclick="castWarVote(0)"></button> \
+							<button class="decision worldEvent" id = "sideWithWinning" onclick="castWarVote(0)"></button> \
 							<h3></h3> \
 						</div> \
 						<div class = "col-md-45 col-md-offset-10"> \
@@ -570,7 +561,7 @@
 							<h3></h3> \
 						</div> \
 					</div>'	);
-				document.getElementById("sideWtihWinning").innerHTML = "Side with " + NATIONS[teamInLead];
+				document.getElementById("sideWithWinning").innerHTML = "Side with " + NATIONS[teamInLead];
 			};
 		}
 		else if(randomEvent == 1){
@@ -644,6 +635,8 @@
 						<button class="decision investigate" id="investigate4" onclick="investigate(4)">Investigate Player 4</button> \
 						<h3></h3> \
 						<button class="decision investigate" id="investigate5" onclick="investigate(5)">Investigate Player 5</button> \
+						<h3></h3> \
+						<button class="decision investigate" id="investigate6" onclick="investigate(6)">Investigate Player 6</button> \
 						<h3></h3> \
 						<button class="decision investigate" id="investigateNone" onclick="investigate(-1)">Investigate Nobody</button> \
 						<h3></h3> \
