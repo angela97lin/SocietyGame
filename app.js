@@ -37,6 +37,9 @@
 	app.get('/game_over', function(req, res) {
 		res.sendFile(__dirname + '/client/game_over.html');
 	});
+	app.get('/gamemaster', function(req, res) {
+		res.sendFile(__dirname + '/client/gamemaster.html');
+	});
 	app.use('/client', express.static(__dirname + '/client'));
 
 	var playerNumber = 1;
@@ -47,6 +50,7 @@
 	var numberOfPlayersInTeams;
 	var world;
 	var NATIONS;
+	var GROUP_NAMES;
 	var roundNumber = 1;
 	var quarter = 0;
 	var ROUNDS = 12;
@@ -144,6 +148,7 @@
 		socket.on('start', function(data) {
 			decisionMode = MODES[data.mode];
 			NATIONS = data.NATIONS;
+			GROUP_NAMES = data.GROUP_NAMES;
 			world = data.worldscore;
 			totalPlayers = data.numberOfPlayers;
 			numberOfGroups = data.numberOfGroups;
@@ -378,6 +383,9 @@
 			socket.emit("getRound", {
 				roundNumber: roundNumber
 			});
+			socket.emit("putPlayerInGameMasterTable", {
+				groupNumber: socket.groupNumber;
+			});
 
 		});
 		
@@ -585,6 +593,15 @@
 					teamDecisionCounters[i] = 0;
 				}
 			}
+		});
+
+		socket.on("gameMasterConnect", function(data) {
+			socket.emit("giveGameMasterData", {
+				NATIONS: NATIONS,
+				GROUP_NAMES: GROUP_NAMES,
+				numberOfTeams: numberOfTeams,
+				numberOfGroups: numberOfGroups
+			});
 		});
 
 	});
