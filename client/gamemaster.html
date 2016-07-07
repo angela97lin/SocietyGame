@@ -44,7 +44,6 @@
 				var playerTable = document.getElementById("playerTable");
 				playerTable.cellSpacing = 200 / numberOfGroups;
 				createCell(playerTable.rows[0].insertCell(0), "Player Table", 'col scoreCell');
-				alert(numberOfTeams);
 				for (var i = 1; i <= numberOfTeams; i++) {
 					addNation(i);
 				};
@@ -53,7 +52,9 @@
 				};
 			});
 
-			socket.on("putPlayerInGameMasterTable", function() {});
+			socket.on("putPlayerInGameMasterTable", function(data) {
+				document.getElementById(data.groupNumber).innerHTML += data.username + "<br>";
+			});
 
 			function createCell(cell, text, style, id=null) {
 				var div = document.createElement('div');
