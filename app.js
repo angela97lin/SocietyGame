@@ -383,9 +383,14 @@
 			socket.emit("getRound", {
 				roundNumber: roundNumber
 			});
-			socket.emit("putPlayerInGameMasterTable", {
-				groupNumber: socket.groupNumber
-			});
+
+			for (var i in SOCKET_LIST) {
+				emitSocket = SOCKET_LIST[i];
+					emitSocket.emit("putPlayerInGameMasterTable", {
+					username: data.username,
+					groupNumber: socket.groupNumber
+				});
+			};
 
 		});
 		
