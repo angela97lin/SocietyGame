@@ -660,6 +660,11 @@
 		socket.on('unpauseGM', function(){
 			unpauseTimer();
 		});
+		
+		socket.on('roundTimeGM', function(data){
+			TIME_LIMIT_MINUTES = data.newMinutes;
+			TIME_LIMIT_SECONDS = data.newSeconds;
+		});
 	});
 
 	
@@ -1220,7 +1225,10 @@
 	function advanceRoundGM(){
 		console.log("Gamemaster has advanced to the next round");
 			if(gameStateScreenType=="decision"){
-				console.log("Gamemaster is not allowed to advance from decision screen")
+				timerMinutes = 0;
+				timerSeconds = 1;
+				
+				//console.log("Gamemaster is not allowed to advance from decision screen")
 
 			}
 			else if(gameStateScreenType=="investigation"){
