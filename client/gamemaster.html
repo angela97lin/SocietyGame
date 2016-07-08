@@ -10,38 +10,41 @@
 
 	<body>
 	
-		
+		<br>
+		<br>
 		<button onclick="advanceRound()">Advance Round</button>
-		<button onclick="pauseButton()">Pause</button>
-		<button onclick="unpauseButton()">Unpause</button>
+		<br>
+		<br>
+		<button onclick="pauseButton()">Pause</button><button onclick="unpauseButton()">Unpause</button>
+		<br>
+		<br>
+		Set new timer length:<br>
+		<input type="text" id="timerMinutes">:<input type="text" id="timerSeconds"><br>
+
+		<input type="button" value="Set length of Round" id="timerButton">
+		<br>
+		<br>
+		Username:<br>
+		<input type="text" id="username"><br>
+		New Score:<br>
+		<input type="text" id="newIndividualScore">
 		<br>
 		<br>
 		<br>
+		Team number:----------------Group Number:<br>
+		<input type="team" id="teamNumber"><input type="group" id="groupNumber">
 		<br>
-		
-			Username:<br>
-			<input type="username" id="username"><br>
-			New Score:<br>
-			<input type="text" id="newIndividualScore">
-			<br>
-			<br>
-			<br>
-			Team number:----------------Group Number:<br>
-			<input type="team" id="teamNumber"><input type="group" id="groupNumber">
-			<br>
-			New Scores:<br>
-			<input type="text" id="newTeamScore"><input type="text" id="newGroupScore">
-			<br>
-			<br>
-			<br>
-			New World Score:<br>
-			<input type="world" id="newWorldScore">
-			<br>
-			<br>
-			<br>
-			<input type="button" value="Submit" id="submitButton">
-		</form>
-			<input type="button" value="Change" id="submitButton">
+		New Scores:<br>
+		<input type="text" id="newTeamScore"><input type="text" id="newGroupScore">
+		<br>
+		<br>
+		<br>
+		New World Score:<br>
+		<input type="text" id="newWorldScore">
+		<br>
+		<br>
+		<br>
+		<input type="button" value="Change" id="submitButton">
 
 		<button onclick="removePlayer()">Remove Player</button>
 
@@ -146,9 +149,9 @@
 				console.log(usernameToChange);
 				console.log(newIndividualScore);
 				console.log(newGroupScore);
-				console.log("teamscore " +newTeamScore);
-				console.log("worldscore "+newWorldScore);
-				console.log("groupscore"+groupToChange);
+				console.log("teamscore " + newTeamScore);
+				console.log("worldscore "+ newWorldScore);
+				console.log("groupscore"+ groupToChange);
 				console.log(teamToChange);
     			socket.emit('scoreChangeGM', {
     				newGroupScore: newGroupScore,
@@ -172,11 +175,20 @@
 				
 			}
 
-			function pauseGameButton(){
+			function pauseButton(){
 				socket.emit('pauseGM',{});
 			}
-			function unpauseGameButton(){
+			function unpauseButton(){
 				socket.emit('unpauseGM',{});
+			}
+			var timerButton = document.getElementById("timerButton");
+			timerButton.onclick = function() {
+				var newMinutes =  parseInt(document.getElementById("timerMinutes").value);
+				var newSeconds = parseInt(document.getElementById("timerSeconds").value);
+				socket.emit('roundTimeGM' {
+					newMinutes: newMinutes;
+					newSeconds: newSeconds;
+				});
 			}
 
 		</script>
