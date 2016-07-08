@@ -620,9 +620,9 @@
 				console.log("loop1");
 			}
 			else if (data.newGroupScore != null && data.newGroupScore != "") {
-				console.log("before: " + groupScores);
-				groupScores[data.teamToChange, data.groupToChange] = data.newGroupScore;
-				console.log("after: " + groupScores);
+				console.log(groupScores);
+				groupScores[[data.teamToChange, data.groupToChange]] = data.newGroupScore;
+				console.log(groupScores);
 				console.log("loop2");
 
 			}
