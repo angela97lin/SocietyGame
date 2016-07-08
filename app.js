@@ -354,7 +354,8 @@
 					emitSocket = SOCKET_LIST[i];
 						emitSocket.emit("putPlayerInGameMasterTable", {
 						username: data.username,
-						groupNumber: socket.groupNumber
+						groupNumber: socket.groupNumber,
+						playerNumber: socket.playerNumber
 					});
 				};
 			};
