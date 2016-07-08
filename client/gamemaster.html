@@ -147,7 +147,18 @@
     				groupToChange: groupToChange,
     				teamToChange: teamToChange
     			});
+    			clearInputs();
 			};
+
+			function clearInputs(){
+				var inputs = document.getElementsByTagName("INPUT");
+				var i;
+				for(i in inputs){
+					console.log(inputs[i].value);
+					inputs[i].value ="";
+				}
+				
+			}
 
 		</script>
 	</body>
