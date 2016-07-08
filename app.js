@@ -619,16 +619,21 @@
 		socket.on("scoreChangeGM", function(data) {
 			if (data.newTeamScore != null && data.newTeamScore != "") {
 				teamScores[data.teamToChange] = data.newTeamScore;
+				console.log("loop1");
 			}
 			else if (data.newGroupScore != null && data.newGroupScore != "") {
 				groupScores[data.teamToChange, data.groupToChange] = data.newGroupScore;
+				console.log("loop2");
 			}
 			else if (data.newIndividualScore != null && data.newIndividualScore != "") {
 				playerScores[playerNameToNumber[data.usernameToChange]] = data.newIndividualScore;
+				console.log("loop3");
 			}
 			else if (data.newWorldScore != null && data.newWorldScore != "") {
+				console.log("loop4");
 				world = data.newWorldScore;
 			}
+		});
 
 		socket.on("removePlayer", function(data) {
 			var playerNumberToDelete = playerNameToNumber[data.username];
