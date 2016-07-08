@@ -12,6 +12,8 @@
 	
 		
 		<button onclick="advanceRound()">Advance Round</button>
+		<button onclick="pauseButton()">Pause</button>
+		<button onclick="unpauseButton()">Unpause</button>
 		<br>
 		<br>
 		<br>
@@ -158,6 +160,13 @@
 					inputs[i].value ="";
 				}
 				
+			}
+
+			function pauseGameButton(){
+				socket.emit('pauseGM',{});
+			}
+			function unpauseGameButton(){
+				socket.emit('unpauseGM',{});
 			}
 
 		</script>
