@@ -13,6 +13,8 @@
 		
 		<button onclick="advanceRound()">Advance Round</button>
 
+		<button onclick="removePlayer()">Remove Player</button>
+
 
 
 		<table id="playerTable">
@@ -56,6 +58,11 @@
 				document.getElementById(data.groupNumber).innerHTML += data.username + "<br>";
 			});
 
+			socket.on("removePlayerFromTable", function(data) {
+				var element = "[id='" + data.groupNumber + "']";
+				$(element).html($(element).html().split(data.username + "<br>").join(""));
+			});
+
 			function createCell(cell, text, style, id=null) {
 				var div = document.createElement('div');
 				var txt = document.createTextNode(text);
@@ -84,9 +91,21 @@
 
 			function advanceRound(){
 				socket.emit('advanceRoundGM', {});
-
+<<<<<<< HEAD
 			};
+=======
+>>>>>>> f69e2e50e93efc24d9f5e55f4395de151215329f
 
+			function removePlayer() {
+				var username = prompt("What is the username of the player you would like to remove?");
+				socket.emit("removePlayer", {
+					username: username
+				});
+			};
+<<<<<<< HEAD
+=======
+
+>>>>>>> f69e2e50e93efc24d9f5e55f4395de151215329f
 
 
 
