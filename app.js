@@ -141,7 +141,9 @@
 				numberOfGroups: numberOfGroups,
 				usernames: usernames,
 				mode: decisionMode,
-				usernameData: usernameData
+				usernameData: usernameData,
+				numberOfPlayersConnectedPerGroup: numberOfPlayersConnectedPerGroup,
+				numberOfPlayersInGroups: numberOfPlayersInGroups
 			});
 		};
 
@@ -597,7 +599,7 @@
 				for (i=1; i<=numberOfTeams; i++) {
 					teamDecisionCounters[i] = 0;
 				};
-			}
+			};
 		});
 
 
@@ -620,8 +622,11 @@
 				console.log("loop1");
 			}
 			else if (data.newGroupScore != null && data.newGroupScore != "") {
-				groupScores[data.teamToChange, data.groupToChange] = data.newGroupScore;
+				console.log(groupScores);
+				groupScores[[data.teamToChange, data.groupToChange]] = data.newGroupScore;
+				console.log(groupScores);
 				console.log("loop2");
+
 			}
 			else if (data.newIndividualScore != null && data.newIndividualScore != "") {
 				playerScores[playerNameToNumber[data.usernameToChange]] = data.newIndividualScore;
@@ -630,7 +635,7 @@
 			else if (data.newWorldScore != null && data.newWorldScore != "") {
 				console.log("loop4");
 				world = data.newWorldScore;
-			}
+			};
 		});
 
 		socket.on("removePlayer", function(data) {
@@ -646,6 +651,14 @@
 					username: data.username
 				});
 			};
+		});
+		
+		socket.on('pauseGM', function(){
+			pauseTimer();
+		});
+		
+		socket.on('unpauseGM', function(){
+			unpauseTimer();
 		});
 	});
 

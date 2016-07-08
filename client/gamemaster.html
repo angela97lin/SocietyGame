@@ -39,8 +39,9 @@
 			<br>
 			<br>
 			<br>
+			<input type="button" value="Submit" id="submitButton">
+		</form>
 			<input type="button" value="Change" id="submitButton">
-		
 
 		<button onclick="removePlayer()">Remove Player</button>
 
@@ -123,15 +124,24 @@
 					username: username
 				});
 			};
+
+			var button = document.getElementById("submitButton");
+			var newIndividualScore =  button.form.newIndividualScore.value;
+			var newWorldScore =  button.form.newWorldScore.value;
+			var newTeamScore = button.form.newTeamScore.value;
+			var newGroupScore = button.form.newGroupScore.value;
+			var usernameToChange = button.form.username.value;
+			var groupToChange = button.form.groupNumber.value;
+			var teamToChange = button.form.teamNumber.value;
 			var button = document.getElementById("submitButton");
 			button.onclick = function() {
-				var newIndividualScore =  document.getElementById("newIndividualScore").value;
-				var newWorldScore =  document.getElementById("newWorldScore").value;
-				var newTeamScore = document.getElementById("newTeamScore").value;
-				var newGroupScore = document.getElementById("newGroupScore").value;
-				var usernameToChange = document.getElementById("username").value;
-				var groupToChange = document.getElementById("groupNumber").value;
-				var teamToChange = document.getElementById("teamNumber").value;
+				var newIndividualScore =  parseInt(document.getElementById("newIndividualScore").value);
+				var newWorldScore =  parseInt(document.getElementById("newWorldScore").value);
+				var newTeamScore = parseInt(document.getElementById("newTeamScore").value);
+				var newGroupScore = parseInt(document.getElementById("newGroupScore").value);
+				var usernameToChange = parseInt(document.getElementById("username").value);
+				var groupToChange = parseInt(document.getElementById("groupNumber").value);
+				var teamToChange = parseInt(document.getElementById("teamNumber").value);
 				console.log("clicked button");
 				console.log(usernameToChange);
 				console.log(newIndividualScore);
