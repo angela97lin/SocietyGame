@@ -75,6 +75,7 @@
 	var teamNameNumbers = {};
 	var playerNameToGroup = {};
 	var playerNameToTeam = {};
+	var playerNameToNumber = {};
 	var currentTeamNumber = 1;
 	var investigationLists;
 	var numberOfInvestigations = 0;
@@ -305,6 +306,7 @@
 				console.log("Player " + socket.playerNumber + " connected");
 				//socket.playerNumberInGroup = data.playerNumber;
 				usernames[socket.playerNumber] = data.username;
+				playerNameToNumber[data.username] = socket.playerNumber;
 				if (!(socket.playerNumber in playerScores)){
 					playerScores[socket.playerNumber] = 20;
 				};
@@ -612,6 +614,20 @@
 				numberOfTeams: numberOfTeams,
 				numberOfGroups: numberOfGroups
 			});
+		});
+
+		socket.on("removePlayer", function(data) {
+			var playerNumberToDelete = playerNameToNumber[data.username];
+			delete usernames[playerNumberToDelete];
+			delete playerScores[playerNumberToDelete];
+			numberOfPlayersConnectedPerGroup[playerNameToTeam[data.username] - 1][playerNameToGroup[data.username] - 1] -= 1;
+			for (var i in SOCKET_LIST) {
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("removePlayerFromTable", {
+					groupNumber: [playerNameToTeam[data.username], playerNameToGroup[data.username]],
+					username: data.username
+				});
+			};
 		});
 	});
 
