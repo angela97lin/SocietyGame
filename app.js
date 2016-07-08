@@ -653,6 +653,14 @@
 				});
 			};
 		});
+		
+		socket.on('pauseGM', function(){
+			pauseTimer();
+		});
+		
+		socket.on('unpauseGM', function(){
+			unpauseTimer();
+		});
 	});
 
 	
