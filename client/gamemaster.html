@@ -12,9 +12,39 @@
 	
 		
 		<button onclick="advanceRound()">Advance Round</button>
+<<<<<<< HEAD
+		<br>
+		<br>
+		<br>
+		<br>
+		<form>
+			Username:<br>
+			<input type="username" name="username"><br>
+			New Score:<br>
+			<input type="text" name="newIndividualScore">
+			<br>
+			<br>
+			<br>
+			Team number:----------------Group Number:<br>
+			<input type="team" name="teamNumber"><input type="group" name="groupNumber">
+			<br>
+			New Scores:<br>
+			<input type="text" name="newTeamScore"><input type="text" name="newGroupScore">
+			<br>
+			<br>
+			<br>
+			New World Score:<br>
+			<input type="world" name="newWorldScore">
+			<br>
+			<br>
+			<br>
+			<input type="button" value="Submit" id="submitButton">
+		</form>
+=======
 
 		<button onclick="removePlayer()">Remove Player</button>
 
+>>>>>>> a5645327ee175dd780dc9b2f928605631032d059
 
 
 		<table id="playerTable">
@@ -91,10 +121,8 @@
 
 			function advanceRound(){
 				socket.emit('advanceRoundGM', {});
-<<<<<<< HEAD
+
 			};
-=======
->>>>>>> f69e2e50e93efc24d9f5e55f4395de151215329f
 
 			function removePlayer() {
 				var username = prompt("What is the username of the player you would like to remove?");
@@ -102,8 +130,29 @@
 					username: username
 				});
 			};
+			var button = document.getElementById("submitButton"),
+			var newIndividualScore =  button.form.newIndividualScore.value;
+			var newWorldScore =  button.form.newWorldScore.value;
+			var newTeamScore = button.form.newTeamScore.value;
+			var newGroupScore = button.form.newGroupScore.value;
+			var usernameToChange = button.form.username.value;
+			var groupToChange = button.form.groupNumber.value;
+			var teamToChange = button.form.teamNumber.value;
+			button.onclick = function() {
+    			socket.emit('scoreChangeGM', {
+    				newGroupScore: newGroupScore,
+    				newTeamScore: newTeamScore,
+    				newWorldScore: newWorldScore,
+    				newIndividualScore: newIndividualScore,
+    				usernameToChange: usernameToChange,
+    				groupToChange: groupToChange,
+    				teamToChange: teamToChange
+    			});
+			}
+=======
 <<<<<<< HEAD
 =======
+>>>>>>> a5645327ee175dd780dc9b2f928605631032d059
 
 >>>>>>> f69e2e50e93efc24d9f5e55f4395de151215329f
 
