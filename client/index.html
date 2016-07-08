@@ -136,6 +136,7 @@
 		numberOfGroups = data.numberOfGroups;
 
 		if (typeof(Storage) !== "undefined") {
+			var groupIsFull = false;
 			if (localStorage.getItem("username") in data.usernameData) {
 				username = localStorage.getItem("username");
 				teamNameInput = data.usernameData[username].teamNumber;
@@ -182,13 +183,20 @@
 					window.alert("Please enter a valid group number");
 					groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
 				};
+				if (data.numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] == data.numberOfPlayersInGroups) {
+					groupIsFull = true;
+				};
 			};
+			if (groupIsFull) {
+				alert("This group is already full, please remove player before you can join");
+			} else {
 			swapToMainContent("#empty", true);
-			teamName = NATIONS[teamNameInput];
-			socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
+				teamName = NATIONS[teamNameInput];
+				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
 
-			//Redirect the player to the correct place, based on gamestate
-			socket.emit('stateRequest', {});
+				//Redirect the player to the correct place, based on gamestate
+				socket.emit('stateRequest', {});
+			};
 		} else {
 			alert("Please use a different browser or update your current browser");
 		};

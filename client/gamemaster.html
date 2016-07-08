@@ -37,8 +37,9 @@
 			<br>
 			<br>
 			<br>
+			<input type="button" value="Submit" id="submitButton">
+		</form>
 			<input type="button" value="Change" id="submitButton">
-		
 
 		<button onclick="removePlayer()">Remove Player</button>
 
@@ -121,6 +122,15 @@
 					username: username
 				});
 			};
+
+			var button = document.getElementById("submitButton");
+			var newIndividualScore =  button.form.newIndividualScore.value;
+			var newWorldScore =  button.form.newWorldScore.value;
+			var newTeamScore = button.form.newTeamScore.value;
+			var newGroupScore = button.form.newGroupScore.value;
+			var usernameToChange = button.form.username.value;
+			var groupToChange = button.form.groupNumber.value;
+			var teamToChange = button.form.teamNumber.value;
 			var button = document.getElementById("submitButton");
 			button.onclick = function() {
 				var newIndividualScore =  parseInt(document.getElementById("newIndividualScore").value);

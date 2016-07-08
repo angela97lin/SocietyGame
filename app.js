@@ -141,7 +141,9 @@
 				numberOfGroups: numberOfGroups,
 				usernames: usernames,
 				mode: decisionMode,
-				usernameData: usernameData
+				usernameData: usernameData,
+				numberOfPlayersConnectedPerGroup: numberOfPlayersConnectedPerGroup,
+				numberOfPlayersInGroups: numberOfPlayersInGroups
 			});
 		};
 
@@ -597,7 +599,7 @@
 				for (i=1; i<=numberOfTeams; i++) {
 					teamDecisionCounters[i] = 0;
 				};
-			}
+			};
 		});
 
 
@@ -633,7 +635,7 @@
 			else if (data.newWorldScore != null && data.newWorldScore != "") {
 				console.log("loop4");
 				world = data.newWorldScore;
-			}
+			};
 		});
 
 		socket.on("removePlayer", function(data) {
