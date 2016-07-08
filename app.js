@@ -613,6 +613,21 @@
 				numberOfGroups: numberOfGroups
 			});
 		});
+		
+		socket.on("scoreChangeGM", function(data) {
+			if (data.newTeamScore != null && data.newTeamScore != "") {
+				teamScores[data.teamToChange] = data.newTeamScore;
+			}
+			else if (data.newGroupScore != null && data.newGroupScore != "") {
+				groupScores[data.teamToChange, data.groupToChange] = data.newGroupScore;
+			}
+			else if (data.newIndividualScore != null && data.newIndividualScore != "") {
+				playerScores[playerNameToNumber[data.usernameToChange]] = data.newIndividualScore;
+			}
+			else if (data.newWorldScore != null && data.newWorldScore != "") {
+				world = data.newWorldScore;
+			}
+		});
 	});
 
 	
