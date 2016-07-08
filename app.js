@@ -599,7 +599,7 @@
 				for (i=1; i<=numberOfTeams; i++) {
 					teamDecisionCounters[i] = 0;
 				};
-			}
+			};
 		});
 
 
@@ -619,14 +619,21 @@
 		socket.on("scoreChangeGM", function(data) {
 			if (data.newTeamScore != null && data.newTeamScore != "") {
 				teamScores[data.teamToChange] = data.newTeamScore;
+				console.log("loop1");
 			}
 			else if (data.newGroupScore != null && data.newGroupScore != "") {
-				groupScores[data.teamToChange, data.groupToChange] = data.newGroupScore;
+				console.log(groupScores);
+				groupScores[[data.teamToChange, data.groupToChange]] = data.newGroupScore;
+				console.log(groupScores);
+				console.log("loop2");
+
 			}
 			else if (data.newIndividualScore != null && data.newIndividualScore != "") {
 				playerScores[playerNameToNumber[data.usernameToChange]] = data.newIndividualScore;
+				console.log("loop3");
 			}
 			else if (data.newWorldScore != null && data.newWorldScore != "") {
+				console.log("loop4");
 				world = data.newWorldScore;
 			};
 		});

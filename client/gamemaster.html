@@ -16,29 +16,30 @@
 		<br>
 		<br>
 		<br>
-		<form>
+		
 			Username:<br>
-			<input type="username" name="username"><br>
+			<input type="username" id="username"><br>
 			New Score:<br>
-			<input type="text" name="newIndividualScore">
+			<input type="text" id="newIndividualScore">
 			<br>
 			<br>
 			<br>
 			Team number:----------------Group Number:<br>
-			<input type="team" name="teamNumber"><input type="group" name="groupNumber">
+			<input type="team" id="teamNumber"><input type="group" id="groupNumber">
 			<br>
 			New Scores:<br>
-			<input type="text" name="newTeamScore"><input type="text" name="newGroupScore">
+			<input type="text" id="newTeamScore"><input type="text" id="newGroupScore">
 			<br>
 			<br>
 			<br>
 			New World Score:<br>
-			<input type="world" name="newWorldScore">
+			<input type="world" id="newWorldScore">
 			<br>
 			<br>
 			<br>
 			<input type="button" value="Submit" id="submitButton">
 		</form>
+			<input type="button" value="Change" id="submitButton">
 
 		<button onclick="removePlayer()">Remove Player</button>
 
@@ -130,7 +131,23 @@
 			var usernameToChange = button.form.username.value;
 			var groupToChange = button.form.groupNumber.value;
 			var teamToChange = button.form.teamNumber.value;
+			var button = document.getElementById("submitButton");
 			button.onclick = function() {
+				var newIndividualScore =  parseInt(document.getElementById("newIndividualScore").value);
+				var newWorldScore =  parseInt(document.getElementById("newWorldScore").value);
+				var newTeamScore = parseInt(document.getElementById("newTeamScore").value);
+				var newGroupScore = parseInt(document.getElementById("newGroupScore").value);
+				var usernameToChange = parseInt(document.getElementById("username").value);
+				var groupToChange = parseInt(document.getElementById("groupNumber").value);
+				var teamToChange = parseInt(document.getElementById("teamNumber").value);
+				console.log("clicked button");
+				console.log(usernameToChange);
+				console.log(newIndividualScore);
+				console.log(newGroupScore);
+				console.log("teamscore " +newTeamScore);
+				console.log("worldscore "+newWorldScore);
+				console.log("groupscore"+groupToChange);
+				console.log(teamToChange);
     			socket.emit('scoreChangeGM', {
     				newGroupScore: newGroupScore,
     				newTeamScore: newTeamScore,
@@ -140,7 +157,18 @@
     				groupToChange: groupToChange,
     				teamToChange: teamToChange
     			});
+    			clearInputs();
 			};
+
+			function clearInputs(){
+				var inputs = document.getElementsByTagName("INPUT");
+				var i;
+				for(i in inputs){
+					console.log(inputs[i].value);
+					inputs[i].value ="";
+				}
+				
+			}
 
 		</script>
 	</body>
