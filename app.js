@@ -8,7 +8,6 @@
 	var SOCKET_LIST = {};
 	var io = require('socket.io')(serv, {});
 	var mainConnected = false;
-	var ipAddresses = {};
 	
 	app.get('/', function(req, res) {
 		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
@@ -142,7 +141,7 @@
 				numberOfGroups: numberOfGroups,
 				usernames: usernames,
 				mode: decisionMode,
-				ipAddresses: ipAddresses
+				usernameData: usernameData
 			});
 		};
 
@@ -286,8 +285,9 @@
 		});
 
 		socket.on('playerConnect', function(data) {
-			if (data.ip in ipAddresses) {
-				var userData = ipAddresses[data.ip];
+			console.log(data.username + " connected");
+			if (data.username in usernameData) {
+				var userData = usernameData[data.username];
 				socket.rawGroupNumber = userData.rawGroupNumber;
 				socket.teamNumber = userData.teamNumber;
 				socket.username = data.username;
@@ -295,7 +295,7 @@
 				socket.groupNumber = userData.groupNumber;
 				socket.playerNumberInGroup = userData.playerNumberInGroup;
 			} else {
-				ipAddresses[data.ip] = {};
+				usernameData[data.username] = {};
 				socket.rawGroupNumber = data.groupNumberInput;
 				socket.teamNumber = data.teamNumber;
 				socket.username = data.username;
@@ -303,7 +303,6 @@
 				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 				// socket.rawPlayerNumber = data.playerNumber;
 				socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
-				console.log("Player " + socket.playerNumber + " connected");
 				//socket.playerNumberInGroup = data.playerNumber;
 				usernames[socket.playerNumber] = data.username;
 				playerNameToNumber[data.username] = socket.playerNumber;
@@ -343,12 +342,19 @@
 				if (!(socket.groupNumber in groupScores)){
 					groupScores[socket.groupNumber] = 20;
 				};
-				ipAddresses[data.ip] = {rawGroupNumber: socket.rawGroupNumber,
+				usernameData[data.username] = {rawGroupNumber: socket.rawGroupNumber,
 											   teamNumber: socket.teamNumber,
 											   username: socket.username,
 											   playerNumber: socket.playerNumber,
 											   groupNumber: socket.groupNumber,
 											   playerNumberInGroup: socket.playerNumberInGroup};
+				for (var i in SOCKET_LIST) {
+					emitSocket = SOCKET_LIST[i];
+						emitSocket.emit("putPlayerInGameMasterTable", {
+						username: data.username,
+						groupNumber: socket.groupNumber
+					});
+				};
 			};
 			usernames[socket.playerNumber] = data.username;
 			socket.emit("team", {
@@ -385,14 +391,6 @@
 			socket.emit("getRound", {
 				roundNumber: roundNumber
 			});
-
-			for (var i in SOCKET_LIST) {
-				emitSocket = SOCKET_LIST[i];
-					emitSocket.emit("putPlayerInGameMasterTable", {
-					username: data.username,
-					groupNumber: socket.groupNumber
-				});
-			};
 
 		});
 		
@@ -537,7 +535,7 @@
 
 		socket.on('disconnect', function() {
 			delete usernames[socket.playerNumber];
-			console.log("Player " + socket.playerNumber + " has been disconnected");
+			console.log(socket.username + " has been disconnected");
 		});
 		
 		socket.on('competeInOlympics', function() {
@@ -639,6 +637,7 @@
 			var playerNumberToDelete = playerNameToNumber[data.username];
 			delete usernames[playerNumberToDelete];
 			delete playerScores[playerNumberToDelete];
+			delete usernameData[data.username];
 			numberOfPlayersConnectedPerGroup[playerNameToTeam[data.username] - 1][playerNameToGroup[data.username] - 1] -= 1;
 			for (var i in SOCKET_LIST) {
 				var emitSocket = SOCKET_LIST[i];
@@ -1114,7 +1113,7 @@
 						groupScores[[teamSides[0][i], j]] += groupBonus;
 					};
 				};
-				console.log("Winning score: " + team1Score);
+				console.log("Winning score: " + team0Score);
 				console.log("Here is the winning team:");
 				for (var i = 0; i < teamSides[0].length; i++) {
 					console.log(NATIONS[teamSides[0][i]]);

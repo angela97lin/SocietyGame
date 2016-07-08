@@ -111,13 +111,8 @@
 				};
 			};
 
-
-
-
-
 			function advanceRound(){
 				socket.emit('advanceRoundGM', {});
-
 			};
 
 			function removePlayer() {
@@ -127,7 +122,6 @@
 				});
 			};
 			var button = document.getElementById("submitButton");
-			
 			button.onclick = function() {
 				var newIndividualScore =  document.getElementById("newIndividualScore").value;
 				var newWorldScore =  document.getElementById("newWorldScore").value;
@@ -153,7 +147,8 @@
     				groupToChange: groupToChange,
     				teamToChange: teamToChange
     			});
-			}
+			};
+
 		</script>
 	</body>
 </html>
