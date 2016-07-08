@@ -87,7 +87,7 @@
 			});
 
 			socket.on("putPlayerInGameMasterTable", function(data) {
-				document.getElementById(data.groupNumber).innerHTML += data.username + "<br>";
+				document.getElementById(data.groupNumber).innerHTML += data.username + " " + data.playerNumber + "<br>";
 			});
 
 			socket.on("removePlayerFromTable", function(data) {
