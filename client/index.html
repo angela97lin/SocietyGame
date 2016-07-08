@@ -342,6 +342,12 @@
 		document.getElementById("nationChange").innerHTML = "+0";
 		document.getElementById("worldChange").innerHTML = "+0";
 	});
+
+	socket.on("removePlayerFromTable", function(data) {
+		if (data.username == username) {
+			localStorage.removeItem("ip");
+		};
+	});
 	
 	
 	
