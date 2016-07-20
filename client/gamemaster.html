@@ -10,38 +10,41 @@
 
 	<body>
 	
-		
+		<br>
+		<br>
 		<button onclick="advanceRound()">Advance Round</button>
-		<button onclick="pauseButton()">Pause</button>
-		<button onclick="unpauseButton()">Unpause</button>
+		<br>
+		<br>
+		<button onclick="pauseButton()">Pause</button><button onclick="unpauseButton()">Unpause</button>
+		<br>
+		<br>
+		Set new timer length:<br>
+		<input type="text" id="timerMinutes">:<input type="text" id="timerSeconds"><br>
+
+		<input type="button" value="Set length of Round" id="timerButton">
+		<br>
+		<br>
+		Username:<br>
+		<input type="text" id="username"><br>
+		New Score:<br>
+		<input type="text" id="newIndividualScore">
 		<br>
 		<br>
 		<br>
+		Team number:----------------Group Number:<br>
+		<input type="text" id="teamNumber"><input type="group" id="groupNumber">
 		<br>
-		
-			Username:<br>
-			<input type="username" id="username"><br>
-			New Score:<br>
-			<input type="text" id="newIndividualScore">
-			<br>
-			<br>
-			<br>
-			Team number:----------------Group Number:<br>
-			<input type="team" id="teamNumber"><input type="group" id="groupNumber">
-			<br>
-			New Scores:<br>
-			<input type="text" id="newTeamScore"><input type="text" id="newGroupScore">
-			<br>
-			<br>
-			<br>
-			New World Score:<br>
-			<input type="world" id="newWorldScore">
-			<br>
-			<br>
-			<br>
-			<input type="button" value="Submit" id="submitButton">
-		</form>
-			<input type="button" value="Change" id="submitButton">
+		New Scores:<br>
+		<input type="text" id="newTeamScore"><input type="text" id="newGroupScore">
+		<br>
+		<br>
+		<br>
+		New World Score:<br>
+		<input type="text" id="newWorldScore">
+		<br>
+		<br>
+		<br>
+		<input type="button" value="Change" id="submitButton">
 
 		<button onclick="removePlayer()">Remove Player</button>
 
@@ -125,16 +128,8 @@
 				});
 			};
 
-			var button = document.getElementById("submitButton");
-			var newIndividualScore =  button.form.newIndividualScore.value;
-			var newWorldScore =  button.form.newWorldScore.value;
-			var newTeamScore = button.form.newTeamScore.value;
-			var newGroupScore = button.form.newGroupScore.value;
-			var usernameToChange = button.form.username.value;
-			var groupToChange = button.form.groupNumber.value;
-			var teamToChange = button.form.teamNumber.value;
-			var button = document.getElementById("submitButton");
-			button.onclick = function() {
+			var subbutton = document.getElementById("submitButton");
+			subbutton.onclick = function() {
 				var newIndividualScore =  parseInt(document.getElementById("newIndividualScore").value);
 				var newWorldScore =  parseInt(document.getElementById("newWorldScore").value);
 				var newTeamScore = parseInt(document.getElementById("newTeamScore").value);
@@ -146,9 +141,9 @@
 				console.log(usernameToChange);
 				console.log(newIndividualScore);
 				console.log(newGroupScore);
-				console.log("teamscore " +newTeamScore);
-				console.log("worldscore "+newWorldScore);
-				console.log("groupscore"+groupToChange);
+				console.log("teamscore " + newTeamScore);
+				console.log("worldscore "+ newWorldScore);
+				console.log("groupscore"+ groupToChange);
 				console.log(teamToChange);
     			socket.emit('scoreChangeGM', {
     				newGroupScore: newGroupScore,
@@ -166,18 +161,30 @@
 				var inputs = document.getElementsByTagName("INPUT");
 				var i;
 				for(i in inputs){
-					console.log(inputs[i].value);
-					inputs[i].value ="";
+					if(inputs[i].type="text"{
+						inputs[i].value ="";
+					}
 				}
 				
-			}
+			};
 
-			function pauseGameButton(){
+			function pauseButton(){
 				socket.emit('pauseGM',{});
-			}
-			function unpauseGameButton(){
+			};
+			function unpauseButton(){
 				socket.emit('unpauseGM',{});
-			}
+			};
+			var setTimerButton = document.getElementById("timerButton");
+			setTimerButton.onclick = function() {
+				console.log("setting timer");
+				var newMinutes =  parseInt(document.getElementById("timerMinutes").value);
+				var newSeconds = parseInt(document.getElementById("timerSeconds").value);
+				socket.emit('roundTimeGM', {
+					newMinutes: newMinutes,
+					newSeconds: newSeconds
+				});
+				clearInputs();
+			};
 
 		</script>
 	</body>
