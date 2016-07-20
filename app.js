@@ -127,6 +127,8 @@
 	
 	var hasStarted = false;
 
+	var removedPlayerNumbers = [];
+
 
 /*LISTENERS*/
 
@@ -162,6 +164,9 @@
 				for (var j = 0; j < numberOfGroups; j++) {
 					teamGroupPlayer[i].push([]);
 				};
+			};
+			for (var i = 0; i < numberOfGroups; i++) {
+				removedPlayerNumbers[i] = [];
 			};
 			if (decisionMode == "timer") {
 				TIME_LIMIT_MINUTES = data.minutes;
@@ -304,7 +309,11 @@
 				numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
 				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 				// socket.rawPlayerNumber = data.playerNumber;
-				socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+				if (!(removedPlayerNumbers[data.groupNumberInput - 1].length == 0)) {
+					socket.playerNumber = removedPlayerNumbers[data.groupNumberInput - 1][0];
+				} else {
+					socket.playerNumber = numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
+				};
 				//socket.playerNumberInGroup = data.playerNumber;
 				usernames[socket.playerNumber] = data.username;
 				playerNameToNumber[data.username] = socket.playerNumber;
@@ -645,6 +654,7 @@
 			delete playerScores[playerNumberToDelete];
 			delete usernameData[data.username];
 			numberOfPlayersConnectedPerGroup[playerNameToTeam[data.username] - 1][playerNameToGroup[data.username] - 1] -= 1;
+			removedPlayerNumbers[playerNameToGroup[data.username] - 1].push(playerNumberToDelete);
 			for (var i in SOCKET_LIST) {
 				var emitSocket = SOCKET_LIST[i];
 				emitSocket.emit("removePlayerFromTable", {
