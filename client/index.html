@@ -369,6 +369,9 @@
 		$(':button').prop('disabled', false);
 	};
 	var decision1 = function(sendToServer) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		if(sendToServer){
 			socket.emit('decision1', {});
 		}		
@@ -376,12 +379,12 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 	
 	var decision2 = function(sendToServer) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		if(sendToServer){
 			socket.emit('decision2', {});
 		}	
@@ -389,12 +392,12 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 	
 	var decision3 = function(sendToServer) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		if(sendToServer){
 			socket.emit('decision3', {});
 		}	
@@ -402,12 +405,12 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 	
 	var decision4 = function(sendToServer) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		if(sendToServer){
 			socket.emit('decision4', {});
 		}	
@@ -415,23 +418,23 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 
 	var decision5 = function(sendToServer) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		if(sendToServer){
 			socket.emit('decision5', {groupNumber: groupNumberInput});
 		}
 		displayDecision5Numbers(groupNumberInput);
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	}
 	
 	function investigate(playerToInvestigate) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		socket.emit('investigate', {
 			teamInvolved: teamNameInput,
 			groupInvolved: groupNumberInput,
@@ -439,71 +442,67 @@
 			playerToInvestigate: playerToInvestigate
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 	
 	/*Functions for world war*/
 	function castWarVote(side) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		socket.emit("castWarVote", {
 			team: teamNameInput,
 			side: side
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 
 	/*Functions for epidemic*/
 	function castBorderVote(side) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		socket.emit("castBorderVote", {
 			team: teamNameInput,
 			side: side
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 	
 	/*Functions for olympics*/
 	var competeInOlympics = function() {
-		socket.emit('competeInOlympics', {});
-		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		socket.emit("disableCopies", {
 			username: username
 		});
+		socket.emit('competeInOlympics', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
 	/*Functions for disaster*/
 	var sendRelief = function() {
-		socket.emit('sendRelief', {});
-		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		socket.emit("disableCopies", {
 			username: username
 		});
+		socket.emit('sendRelief', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
 	/*Functions for space race*/
 	var donateToSpaceRace = function() {
-		socket.emit('donateToSpaceRace', {});
-		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		socket.emit("disableCopies", {
 			username: username
 		});
+		socket.emit('donateToSpaceRace', {});
+		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
 	var doNothing = function(eventNumber) {
+		socket.emit("disableCopies", {
+			username: username
+		});
 		socket.emit('doNothing', {
 			eventNumber: eventNumber
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		socket.emit("disableCopies", {
-			username: username
-		});
 	};
 
 
