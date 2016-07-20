@@ -51,7 +51,7 @@
 	var NATIONS;
 	var GROUP_NAMES;
 	var roundNumber = 1;
-	var quarter = 0;
+	var quarter = 1;
 	var ROUNDS = 12;
 	var afterRoundDelayAmount = 3;
 	
@@ -1221,6 +1221,9 @@
 			socket.emit('eventOver', {});
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
+			});
+			socket.emit("newQuarter", {
+				quarter: quarter
 			});
 		};
 		resetPlayerDecisionMade();
