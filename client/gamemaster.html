@@ -89,7 +89,7 @@
 
 			socket.on("removePlayerFromTable", function(data) {
 				var element = "[id='" + data.groupNumber + "']";
-				$(element).html($(element).html().split(data.username + "<br>").join(""));
+				$(element).html($(element).html().split(data.username + " " + data.playerNumber + "<br>").join(""));
 			});
 
 			function createCell(cell, text, style, id=null) {

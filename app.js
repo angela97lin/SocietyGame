@@ -649,7 +649,8 @@
 				var emitSocket = SOCKET_LIST[i];
 				emitSocket.emit("removePlayerFromTable", {
 					groupNumber: [playerNameToTeam[data.username], playerNameToGroup[data.username]],
-					username: data.username
+					username: data.username,
+					playerNumber: playerNumberToDelete
 				});
 			};
 		});
