@@ -264,6 +264,10 @@
 			playerDecisionMade[socket.playerNumber] = 5;
 			decision5(socket, data.groupNumber);
 		});
+
+		socket.on("disableCopies", function(data) {
+			disableCopies(data.username);
+		});
 		
 		socket.on('investigate', function(data) {
 			playerDecisionMade[socket.playerNumber] = 0;
@@ -855,6 +859,15 @@
 	
 	var updatePastActions = function(socket, decision){
 		pastActions[socket.teamNumber-1][socket.groupNumber-1][socket.playerNumber-1].push(decision);
+	};
+
+	function disableCopies(username) {
+		for (var i in SOCKET_LIST) {
+			var emitSocket = SOCKET_LIST[i];
+			if (emitSocket.username == username) {
+				emitSocket.emit("disable", {});
+			};
+		};
 	};
 	
 	var enableAllButtons = function(sockets) {

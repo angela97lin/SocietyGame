@@ -271,6 +271,10 @@
 		enableButtons();
 	});
 
+	socket.on("disable", function() {
+		disableButtons();
+	});
+
 	socket.on('nextRound', function(data) {
 		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
 			document.getElementById("roundnumber").innerHTML = data.roundNumber;
@@ -372,7 +376,9 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	var decision2 = function(sendToServer) {
@@ -383,7 +389,9 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	var decision3 = function(sendToServer) {
@@ -394,7 +402,9 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	var decision4 = function(sendToServer) {
@@ -405,7 +415,9 @@
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 
 	var decision5 = function(sendToServer) {
@@ -414,7 +426,9 @@
 		}
 		displayDecision5Numbers(groupNumberInput);
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	}
 	
 	function investigate(playerToInvestigate) {
@@ -426,6 +440,9 @@
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	/*Functions for world war*/
@@ -435,7 +452,9 @@
 			side: side
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 
 	/*Functions for epidemic*/
@@ -445,28 +464,36 @@
 			side: side
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	/*Functions for olympics*/
 	var competeInOlympics = function() {
 		socket.emit('competeInOlympics', {});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	/*Functions for disaster*/
 	var sendRelief = function() {
 		socket.emit('sendRelief', {});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	/*Functions for space race*/
 	var donateToSpaceRace = function() {
 		socket.emit('donateToSpaceRace', {});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 	
 	var doNothing = function(eventNumber) {
@@ -474,7 +501,9 @@
 			eventNumber: eventNumber
 		});
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
-		disableButtons();
+		socket.emit("disableCopies", {
+			username: username
+		});
 	};
 
 
