@@ -51,7 +51,7 @@
 	var NATIONS;
 	var GROUP_NAMES;
 	var roundNumber = 1;
-	var quarter = 0;
+	var quarter = 1;
 	var ROUNDS = 12;
 	var afterRoundDelayAmount = 3;
 	
@@ -263,6 +263,10 @@
 		socket.on('decision5', function(data) {
 			playerDecisionMade[socket.playerNumber] = 5;
 			decision5(socket, data.groupNumber);
+		});
+
+		socket.on("disableCopies", function(data) {
+			disableCopies(data.username);
 		});
 		
 		socket.on('investigate', function(data) {
@@ -856,6 +860,15 @@
 	var updatePastActions = function(socket, decision){
 		pastActions[socket.teamNumber-1][socket.groupNumber-1][socket.playerNumber-1].push(decision);
 	};
+
+	function disableCopies(username) {
+		for (var i in SOCKET_LIST) {
+			var emitSocket = SOCKET_LIST[i];
+			if (emitSocket.username == username) {
+				emitSocket.emit("disable", {});
+			};
+		};
+	};
 	
 	var enableAllButtons = function(sockets) {
 		for(var i in sockets) {
@@ -1221,6 +1234,9 @@
 			socket.emit('eventOver', {});
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
+			});
+			socket.emit("newQuarter", {
+				quarter: quarter
 			});
 		};
 		resetPlayerDecisionMade();
