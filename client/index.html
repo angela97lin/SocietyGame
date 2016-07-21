@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-	<link href="client/bootstrap-3.3.6-dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
-	<link href="client/bootstrap-3.3.6-dist/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+	<link href="client/bootstrap-iso.css" rel="stylesheet" type="text/css" />
 	<link href="client/grid.css" rel="stylesheet" type="text/css" />
 	<link href="client/main_mobile.css" rel="stylesheet" type="text/css" />
 	<link href="client/investigation_rules.css" rel="stylesheet" type="text/css" />
@@ -16,47 +15,45 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="client/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
 
-<div id = "empty"></div>
+<div id = "empty">
+	<!-- Trigger the modal with a button -->
+	<!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button> -->
 
+	<!-- Modal -->
+	<div id="myModal" class="bootstrap-iso modal fade" role="dialog">
+	  <div class="modal-dialog modal-sm">
 
-<!-- Trigger the modal with a button -->
-<!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button> -->
+		<!-- Modal content-->
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title">Sign-in</h4>
+		  </div>
+		  <div class="modal-body">
+			<select class="form-control" id="usernameChooser">
+			  <option>Choose your username:</option>
+			  <option>Ms. Frizzle</option>
+			  <option>Mrs. Pancakes</option>
+			  <option>Professor Snape</option>
+			  <option>Professor X</option>
+			  <option>Dr. Manhattan</option>
+			  <option>John Keating</option>
+			  <option>Tyler Durden</option>
+			  <option>Turanga Leela</option>
+			  <option>Michael Scott</option>
+			  <option>Robocop</option>
+			  <option>Rosie the Riveter</option>
+			  <option>Commissioner Gordon</option>
+			</select>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default" onclick="modalEnter()">Enter</button>
+		  </div>
+		</div>
 
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-sm">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Sign-in</h4>
-      </div>
-      <div class="modal-body">
-        <select class="form-control" id="usernameChooser">
-		  <option>Choose your username:</option>
-		  <option>Ms. Frizzle</option>
-		  <option>Mrs. Pancakes</option>
-		  <option>Professor Snape</option>
-		  <option>Professor X</option>
-		  <option>Dr. Manhattan</option>
-		  <option>John Keating</option>
-		  <option>Tyler Durden</option>
-		  <option>Turanga Leela</option>
-		  <option>Michael Scott</option>
-		  <option>Robocop</option>
-		  <option>Rosie the Riveter</option>
-		  <option>Commissioner Gordon</option>
-		</select>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" onclick="modalEnter()">Enter</button>
-      </div>
-    </div>
-
-  </div>
+	  </div>
+	</div>
 </div>
-
 <!-- INITIALIZATION -->
 
 <script>
@@ -204,11 +201,22 @@
 
 		if (typeof(Storage) !== "undefined") {
 			var groupIsFull = false;
-		/*	if (localStorage.getItem("username") in data.usernameData) {
+			if (localStorage.getItem("username") in data.usernameData) {
 				username = localStorage.getItem("username");
 				teamNameInput = data.usernameData[username].teamNumber;
 				groupNumberInput = data.usernameData[username].rawGroupNumber;
-			} else { /*
+				teamName = NATIONS[teamNameInput];
+				swapToMainContent("#empty", true);
+			
+				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
+
+				//Redirect the player to the correct place, based on gamestate
+				socket.emit('stateRequest', {});
+			}
+			else{
+				$("#myModal").modal();
+			}
+			/*else { /*
 			    var nationPromptText = "";
 				var groupPromptText = "";
 				
@@ -253,7 +261,7 @@
 				if (data.numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] == data.numberOfPlayersInGroups) {
 					groupIsFull = true;
 				}; */
-				$("#myModal").modal();
+				
 			//};
 			/*if (groupIsFull) {
 				alert("This group is already full, please remove player before you can join");
@@ -432,6 +440,8 @@
 			teamNameInput = usernameToTeam[username];
 			teamName = NATIONS[teamNameInput];
 			groupNumberInput = usernameToGroup[username];
+			
+			localStorage.setItem("username", username);
 			
 			$('#myModal').modal("hide");
 			
