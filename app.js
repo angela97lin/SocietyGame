@@ -83,6 +83,7 @@
 	var teamGroupPlayer = {};
 	var usernames = {};
 	var usernameData = {};
+	var usernameToSocketID = {};
 	var groupmatesDict = {};
 	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
 	var eventsCompleted = [];
@@ -304,6 +305,7 @@
 				socket.rawGroupNumber = userData.rawGroupNumber;
 				socket.teamNumber = userData.teamNumber;
 				socket.username = data.username;
+				usernameToSocketID[data.username] = socket.id;
 				socket.playerNumber = userData.playerNumber;
 				socket.groupNumber = userData.groupNumber;
 				socket.playerNumberInGroup = userData.playerNumberInGroup;
@@ -320,6 +322,7 @@
 				socket.rawGroupNumber = data.groupNumberInput;
 				socket.teamNumber = data.teamNumber;
 				socket.username = data.username;
+				usernameToSocketID[data.username] = socket.id;
 				numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
 				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 				// socket.rawPlayerNumber = data.playerNumber;
@@ -486,7 +489,7 @@
 			
 			for(var i in SOCKET_LIST) {
 				var emitSocket = SOCKET_LIST[i];
-				if (emitSocket.teamNumber != null && emitSocket.rawGroupNumber != null) {
+				if (emitSocket.username != null) {
 					var listOfGroupmates = teamGroupPlayer[emitSocket.teamNumber][emitSocket.rawGroupNumber - 1];
 					emitSocket.playerNumberInGroup = listOfGroupmates.indexOf(emitSocket.playerNumber) + 1;
 					usernameData[emitSocket.username].playerNumberInGroup = emitSocket.playerNumberInGroup;
@@ -569,6 +572,7 @@
 		socket.on('disconnect', function() {
 			delete usernames[socket.playerNumber];
 			console.log(socket.username + " has been disconnected");
+			delete SOCKET_LIST[socket.id];
 		});
 		
 		socket.on('competeInOlympics', function() {
@@ -686,6 +690,7 @@
 					playerNumber: playerNumberToDelete
 				});
 			};
+			delete SOCKET_LIST[usernameToSocketID[data.username]];
 		});
 		
 		socket.on('pauseGM', function(){
