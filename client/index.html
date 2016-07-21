@@ -291,9 +291,7 @@
 	});
 	
 	socket.on('player', function(data) {
-		playerNumber = data.number;
 		username = data.username;
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
 	});
@@ -331,6 +329,8 @@
 	
 	socket.on('groupmates', function(data) {
 		groupmates = data.groupmates;
+		playerNumber = data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 	});
 	
 	socket.on('hasStarted', function(data) {
