@@ -178,6 +178,10 @@
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
 			});
 
+			socket.on("startGame", function() {
+				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Game</h2></button>');
+			});
+
 			socket.on('timer', function(data) {
 				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
 			});

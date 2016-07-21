@@ -176,7 +176,9 @@
 				socket.emit('startTimer', {
 					timer: timeLimitToString(timerMinutes, timerSeconds)
 				});
-			};
+			} else {
+				socket.emit("startGame", {});
+			}
 			investigationLists = [];
 			for(i=1; i<=numberOfTeams; i++){
 				thisTeam = [];
@@ -504,40 +506,42 @@
 				});
 			};
 			
-			setInterval(function() {
-				//if (decidedPlayers == totalPlayers) {
-					//decidedPlayers = 0;
-					//resetPlayerDecisionMade();
-					//timerMinutes = TIME_LIMIT_MINUTES;
-					//timerSeconds = TIME_LIMIT_SECONDS;
-					//updateRound();
-				//};
-			
-				if (timerMinutes == 0 && timerSeconds == 0) {
-					timerMinutes = TIME_LIMIT_MINUTES;
-					timerSeconds = TIME_LIMIT_SECONDS;
-					decidedPlayers = 0;
-					resetPlayerDecisionMade();
-					updateRound();
-				};
+			if (decisionMode == "timer") {
+				setInterval(function() {
+					//if (decidedPlayers == totalPlayers) {
+						//decidedPlayers = 0;
+						//resetPlayerDecisionMade();
+						//timerMinutes = TIME_LIMIT_MINUTES;
+						//timerSeconds = TIME_LIMIT_SECONDS;
+						//updateRound();
+					//};
 				
-				for(var i in SOCKET_LIST) {
-					var socket = SOCKET_LIST[i];
-					socket.emit('timer', {
-						timer: timeLimitToString(timerMinutes, timerSeconds)
-					});
-				};
-				
-				if (!timerPaused) {
-					if (timerSeconds == 0) {
-						timerSeconds = 59
-						timerMinutes--;
-					} else {
-						timerSeconds--;
+					if (timerMinutes == 0 && timerSeconds == 0) {
+						timerMinutes = TIME_LIMIT_MINUTES;
+						timerSeconds = TIME_LIMIT_SECONDS;
+						decidedPlayers = 0;
+						resetPlayerDecisionMade();
+						updateRound();
 					};
-				};
-				
-			}, 1000);
+					
+					for(var i in SOCKET_LIST) {
+						var socket = SOCKET_LIST[i];
+						socket.emit('timer', {
+							timer: timeLimitToString(timerMinutes, timerSeconds)
+						});
+					};
+					
+					if (!timerPaused) {
+						if (timerSeconds == 0) {
+							timerSeconds = 59
+							timerMinutes--;
+						} else {
+							timerSeconds--;
+						};
+					};
+					
+				}, 1000);
+			};
 		});
 
 		socket.on('congratulations', function() {
