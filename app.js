@@ -392,7 +392,6 @@
 			};
 			socket.emit("player", {
 				username: socket.username,
-				number: socket.playerNumberInGroup,
 				playerScore: playerScores[socket.playerNumber]
 			});
 			socket.emit('getTeamNumber', {
@@ -423,12 +422,12 @@
 		
 		socket.on('infoRequest', function() {
 			socket.emit('player', {
-				number: socket.playerNumberInGroup,
 				playerScore: playerScores[socket.playerNumber],
 				username: usernames[socket.playerNumber]
 			});
 			
 			socket.emit("groupmates", {
+				number: socket.playerNumberInGroup,
 				groupmates: groupmatesDict[socket.playerNumber]
 			});
 		
@@ -511,14 +510,19 @@
 			};
 			
 			for(var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.emit("groupmates", {
-					groupmates: groupmatesDict[socket.playerNumber],
-					number: socket.playerNumberInGroup
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("player", {
+					username: emitSocket.username,
+					number: emitSocket.playerNumberInGroup,
+					playerScore: playerScores[emitSocket.playerNumber]
 				});
-				socket.emit('teamInitiate', {
+				emitSocket.emit("groupmates", {
+					groupmates: groupmatesDict[emitSocket.playerNumber],
+					number: emitSocket.playerNumberInGroup
+				});
+				emitSocket.emit('teamInitiate', {
 					playersPerGroup: numberOfPlayersInGroups,
-					p: socket.playerNumberInGroup
+					p: emitSocket.playerNumberInGroup
 				});
 			};
 			
@@ -874,6 +878,7 @@
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
 					socket.emit("groupmates", {
+						number: socket.playerNumberInGroup,
 						groupmates: groupmatesDict[socket.playerNumber]
 					});
 				};
@@ -1282,8 +1287,6 @@
 			if(gameStateScreenType=="decision"){
 				timerMinutes = 0;
 				timerSeconds = 1;
-				
-				//console.log("Gamemaster is not allowed to advance from decision screen")
 
 			}
 			else if(gameStateScreenType=="investigation"){
