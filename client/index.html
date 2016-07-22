@@ -106,9 +106,9 @@
 		</div>'+decisionString+'</div>'
 	var socket = io();
 	
-	var playerScore = 20;
-	var numberOfTeams = 0;
-	var numberOfGroups = 0;
+	var playerScore;
+	var numberOfTeams;
+	var numberOfGroups;
 	
 	var playerNumberInput;
 	var teamNameInput;
@@ -198,9 +198,10 @@
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
+		playersPerGroup = data.numberOfPlayersInGroups;
 
 		if (typeof(Storage) !== "undefined") {
-			var groupIsFull = false;
+			// var groupIsFull = false;
 			if (localStorage.getItem("username") in data.usernameData) {
 				username = localStorage.getItem("username");
 				teamNameInput = data.usernameData[username].teamNumber;
@@ -212,10 +213,9 @@
 
 				//Redirect the player to the correct place, based on gamestate
 				socket.emit('stateRequest', {});
-			}
-			else{
+			} else {
 				$("#myModal").modal();
-			}
+			};
 			/*else { /*
 			    var nationPromptText = "";
 				var groupPromptText = "";
@@ -320,7 +320,6 @@
 	
 	socket.on('teamInitiate', function(data) {
 		p = data.p;
-		playersPerGroup = data.playersPerGroup;
 		playersNotToInvestigate.push(p);
 		for (i=playersPerGroup; i<6; i++) {
 			playersNotToInvestigate.push(i+1);
@@ -440,19 +439,46 @@
 			teamNameInput = usernameToTeam[username];
 			teamName = NATIONS[teamNameInput];
 			groupNumberInput = usernameToGroup[username];
-			
-			localStorage.setItem("username", username);
-			
-			$('#myModal').modal("hide");
-			
-			swapToMainContent("#empty", true);
-			
-			socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
 
-			//Redirect the player to the correct place, based on gamestate
-			socket.emit('stateRequest', {});
-		}
+			if (teamNameInput > numberOfTeams || groupNumberInput > numberOfGroups) {
+				window.alert("Please choose an appropriate character");
+				$("#myModal").modal();
+			} else {
+			
+				localStorage.setItem("username", username);
+				
+				$('#myModal').modal("hide");
+				
+				swapToMainContent("#empty", true);
+				
+				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
+
+				//Redirect the player to the correct place, based on gamestate
+				socket.emit('stateRequest', {});
+			};
+		};
 	};
+
+	// function getModalInput(numberOfPlayersConnectedPerGroup) {
+	// 	$("#myModal").modal();
+	// 	alert("this should be second");
+	// 	console.log(teamNameInput);
+	// 	console.log(numberOfTeams);
+	// 	console.log(groupNumberInput);
+	// 	console.log(numberOfGroups);
+	// 	console.log(numberOfPlayersConnectedPerGroup);
+	// 	console.log(numberOfPlayersConnectedPerGroup[teamNameInput - 1]);
+	// 	console.log(numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1]);
+	// 	while (teamNameInput > numberOfTeams || groupNumberInput > numberOfGroups) {
+	// 		window.alert("Please choose an appropriate character");
+	// 		$("#myModal").modal();
+	// 	};
+	// 	while (numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] >= playersPerGroup) {
+	// 		alert("This group is already full, please remove player before you can join");
+	// 		$("#myModal").modal();
+	// 	};	
+	// };
+
 
 	function createDecisions(group) {
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
