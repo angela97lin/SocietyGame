@@ -109,6 +109,8 @@
 	var playerScore;
 	var numberOfTeams;
 	var numberOfGroups;
+	var numberOfPlayersConnectedPerGroup;
+	var usernamesUsed;
 	
 	var playerNumberInput;
 	var teamNameInput;
@@ -199,11 +201,21 @@
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
 		playersPerGroup = data.numberOfPlayersInGroups;
+		numberOfPlayersConnectedPerGroup = data.numberOfPlayersConnectedPerGroup;
+		usernamesUsed = data.usernames;
 
 		if (typeof(Storage) !== "undefined") {
 			// var groupIsFull = false;
 			if (localStorage.getItem("username") in data.usernameData) {
 				username = localStorage.getItem("username");
+				console.log(data.usernames);
+				for (i in data.usernames) {
+					if (data.usernames[i] == username) {
+						alert("Someone else has signed into your name!");
+						localStorage.removeItem("username");
+						window.location = "/index";
+					};
+				};
 				teamNameInput = data.usernameData[username].teamNumber;
 				groupNumberInput = data.usernameData[username].rawGroupNumber;
 				teamName = NATIONS[teamNameInput];
@@ -443,6 +455,19 @@
 			if (teamNameInput > numberOfTeams || groupNumberInput > numberOfGroups) {
 				window.alert("Please choose an appropriate character");
 				$("#myModal").modal();
+			};
+			var invalidUsername = false;
+			for (i in usernamesUsed) {
+				if (usernamesUsed[i] == username) {
+					invalidUsername = true;
+				};
+			};
+			if (invalidUsername) {
+				alert("That character has already been chosen");
+				window.location = "/index";
+			} else if (numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] >= playersPerGroup) {
+				window.alert("This group is already full, please remove a player before you can join");
+				window.location = "/index";
 			} else {
 			
 				localStorage.setItem("username", username);
