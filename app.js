@@ -83,6 +83,7 @@
 	var teamGroupPlayer = {};
 	var usernames = {};
 	var usernameData = {};
+	var usernameToSocketID = {};
 	var groupmatesDict = {};
 	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
 	var eventsCompleted = [];
@@ -178,7 +179,9 @@
 				socket.emit('startTimer', {
 					timer: timeLimitToString(timerMinutes, timerSeconds)
 				});
-			};
+			} else {
+				socket.emit("startGame", {});
+			}
 			investigationLists = [];
 			for(i=1; i<=numberOfTeams; i++){
 				thisTeam = [];
@@ -304,14 +307,24 @@
 				socket.rawGroupNumber = userData.rawGroupNumber;
 				socket.teamNumber = userData.teamNumber;
 				socket.username = data.username;
+				usernameToSocketID[data.username] = socket.id;
 				socket.playerNumber = userData.playerNumber;
 				socket.groupNumber = userData.groupNumber;
 				socket.playerNumberInGroup = userData.playerNumberInGroup;
+				socket.emit("groupmates", {
+					groupmates: groupmatesDict[socket.playerNumber],
+					number: socket.playerNumberInGroup
+				});
+				socket.emit('teamInitiate', {
+					playersPerGroup: numberOfPlayersInGroups,
+					p: socket.playerNumberInGroup
+				});
 			} else {
 				usernameData[data.username] = {};
 				socket.rawGroupNumber = data.groupNumberInput;
 				socket.teamNumber = data.teamNumber;
 				socket.username = data.username;
+				usernameToSocketID[data.username] = socket.id;
 				numberOfPlayersConnectedPerGroup[socket.teamNumber-1][socket.rawGroupNumber-1] += 1;
 				// socket.playerNumber = data.playerNumber + ((socket.rawGroupNumber-1) * (numberOfPlayersInGroups)) + ((socket.teamNumber-1) * (numberOfPlayersInTeams));
 				// socket.rawPlayerNumber = data.playerNumber;
@@ -347,12 +360,6 @@
 				playerNameToGroup[data.username] = data.groupNumberInput;
 				playerNameToTeam[data.username] = data.teamNumber;
 				teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].push(socket.playerNumber);
-				socket.playerNumberInGroup = teamGroupPlayer[socket.teamNumber][data.groupNumberInput - 1].indexOf(socket.playerNumber) + 1;
-				socket.emit('player', {
-					number: socket.playerNumberInGroup,
-					playerScore: playerScores[socket.playerNumber],
-					username: usernames[socket.playerNumber]
-				});
 				if (!(socket.teamNumber in teamScores)){
 					teamScores[socket.teamNumber] = 20 * numberOfGroups;
 				};
@@ -363,8 +370,7 @@
 											   teamNumber: socket.teamNumber,
 											   username: socket.username,
 											   playerNumber: socket.playerNumber,
-											   groupNumber: socket.groupNumber,
-											   playerNumberInGroup: socket.playerNumberInGroup};
+											   groupNumber: socket.groupNumber};
 				for (var i in SOCKET_LIST) {
 					emitSocket = SOCKET_LIST[i];
 						emitSocket.emit("putPlayerInGameMasterTable", {
@@ -387,7 +393,7 @@
 				});
 			};
 			socket.emit("player", {
-				number: socket.playerNumberInGroup,
+				username: socket.username,
 				playerScore: playerScores[socket.playerNumber]
 			});
 			socket.emit('getTeamNumber', {
@@ -401,11 +407,6 @@
 			socket.emit("hasStarted", {
 					hasStarted: hasStarted
 				});
-			
-			socket.emit('teamInitiate', {
-				playersPerGroup: numberOfPlayersInGroups,
-				p: socket.playerNumberInGroup
-			});
 			socket.emit("getRound", {
 				roundNumber: roundNumber
 			});
@@ -423,12 +424,12 @@
 		
 		socket.on('infoRequest', function() {
 			socket.emit('player', {
-				number: socket.playerNumberInGroup,
 				playerScore: playerScores[socket.playerNumber],
 				username: usernames[socket.playerNumber]
 			});
 			
 			socket.emit("groupmates", {
+				number: socket.playerNumberInGroup,
 				groupmates: groupmatesDict[socket.playerNumber]
 			});
 		
@@ -488,58 +489,81 @@
 			};
 			
 			for(var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				groupmates = {};
-				groupmatesLowerBound = (numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*(socket.rawGroupNumber-1)) + 1;
-				groupmatesUpperBound = (numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*socket.rawGroupNumber);
-				for(i=groupmatesLowerBound; i<=groupmatesUpperBound; i++){
-					groupmates[i - ((numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*(socket.rawGroupNumber-1)))] = usernames[i];
+				var emitSocket = SOCKET_LIST[i];
+				if (emitSocket.username != null) {
+					var listOfGroupmates = teamGroupPlayer[emitSocket.teamNumber][emitSocket.rawGroupNumber - 1];
+					emitSocket.playerNumberInGroup = listOfGroupmates.indexOf(emitSocket.playerNumber) + 1;
+					usernameData[emitSocket.username].playerNumberInGroup = emitSocket.playerNumberInGroup;
+					var groupmates = {};
+					for (var i = 1; i <= listOfGroupmates.length; i++) {
+						groupmates[i] = usernames[listOfGroupmates[i - 1]];
+					};
+					delete groupmates[emitSocket.playerNumberInGroup];
+					groupmatesDict[emitSocket.playerNumber] = groupmates;
 				};
-				delete groupmates[socket.playerNumberInGroup];
-				groupmatesDict[socket.playerNumber] = groupmates;
+				// groupmates = {};
+				// groupmatesLowerBound = (numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*(socket.rawGroupNumber-1)) + 1;
+				// groupmatesUpperBound = (numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*socket.rawGroupNumber);
+				// for(i=groupmatesLowerBound; i<=groupmatesUpperBound; i++){
+				// 	groupmates[i - ((numberOfPlayersInTeams*(socket.teamNumber-1)) + (numberOfPlayersInGroups*(socket.rawGroupNumber-1)))] = usernames[i];
+				// };
+				// delete groupmates[socket.playerNumberInGroup];
+				// groupmatesDict[socket.playerNumber] = groupmates;
 			};
 			
 			for(var i in SOCKET_LIST) {
-				var socket = SOCKET_LIST[i];
-				socket.emit("groupmates", {
-					groupmates: groupmatesDict[socket.playerNumber]
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("player", {
+					username: emitSocket.username,
+					number: emitSocket.playerNumberInGroup,
+					playerScore: playerScores[emitSocket.playerNumber]
+				});
+				emitSocket.emit("groupmates", {
+					groupmates: groupmatesDict[emitSocket.playerNumber],
+					number: emitSocket.playerNumberInGroup
+				});
+				emitSocket.emit('teamInitiate', {
+					playersPerGroup: numberOfPlayersInGroups,
+					p: emitSocket.playerNumberInGroup
 				});
 			};
 			
-			setInterval(function() {
-				//if (decidedPlayers == totalPlayers) {
-					//decidedPlayers = 0;
-					//resetPlayerDecisionMade();
-					//timerMinutes = TIME_LIMIT_MINUTES;
-					//timerSeconds = TIME_LIMIT_SECONDS;
-					//updateRound();
-				//};
-			
-				if (timerMinutes == 0 && timerSeconds == 0) {
-					timerMinutes = TIME_LIMIT_MINUTES;
-					timerSeconds = TIME_LIMIT_SECONDS;
-					decidedPlayers = 0;
-					resetPlayerDecisionMade();
-					updateRound();
-				};
+			if (decisionMode == "timer") {
+				setInterval(function() {
+					//if (decidedPlayers == totalPlayers) {
+						//decidedPlayers = 0;
+						//resetPlayerDecisionMade();
+						//timerMinutes = TIME_LIMIT_MINUTES;
+						//timerSeconds = TIME_LIMIT_SECONDS;
+						//updateRound();
+					//};
 				
-				for(var i in SOCKET_LIST) {
-					var socket = SOCKET_LIST[i];
-					socket.emit('timer', {
-						timer: timeLimitToString(timerMinutes, timerSeconds)
-					});
-				};
-				
-				if (!timerPaused) {
-					if (timerSeconds == 0) {
-						timerSeconds = 59
-						timerMinutes--;
-					} else {
-						timerSeconds--;
+					if (timerMinutes == 0 && timerSeconds == 0) {
+						timerMinutes = TIME_LIMIT_MINUTES;
+						timerSeconds = TIME_LIMIT_SECONDS;
+						decidedPlayers = 0;
+						resetPlayerDecisionMade();
+						updateRound();
 					};
-				};
-				
-			}, 1000);
+					
+					for(var i in SOCKET_LIST) {
+						var socket = SOCKET_LIST[i];
+						socket.emit('timer', {
+							timer: timeLimitToString(timerMinutes, timerSeconds)
+						});
+					};
+					
+					if (!timerPaused) {
+						if (timerSeconds == 0) {
+							timerSeconds = 59
+							timerMinutes--;
+						} else {
+							timerSeconds--;
+						};
+					};
+					
+				}, 1000);
+			};
 		});
 
 		socket.on('congratulations', function() {
@@ -554,6 +578,7 @@
 		socket.on('disconnect', function() {
 			delete usernames[socket.playerNumber];
 			console.log(socket.username + " has been disconnected");
+			delete SOCKET_LIST[socket.id];
 		});
 		
 		socket.on('competeInOlympics', function() {
@@ -660,6 +685,8 @@
 			delete playerScores[playerNumberToDelete];
 			delete usernameData[data.username];
 			numberOfPlayersConnectedPerGroup[playerNameToTeam[data.username] - 1][playerNameToGroup[data.username] - 1] -= 1;
+			var teamGroupPlayerArrayToRemoveFrom = teamGroupPlayer[playerNameToTeam[data.username]][playerNameToGroup[data.username] - 1];
+			teamGroupPlayerArrayToRemoveFrom.splice(teamGroupPlayerArrayToRemoveFrom.indexOf(playerNumberToDelete), 1);
 			removedPlayerNumbers[playerNameToGroup[data.username] - 1].push(playerNumberToDelete);
 			for (var i in SOCKET_LIST) {
 				var emitSocket = SOCKET_LIST[i];
@@ -669,6 +696,7 @@
 					playerNumber: playerNumberToDelete
 				});
 			};
+			delete SOCKET_LIST[usernameToSocketID[data.username]];
 		});
 		
 		socket.on('pauseGM', function(){
@@ -838,7 +866,10 @@
 			socket.emit('showImpact', {
 				playerScore: playerScores[socket.playerNumber]
 			});
-		}
+			socket.emit("newQuarterNumber", {
+				quarter: quarter
+			});
+		};
 		unpauseTimer();
 		resetPlayerDecisionMade();
 		gameStateScreenType = "decision";
@@ -851,6 +882,7 @@
 				for(var i in SOCKET_LIST) {
 					var socket = SOCKET_LIST[i];
 					socket.emit("groupmates", {
+						number: socket.playerNumberInGroup,
 						groupmates: groupmatesDict[socket.playerNumber]
 					});
 				};
@@ -937,10 +969,10 @@
 				socket.emit('nextRound', {
 					roundNumber: "Investigations"
 				});
-				socket.emit('newQuarter', {
+				socket.emit('newQuarter', {});
+				socket.emit("newQuarterNumber", {
 					quarter: quarter
 				});
-				
 			};
 			worldEventChance = 1;
 		}
@@ -1239,7 +1271,7 @@
 			socket.emit('nextRound', {
 				roundNumber: roundNumber
 			});
-			socket.emit("newQuarter", {
+			socket.emit("newQuarterNumber", {
 				quarter: quarter
 			});
 		};
@@ -1259,8 +1291,6 @@
 			if(gameStateScreenType=="decision"){
 				timerMinutes = 0;
 				timerSeconds = 1;
-				
-				//console.log("Gamemaster is not allowed to advance from decision screen")
 
 			}
 			else if(gameStateScreenType=="investigation"){

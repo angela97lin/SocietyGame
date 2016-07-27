@@ -106,9 +106,11 @@
 		</div>'+decisionString+'</div>'
 	var socket = io();
 	
-	var playerScore = 20;
-	var numberOfTeams = 0;
-	var numberOfGroups = 0;
+	var playerScore;
+	var numberOfTeams;
+	var numberOfGroups;
+	var numberOfPlayersConnectedPerGroup;
+	var usernamesUsed;
 	
 	var playerNumberInput;
 	var teamNameInput;
@@ -198,11 +200,22 @@
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
+		playersPerGroup = data.numberOfPlayersInGroups;
+		numberOfPlayersConnectedPerGroup = data.numberOfPlayersConnectedPerGroup;
+		usernamesUsed = data.usernames;
 
 		if (typeof(Storage) !== "undefined") {
-			var groupIsFull = false;
+			// var groupIsFull = false;
 			if (localStorage.getItem("username") in data.usernameData) {
 				username = localStorage.getItem("username");
+				console.log(data.usernames);
+				for (i in data.usernames) {
+					if (data.usernames[i] == username) {
+						alert("Someone else has signed into your name!");
+						localStorage.removeItem("username");
+						window.location = "/index";
+					};
+				};
 				teamNameInput = data.usernameData[username].teamNumber;
 				groupNumberInput = data.usernameData[username].rawGroupNumber;
 				teamName = NATIONS[teamNameInput];
@@ -212,10 +225,9 @@
 
 				//Redirect the player to the correct place, based on gamestate
 				socket.emit('stateRequest', {});
-			}
-			else{
+			} else {
 				$("#myModal").modal();
-			}
+			};
 			/*else { /*
 			    var nationPromptText = "";
 				var groupPromptText = "";
@@ -291,9 +303,7 @@
 	});
 	
 	socket.on('player', function(data) {
-		playerNumber = data.number;
 		username = data.username;
-		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 		playerScore = data.playerScore;
 		document.getElementById('individualscore').innerHTML = username + "'s Score: " + data.playerScore;
 	});
@@ -322,7 +332,6 @@
 	
 	socket.on('teamInitiate', function(data) {
 		p = data.p;
-		playersPerGroup = data.playersPerGroup;
 		playersNotToInvestigate.push(p);
 		for (i=playersPerGroup; i<6; i++) {
 			playersNotToInvestigate.push(i+1);
@@ -331,6 +340,8 @@
 	
 	socket.on('groupmates', function(data) {
 		groupmates = data.groupmates;
+		playerNumber = data.number;
+		document.getElementById('playerNumber').innerHTML = "Player Number: " + data.number;
 	});
 	
 	socket.on('hasStarted', function(data) {
@@ -440,19 +451,59 @@
 			teamNameInput = usernameToTeam[username];
 			teamName = NATIONS[teamNameInput];
 			groupNumberInput = usernameToGroup[username];
-			
-			localStorage.setItem("username", username);
-			
-			$('#myModal').modal("hide");
-			
-			swapToMainContent("#empty", true);
-			
-			socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
 
-			//Redirect the player to the correct place, based on gamestate
-			socket.emit('stateRequest', {});
-		}
+			if (teamNameInput > numberOfTeams || groupNumberInput > numberOfGroups) {
+				window.alert("Please choose an appropriate character");
+				$("#myModal").modal();
+			};
+			var invalidUsername = false;
+			for (i in usernamesUsed) {
+				if (usernamesUsed[i] == username) {
+					invalidUsername = true;
+				};
+			};
+			if (invalidUsername) {
+				alert("That character has already been chosen");
+				window.location = "/index";
+			} else if (numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] >= playersPerGroup) {
+				window.alert("This group is already full, please remove a player before you can join");
+				window.location = "/index";
+			} else {
+			
+				localStorage.setItem("username", username);
+				
+				$('#myModal').modal("hide");
+				
+				swapToMainContent("#empty", true);
+				
+				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
+
+				//Redirect the player to the correct place, based on gamestate
+				socket.emit('stateRequest', {});
+			};
+		};
 	};
+
+	// function getModalInput(numberOfPlayersConnectedPerGroup) {
+	// 	$("#myModal").modal();
+	// 	alert("this should be second");
+	// 	console.log(teamNameInput);
+	// 	console.log(numberOfTeams);
+	// 	console.log(groupNumberInput);
+	// 	console.log(numberOfGroups);
+	// 	console.log(numberOfPlayersConnectedPerGroup);
+	// 	console.log(numberOfPlayersConnectedPerGroup[teamNameInput - 1]);
+	// 	console.log(numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1]);
+	// 	while (teamNameInput > numberOfTeams || groupNumberInput > numberOfGroups) {
+	// 		window.alert("Please choose an appropriate character");
+	// 		$("#myModal").modal();
+	// 	};
+	// 	while (numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] >= playersPerGroup) {
+	// 		alert("This group is already full, please remove player before you can join");
+	// 		$("#myModal").modal();
+	// 	};	
+	// };
+
 
 	function createDecisions(group) {
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
@@ -661,7 +712,7 @@
 	    	default:
 	        	console.log('That was not a valid decision case');
 		}
-		if (gameMode == "timer" && hasStarted == false) {
+		if (hasStarted == false) {
 			disableButtons();
 		};
 	}
@@ -796,7 +847,7 @@
 					<p>Spend your points to investigate your teammates and find the selfish ones! </p>\
 					<br>\
 					<br>\
-					<button type="button" onclick="swapToInvestigation(3)">Investigate!</button>\
+					<button type="button" onclick="swapToInvestigation(3)">Proceed</button>\
 				</div>'
 			);
 		}

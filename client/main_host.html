@@ -159,7 +159,7 @@
 				};
 			});
 
-			socket.on('newQuarter', function(data) {
+			socket.on('newQuarterNumber', function(data) {
 				document.getElementById('quarterlyreports').innerHTML = "Q" + data.quarter;
 			});
 
@@ -176,6 +176,10 @@
 
 			socket.on('startTimer', function(data) {
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
+			});
+
+			socket.on("startGame", function() {
+				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Game</h2></button>');
 			});
 
 			socket.on('timer', function(data) {
