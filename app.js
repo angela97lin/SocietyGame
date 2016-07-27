@@ -87,6 +87,8 @@
 	var worldEvents = ["World War", "Epidemic", "Olympics", "Natural Disaster", "Space Race"];
 	var eventsCompleted = [];
 	
+	eventsCompleted.push(0);
+	
 	var winningTeams = [];
 	var winningNames = [];
 	
@@ -806,8 +808,10 @@
 							playerToGainPointsNumber = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + parseInt(investigationLists[i][j][k][m], 10);
 							playerScores[playerToGainPointsNumber] += Math.ceil(((2*counter)/(investigationLists[i][j][k].length)));
 						};
-						playerCaught = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + k + 1;
-						playerScores[playerCaught] += (-2 * counter);
+						if (investigationLists[i][j][k].length != 0){
+							playerCaught = (numberOfPlayersInTeams*(i)) + (numberOfPlayersInGroups*(j)) + k + 1;
+							playerScores[playerCaught] += (-2 * counter);
+						}
 					}
 				}
 			}
