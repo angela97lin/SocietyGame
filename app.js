@@ -231,6 +231,7 @@
 			groupScores[socket.groupNumber] += -2;
 			teamScores[socket.teamNumber] += -2;
 			playerScores[socket.playerNumber] += 2;
+			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(1);
 		});
@@ -241,6 +242,7 @@
 			groupScores[socket.groupNumber] += 2;
 			teamScores[socket.teamNumber] += 2;
 			playerScores[socket.playerNumber] += -1;
+			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(2);
 		});
@@ -251,6 +253,7 @@
 			groupScores[socket.groupNumber] += 1;
 			teamScores[socket.teamNumber] += 1;
 			playerScores[socket.playerNumber] += 1;
+			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(3);
 		});
@@ -261,6 +264,7 @@
 			groupScores[socket.groupNumber] += 0;
 			teamScores[socket.teamNumber] += 0;
 			playerScores[socket.playerNumber] += -1;
+			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
@@ -372,11 +376,15 @@
 											   playerNumber: socket.playerNumber,
 											   groupNumber: socket.groupNumber};
 				for (var i in SOCKET_LIST) {
-					emitSocket = SOCKET_LIST[i];
-						emitSocket.emit("putPlayerInGameMasterTable", {
+					var emitSocket = SOCKET_LIST[i];
+					emitSocket.emit("putPlayerInGameMasterTable", {
 						username: data.username,
 						groupNumber: socket.groupNumber,
 						playerNumber: socket.playerNumber
+					});
+					emitSocket.emit("addPlayerScore", {
+						username: data.username,
+						playerScore: playerScores[socket.playerNumber]
 					});
 				};
 			};
@@ -1067,6 +1075,7 @@
 			teamScores[socket.teamNumber] -= 1;
 			playerScores[socket.playerNumber] += 2;
 		};
+		updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 		checkPlayers(decisionMode);
 		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
 	};
@@ -1283,6 +1292,16 @@
 	function resetPlayerDecisionMade() {
 		for (i=1; i<=totalPlayers; i++) {
 			playerDecisionMade[i] = -1;
+		};
+	};
+
+	function updatePlayerScore(username, playerScore) {
+		for (var i in SOCKET_LIST) {
+			var emitSocket = SOCKET_LIST[i];
+			emitSocket.emit("updatePlayerScore", {
+				username: username,
+				playerScore: playerScore
+			});
 		};
 	};
 

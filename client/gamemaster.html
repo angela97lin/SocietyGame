@@ -55,8 +55,11 @@
 			</tbody>
 		</table>
 
-
-
+		<table id="scoreTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
 
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
@@ -84,6 +87,10 @@
 				for (var i = 1; i <= numberOfGroups; i++) {
 					addGroup(i);
 				};
+				var scoreTable = document.getElementById("scoreTable");
+				scoreTable.cellSpacing = 30;
+				createCell(scoreTable.rows[0].insertCell(0), "Username", 'col scoreCell');
+				createCell(scoreTable.rows[0].insertCell(1), "Score", 'col scoreCell');
 			});
 
 			socket.on("putPlayerInGameMasterTable", function(data) {
@@ -93,6 +100,14 @@
 			socket.on("removePlayerFromTable", function(data) {
 				var element = "[id='" + data.groupNumber + "']";
 				$(element).html($(element).html().split(data.username + " " + data.playerNumber + "<br>").join(""));
+			});
+
+			socket.on("addPlayerScore", function(data) {
+				addPlayerScore(data.username, data.playerScore, data.playerNumber);
+			});
+
+			socket.on("updatePlayerScore", function(data) {
+				updatePlayerScore(data.username, data.playerScore)
 			});
 
 			function createCell(cell, text, style, id=null) {
@@ -115,6 +130,16 @@
 				for (var i = 1; i < playerTable.rows[0].cells.length; i++) {
 					createCell(row.insertCell(i), "", 'row scoreCell', [i, group]);
 				};
+			};
+
+			function addPlayerScore(username, playerScore) {
+				var row = scoreTable.insertRow(scoreTable.rows.length);
+				createCell(row.insertCell(0), username, 'row scoreCell');
+				createCell(row.insertCell(1), playerScore, 'row scoreCell', username);
+			};
+
+			function updatePlayerScore(username, playerScore) {
+				document.getElementById(username).innerHTML = playerScore;
 			};
 
 			function advanceRound(){
