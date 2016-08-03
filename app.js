@@ -141,9 +141,9 @@
 		socket.id = playerNumber;
 		var typeOfConnection = socket.handshake.headers.referer.split(/\//)[3];
 		if (typeOfConnection == "main") {
-			mainSocket = socket.id;
+			mainSocket = socket;
 		} else if (typeOfConnection == "gamemaster") {
-			gameMasterSocket = socket.id;
+			gameMasterSocket = socket;
 		};
 		SOCKET_LIST[socket.id] = socket;
 		playerNumber++;
@@ -357,13 +357,6 @@
 				//associate team names and numbers
 				if (!(data.teamName in teamNameNumbers)) {
 					teamNameNumbers[data.teamName] = currentTeamNumber;
-					for (var i in SOCKET_LIST) {
-						var emitSocket = SOCKET_LIST[i];
-						emitSocket.emit('newTeam', {
-							teamName: data.teamName,
-							currentTeamNumber: currentTeamNumber
-						});
-					};
 					currentTeamNumber++;
 				};
 				//socket.teamNumber = teamNameNumbers[data.teamName];
@@ -382,18 +375,15 @@
 											   username: socket.username,
 											   playerNumber: socket.playerNumber,
 											   groupNumber: socket.groupNumber};
-				for (var i in SOCKET_LIST) {
-					var emitSocket = SOCKET_LIST[i];
-					emitSocket.emit("putPlayerInGameMasterTable", {
-						username: data.username,
-						groupNumber: socket.groupNumber,
-						playerNumber: socket.playerNumber
-					});
-					emitSocket.emit("addPlayerScore", {
-						username: data.username,
-						playerScore: playerScores[socket.playerNumber]
-					});
-				};
+				gameMasterSocket.emit("putPlayerInGameMasterTable", {
+					username: data.username,
+					groupNumber: socket.groupNumber,
+					playerNumber: socket.playerNumber
+				});
+				gameMasterSocket.emit("addPlayerScore", {
+					username: data.username,
+					playerScore: playerScores[socket.playerNumber]
+				});
 			};
 			usernames[socket.playerNumber] = data.username;
 			socket.emit("team", {
@@ -703,14 +693,11 @@
 			var teamGroupPlayerArrayToRemoveFrom = teamGroupPlayer[playerNameToTeam[data.username]][playerNameToGroup[data.username] - 1];
 			teamGroupPlayerArrayToRemoveFrom.splice(teamGroupPlayerArrayToRemoveFrom.indexOf(playerNumberToDelete), 1);
 			removedPlayerNumbers[playerNameToGroup[data.username] - 1].push(playerNumberToDelete);
-			for (var i in SOCKET_LIST) {
-				var emitSocket = SOCKET_LIST[i];
-				emitSocket.emit("removePlayerFromTable", {
-					groupNumber: [playerNameToTeam[data.username], playerNameToGroup[data.username]],
-					username: data.username,
-					playerNumber: playerNumberToDelete
-				});
-			};
+			gameMasterSocket.emit("removePlayerFromTable", {
+				groupNumber: [playerNameToTeam[data.username], playerNameToGroup[data.username]],
+				username: data.username,
+				playerNumber: playerNumberToDelete
+			});
 			delete SOCKET_LIST[usernameToSocketID[data.username]];
 		});
 		
@@ -1291,6 +1278,7 @@
 			socket.emit("newQuarterNumber", {
 				quarter: quarter
 			});
+			updatePlayerScore
 		};
 		resetPlayerDecisionMade();
 		unpauseTimer();
@@ -1304,8 +1292,7 @@
 	};
 
 	function updatePlayerScore(username, playerScore) {
-		var emitSocket = SOCKET_LIST[gameMasterSocket];
-		emitSocket.emit("updatePlayerScore", {
+		gameMasterSocket.emit("updatePlayerScore", {
 			username: username,
 			playerScore: playerScore
 		});
