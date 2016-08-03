@@ -877,6 +877,7 @@
 			socket.emit("newQuarterNumber", {
 				quarter: quarter
 			});
+			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 		};
 		unpauseTimer();
 		resetPlayerDecisionMade();
