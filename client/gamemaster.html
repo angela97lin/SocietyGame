@@ -67,6 +67,12 @@
 			</tbody>
 		</table>
 
+		<table id="decisionTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 		<script type="text/javascript">
@@ -103,6 +109,9 @@
 				var scoreTable = document.getElementById("scoreTable");
 				scoreTable.cellSpacing = 30;
 				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
+				var decisionTable = document.getElementById("decisionTable");
+				decisionTable.cellSpacing = 30;
+				createCell(decisionTable.rows[0].insertCell(0), "Decided Players", 'col scoreCell');
 			});
 
 			socket.on("putPlayerInGameMasterTable", function(data) {
@@ -126,6 +135,14 @@
 
 			socket.on("updateTeamScore", function(data) {
 				updateTeamScore(data.team, data.teamScore);
+			});
+
+			socket.on("addDecidedPlayer", function(data) {
+				addDecidedPlayer(data.username);
+			});
+
+			socket.on("clearDecidedPlayers", function(data) {
+				clearDecidedPlayers();
 			});
 
 			function createCell(cell, text, style, id=null) {
@@ -160,12 +177,25 @@
 				createCell(row.insertCell(0), NATIONS[team] + " " + teamScore, 'row scoreCell', NATIONS[team]);
 			};
 
+			function addDecidedPlayer(username) {
+				var row = decisionTable.insertRow(decisionTable.rows.length);
+				createCell(row.insertCell(0), username, 'row scoreCell');
+			};
+
 			function updatePlayerScore(username, playerScore) {
 				document.getElementById(username).innerHTML = username + " " + playerScore;
 			};
 
 			function updateTeamScore(team, teamScore) {
 				document.getElementById(NATIONS[team]).innerHTML = NATIONS[team] + " " + teamScore;
+			};
+
+			function clearDecidedPlayers() {
+				var decisionTable = document.getElementById("decisionTable");
+				for (var i = decisionTable.rows.length - 1; i > 0; i--) {
+					decisionTable.deleteRow(i);
+					console.log("this happened");
+				};
 			};
 
 			function advanceRound(){

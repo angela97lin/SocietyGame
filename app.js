@@ -240,6 +240,7 @@
 			playerScores[socket.playerNumber] += 2;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			addDecidedPlayer(socket.username);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(1);
 		});
@@ -252,6 +253,7 @@
 			playerScores[socket.playerNumber] += -1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			addDecidedPlayer(socket.username);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(2);
 		});
@@ -264,6 +266,7 @@
 			playerScores[socket.playerNumber] += 1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			addDecidedPlayer(socket.username);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(3);
 		});
@@ -276,6 +279,7 @@
 			playerScores[socket.playerNumber] += -1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			addDecidedPlayer(socket.username);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
@@ -877,6 +881,7 @@
 			});
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 		};
+		clearDecidedPlayers();
 		unpauseTimer();
 		resetPlayerDecisionMade();
 		gameStateScreenType = "decision";
@@ -950,6 +955,7 @@
 				});
 			};
 		};
+		clearDecidedPlayers();
 		pauseTimer();
 		getWorldEvent();
 		//unpauseTimer();
@@ -1076,6 +1082,7 @@
 		};
 		updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 		updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+		addDecidedPlayer(socket.username);
 		checkPlayers(decisionMode);
 		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
 	};
@@ -1167,6 +1174,7 @@
 				roundNumber: "World Event"
 			});
 		};
+
 	};
 
 	function checkWarVotes(team, side) {
@@ -1288,6 +1296,7 @@
 		for (var i in teamScores) {
 			updateTeamScore(i, teamScores[i]);
 		};
+		clearDecidedPlayers();
 		resetPlayerDecisionMade();
 		unpauseTimer();
 		gameStateScreenType = "decision";
@@ -1313,6 +1322,16 @@
 		});
 	};
 
+	function addDecidedPlayer(username) {
+		gameMasterSocket.emit("addDecidedPlayer", {
+			username: username
+		});
+	};
+
+	function clearDecidedPlayers() {
+		gameMasterSocket.emit("clearDecidedPlayers", {});
+	};
+ 
 	function advanceRoundGM(){
 		console.log("Gamemaster has advanced to the next round");
 			if(gameStateScreenType=="decision"){
