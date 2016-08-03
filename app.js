@@ -8,6 +8,8 @@
 	var SOCKET_LIST = {};
 	var io = require('socket.io')(serv, {});
 	var mainConnected = false;
+	var mainSocket;
+	var gameMasterSocket;
 	
 	app.get('/', function(req, res) {
 		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
@@ -136,8 +138,13 @@
 /*LISTENERS*/
 
 	io.sockets.on('connection', function(socket) {
-
 		socket.id = playerNumber;
+		var typeOfConnection = socket.handshake.headers.referer.split(/\//)[3];
+		if (typeOfConnection == "main") {
+			mainSocket = socket.id;
+		} else if (typeOfConnection == "gamemaster") {
+			gameMasterSocket = socket.id;
+		};
 		SOCKET_LIST[socket.id] = socket;
 		playerNumber++;
 		if (mainConnected) {
@@ -1297,13 +1304,11 @@
 	};
 
 	function updatePlayerScore(username, playerScore) {
-		for (var i in SOCKET_LIST) {
-			var emitSocket = SOCKET_LIST[i];
-			emitSocket.emit("updatePlayerScore", {
-				username: username,
-				playerScore: playerScore
-			});
-		};
+		var emitSocket = SOCKET_LIST[gameMasterSocket];
+		emitSocket.emit("updatePlayerScore", {
+			username: username,
+			playerScore: playerScore
+		});
 	};
 
 	function advanceRoundGM(){
