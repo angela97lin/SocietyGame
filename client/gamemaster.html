@@ -89,8 +89,7 @@
 				};
 				var scoreTable = document.getElementById("scoreTable");
 				scoreTable.cellSpacing = 30;
-				createCell(scoreTable.rows[0].insertCell(0), "Username", 'col scoreCell');
-				createCell(scoreTable.rows[0].insertCell(1), "Score", 'col scoreCell');
+				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
 			});
 
 			socket.on("putPlayerInGameMasterTable", function(data) {
@@ -100,6 +99,8 @@
 			socket.on("removePlayerFromTable", function(data) {
 				var element = "[id='" + data.groupNumber + "']";
 				$(element).html($(element).html().split(data.username + " " + data.playerNumber + "<br>").join(""));
+				var nameToRemove = document.getElementById(data.username);
+				nameToRemove.parentNode.removeChild(nameToRemove);
 			});
 
 			socket.on("addPlayerScore", function(data) {
@@ -134,12 +135,11 @@
 
 			function addPlayerScore(username, playerScore) {
 				var row = scoreTable.insertRow(scoreTable.rows.length);
-				createCell(row.insertCell(0), username, 'row scoreCell');
-				createCell(row.insertCell(1), playerScore, 'row scoreCell', username);
+				createCell(row.insertCell(0), username + " " + playerScore, 'row scoreCell', username);
 			};
 
 			function updatePlayerScore(username, playerScore) {
-				document.getElementById(username).innerHTML = playerScore;
+				document.getElementById(username).innerHTML = username + " " + playerScore;
 			};
 
 			function advanceRound(){
