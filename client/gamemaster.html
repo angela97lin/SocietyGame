@@ -55,6 +55,12 @@
 			</tbody>
 		</table>
 
+		<table id="teamTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
 		<table id="scoreTable">
 			<tbody>
 				<tr></tr>
@@ -87,6 +93,13 @@
 				for (var i = 1; i <= numberOfGroups; i++) {
 					addGroup(i);
 				};
+				var teamTable = document.getElementById("teamTable");
+				teamTable.cellSpacing = 30;
+				var teamScore = 20 * numberOfGroups;
+				createCell(teamTable.rows[0].insertCell(0), "Nation Scores", 'col scoreCell');
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addTeamScore(i, teamScore);
+				};
 				var scoreTable = document.getElementById("scoreTable");
 				scoreTable.cellSpacing = 30;
 				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
@@ -109,6 +122,10 @@
 
 			socket.on("updatePlayerScore", function(data) {
 				updatePlayerScore(data.username, data.playerScore)
+			});
+
+			socket.on("updateTeamScore", function(data) {
+				updateTeamScore(data.team, data.teamScore);
 			});
 
 			function createCell(cell, text, style, id=null) {
@@ -138,8 +155,17 @@
 				createCell(row.insertCell(0), username + " " + playerScore, 'row scoreCell', username);
 			};
 
+			function addTeamScore(team, teamScore) {
+				var row = teamTable.insertRow(teamTable.rows.length);
+				createCell(row.insertCell(0), NATIONS[team] + " " + teamScore, 'row scoreCell', NATIONS[team]);
+			};
+
 			function updatePlayerScore(username, playerScore) {
 				document.getElementById(username).innerHTML = username + " " + playerScore;
+			};
+
+			function updateTeamScore(team, teamScore) {
+				document.getElementById(NATIONS[team]).innerHTML = NATIONS[team] + " " + teamScore;
 			};
 
 			function advanceRound(){

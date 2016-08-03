@@ -239,6 +239,7 @@
 			teamScores[socket.teamNumber] += -2;
 			playerScores[socket.playerNumber] += 2;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
+			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(1);
 		});
@@ -250,6 +251,7 @@
 			teamScores[socket.teamNumber] += 2;
 			playerScores[socket.playerNumber] += -1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
+			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(2);
 		});
@@ -261,6 +263,7 @@
 			teamScores[socket.teamNumber] += 1;
 			playerScores[socket.playerNumber] += 1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
+			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(3);
 		});
@@ -272,6 +275,7 @@
 			teamScores[socket.teamNumber] += 0;
 			playerScores[socket.playerNumber] += -1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
+			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
@@ -1071,6 +1075,7 @@
 			playerScores[socket.playerNumber] += 2;
 		};
 		updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
+		updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 		checkPlayers(decisionMode);
 		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
 	};
@@ -1280,6 +1285,9 @@
 			});
 			updatePlayerScore
 		};
+		for (var i in teamScores) {
+			updateTeamScore(i, teamScores[i]);
+		};
 		resetPlayerDecisionMade();
 		unpauseTimer();
 		gameStateScreenType = "decision";
@@ -1295,6 +1303,13 @@
 		gameMasterSocket.emit("updatePlayerScore", {
 			username: username,
 			playerScore: playerScore
+		});
+	};
+
+	function updateTeamScore(team, teamScore) {
+		gameMasterSocket.emit("updateTeamScore", {
+			team: team,
+			teamScore: teamScore
 		});
 	};
 
