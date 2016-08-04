@@ -299,6 +299,7 @@
 				investigationLists[data.teamInvolved-1][data.groupInvolved-1][data.playerToInvestigate-1].push(data.playerInvestigating);
 			};
 			numberOfInvestigations += 1;
+			addDecidedPlayer(socket.username);
 			if(numberOfInvestigations == totalPlayers){
 				carryOutInvestigations(SOCKET_LIST);
 				numberOfInvestigations = 0;
@@ -469,6 +470,7 @@
 		socket.on("castWarVote", function(data) {
 			playerDecisionMade[socket.playerNumber] = 0;
 			individualWarVotes[data.team - 1][data.side] += 1;
+			addDecidedPlayer(socket.username);
 			checkWarVotes(data.team, data.side);
 			checkTeamSides(false);
 		});
@@ -481,6 +483,7 @@
 		socket.on("castBorderVote", function(data) {
 			playerDecisionMade[socket.playerNumber] = 0;
 			individualBorderVotes[data.team - 1][data.side] += 1;
+			addDecidedPlayer(socket.username);
 			checkBorderVotes(data.team, data.side);
 			checkBorderSides();
 		});
@@ -598,6 +601,7 @@
 			playerDecisionMade[socket.playerNumber] = 0;
 			olympicCompetitors.push(socket.playerNumber);
 			decidedPlayers += 1;
+			addDecidedPlayer(socket.username);
 			if (decidedPlayers == totalPlayers) {
 				carryOutOlympics();
 				decidedPlayers = 0;
@@ -610,6 +614,7 @@
 			teamDecisionCounters[socket.teamNumber] += 1;
 			totalYesVotes += 1;
 			decidedPlayers += 1;
+			addDecidedPlayer(socket.username);
 			if (decidedPlayers == totalPlayers) {
 				carryOutRelief();
 				decidedPlayers = 0;
@@ -625,6 +630,7 @@
 			teamDecisionCounters[socket.teamNumber] += 1;
 			playerScores[socket.playerNumber] += spaceResearchCost;
 			decidedPlayers += 1;
+			addDecidedPlayer(socket.username);
 			if (decidedPlayers == totalPlayers) {
 				carryOutSpaceRace();
 				decidedPlayers = 0;
@@ -637,6 +643,7 @@
 		socket.on('doNothing', function(data) {
 			playerDecisionMade[socket.playerNumber] = 0;
 			decidedPlayers += 1;
+			addDecidedPlayer(socket.username);
 			if (decidedPlayers == totalPlayers) {
 				if (data.eventNumber == 2) {
 					carryOutOlympics();
