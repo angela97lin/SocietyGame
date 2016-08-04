@@ -909,6 +909,11 @@
 				resetPlayerDecisionMade();
 				updateRound(SOCKET_LIST);
 			};
+		} else if (mode == "timer") {
+			if (decidedPlayers == totalPlayers) {
+				timerMinutes = 0;
+				timerSeconds = 5;
+			};
 		};
 	};
 	
@@ -1344,7 +1349,6 @@
 			if(gameStateScreenType=="decision"){
 				timerMinutes = 0;
 				timerSeconds = 1;
-
 			}
 			else if(gameStateScreenType=="investigation"){
 				carryOutInvestigations(SOCKET_LIST);
