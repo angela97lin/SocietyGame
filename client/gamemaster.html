@@ -18,6 +18,10 @@
 		<button onclick="pauseButton()">Pause</button><button onclick="unpauseButton()">Unpause</button>
 		<br>
 		<br>
+		<h2 id="updateMode">End of Round</h2>
+		<button onclick="changeUpdateMode()">Change Update Mode</button>
+		<br>
+		<br>
 		Set new timer length:<br>
 		<input type="text" id="timerMinutes">:<input type="text" id="timerSeconds"><br>
 
@@ -125,6 +129,14 @@
 				nameToRemove.parentNode.removeChild(nameToRemove);
 			});
 
+			socket.on("updateModeChanged", function(data) {
+				if (data.updateRealTime) {
+					document.getElementById("updateMode").innerHTML = "Real Time";
+				} else {
+					document.getElementById("updateMode").innerHTML = "End of Round";
+				};
+			});
+
 			socket.on("addPlayerScore", function(data) {
 				addPlayerScore(data.username, data.playerScore, data.playerNumber);
 			});
@@ -165,6 +177,10 @@
 				for (var i = 1; i < playerTable.rows[0].cells.length; i++) {
 					createCell(row.insertCell(i), "", 'row scoreCell', [i, group]);
 				};
+			};
+
+			function changeUpdateMode() {
+				socket.emit("changeUpdateMode", {});
 			};
 
 			function addPlayerScore(username, playerScore) {

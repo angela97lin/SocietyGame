@@ -110,6 +110,7 @@
 	//either timer or waitForPlayers
 	var MODES = {1: "timer",
 				 2: "waitForPlayers"};
+	var updateRealTime = false;
 	var decisionMode;
 	
 	//variables for timer
@@ -241,6 +242,7 @@
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
+			updateScoreRealTime();
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(1);
 		});
@@ -254,6 +256,7 @@
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
+			updateScoreRealTime();
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(2);
 		});
@@ -267,6 +270,7 @@
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
+			updateScoreRealTime();
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(3);
 		});
@@ -280,6 +284,7 @@
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
+			updateScoreRealTime();
 			checkPlayers(decisionMode);
 			pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(4);
 		});
@@ -676,6 +681,10 @@
 				numberOfGroups: numberOfGroups
 			});
 		});
+
+		socket.on("changeUpdateMode", function() {
+			changeUpdateMode();
+		});
 		
 		socket.on("scoreChangeGM", function(data) {
 			if (data.newTeamScore != null && data.newTeamScore != "") {
@@ -954,6 +963,27 @@
 		};
 	};
 
+	function changeUpdateMode() {
+		updateRealTime = !updateRealTime;
+		gameMasterSocket.emit("updateModeChanged", {
+			updateRealTime: updateRealTime
+		});
+	};
+
+	function updateScoreRealTime() {
+		if (updateRealTime) {
+			for (var i in SOCKET_LIST) {
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("decisionUpdate", {
+					playerScore: playerScores[emitSocket.playerNumber],
+					groupScore: groupScores[emitSocket.groupNumber],
+					teamScore: teamScores[emitSocket.teamNumber],
+					world: world
+				});
+			};
+		};
+	};
+
 	var updateRound = function() {
 		endGame(SOCKET_LIST);
 		for(var i in SOCKET_LIST) {
@@ -1099,6 +1129,7 @@
 		updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
 		updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 		addDecidedPlayer(socket.username);
+		updateScoreRealTime();
 		checkPlayers(decisionMode);
 		pastActions[socket.teamNumber-1][socket.rawGroupNumber-1][socket.playerNumberInGroup-1].push(5);
 	};
