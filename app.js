@@ -913,6 +913,10 @@
 			if (decidedPlayers == totalPlayers) {
 				timerMinutes = 0;
 				timerSeconds = 5;
+				for (var i in SOCKET_LIST) {
+					var emitSocket = SOCKET_LIST[i];
+					emitSocket.emit("advancing", {});
+				};
 			};
 		};
 	};

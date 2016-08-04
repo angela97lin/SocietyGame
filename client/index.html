@@ -363,6 +363,10 @@
 		disableButtons();
 	});
 
+	socket.on("advancing", function() {
+		document.getElementById("waitingForPlayers").innerHTML = "<h4>Advancing</h4>";
+	})
+
 	socket.on('nextRound', function(data) {
 		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
 			document.getElementById("roundnumber").innerHTML = data.roundNumber;
