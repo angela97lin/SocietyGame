@@ -135,6 +135,7 @@
 
 			/*variables for world events*/
 			var isWorldEvent = false;
+			var currentEvent;
 			var temporaryGroupScores;
 			var temporaryTeamScores;
 			var winningTeam;
@@ -189,7 +190,8 @@
 			socket.on("worldEvent", function(data) {
 				isWorldEvent = true;
 				winningTeam = NATIONS[data.teamInLead];
-				swapToWorldEventScreen(data.eventNumber);
+				currentEvent = data.eventNumber;
+				swapToWorldEventScreen(currentEvent, "#mainScreen");
 				temporaryTeamScores = data.teamScores;
 				temporaryGroupScores = data.groupScores;
 				
@@ -198,6 +200,20 @@
 			socket.on("eventOver", function() {
 				isWorldEvent = false;
 				swapToMainScreen();
+			});
+
+			socket.on("swapToPresenter", function(data) {
+				swapToPresenter(data.screenType);
+				temporaryTeamScores = data.teamScores;
+				temporaryGroupScores = data.groupScores;
+			});
+
+			socket.on("swapFromPresenter", function(data) {
+				if (data.screenType == "event") {
+					swapToWorldEventScreen(currentEvent, "#worldEventScreen");
+				} else {
+					swapToMainScreen();
+				};
 			});
 
 			socket.on('mainWinners', function() {
@@ -248,6 +264,7 @@
 							<div id="starttimer"></div> \
 							<h2 id="worldscore"></h2> \
 						</div> \
+						<h2 id ="roundsTill">Initial Scores</h2> \
 						\
 						<table id="nations" class ="cellTable"> \
 							<tbody> \
@@ -274,13 +291,13 @@
 				socket.emit("infoRequest", {});
 			};
 
-			function swapToWorldEventScreen(worldEventNumber) {
+			function swapToWorldEventScreen(worldEventNumber, fromhere) {
 				/*TODO
 				improve the world event screen
 				*/
 				var worldEvents = ['warEvent','pandemicEvent','olympicsEvent','disasterEvent','energyEvent'];
 				if(worldEventNumber==0){
-					$("#mainScreen").replaceWith(
+					$(fromhere).replaceWith(
 						'<div id = "worldEventScreen">\
 							<p id="warEvent">' + winningTeam + ' declared war on Switzerland! Which side will you take?</p>\
 						</div>'
@@ -288,11 +305,21 @@
 				}
 				else{
 					$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
-	    				$("#mainScreen").replaceWith(data);
+	    				$(fromhere).replaceWith(data);
 					});
 				}
 
 				
+			};
+
+			function swapToPresenter(screenType) {
+				$.get("client/worldEvents/presenter.html", function(data) {
+					if (screenType == "event") {
+						$("#worldEventScreen").replaceWith(data);
+					} else {
+						$("#mainScreen").replaceWith(data);
+					};
+				});
 			};
 
 	</script>	

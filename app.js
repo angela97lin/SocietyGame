@@ -431,6 +431,27 @@
 			});
 
 		});
+
+		socket.on("presenter", function() {
+			for (var i in SOCKET_LIST) {
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("swapToPresenter", {
+					screenType: gameStateScreenType,
+					groupScores: groupScores,
+					teamScores: teamScores
+				});
+			};
+		});
+
+		socket.on("endPresenter", function() {
+			for (var i in SOCKET_LIST) {
+				var emitSocket = SOCKET_LIST[i];
+				emitSocket.emit("swapFromPresenter", {
+					screenType: gameStateScreenType,
+					worldEventNumber: mostRecentWorldEvent
+				});
+			};
+		});
 		
 		socket.on('stateRequest', function() {
 			socket.emit('gameState', {

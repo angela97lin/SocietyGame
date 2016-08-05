@@ -320,6 +320,14 @@
 		document.getElementById('nationscore').innerHTML = teamName + "'s Score: " + data.team;
 	});
 
+	socket.on("swapToPresenter", function(data) {
+		swapToPresenter(data.screenType);
+	});
+
+	socket.on("swapFromPresenter", function() {
+		window.location = "/index";
+	});
+
 	socket.on("getRound", function(data) {
 		if(data.roundNumber == "World Event" || data.roundNumber == "Investigations"){
 			document.getElementById("roundnumber").innerHTML = data.roundNumber;
@@ -859,6 +867,18 @@
 			swapToMainContent("#textie");
 			swapToInvestigation(1);
 		}
+	};
+
+	function swapToPresenter(screenType) {
+		$.get("client/worldEvents/presenter.html", function(data) {
+			if (screenType == "decision") {
+				$("#decisionScreen").replaceWith(data);
+			} else if (screenType == "investigation") {
+				$("#investigationScreen").replaceWith(data);
+			} else {
+				$("#worldEventScreen").replaceWith(data);
+			};
+		});
 	};
 	
 	function swapToDecision(fromhere) {

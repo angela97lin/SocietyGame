@@ -18,8 +18,14 @@
 		<button onclick="pauseButton()">Pause</button><button onclick="unpauseButton()">Unpause</button>
 		<br>
 		<br>
-		<h2 id="updateMode">End of Round</h2>
+		<h2 id="updateMode">Update Mode: End of Round</h2>
 		<button onclick="changeUpdateMode()">Change Update Mode</button>
+		<br>
+		<br>
+		<button onclick="presenter()">Presenter</button>
+		<br>
+		<br>
+		<button onclick="endPresenter()">End Presenter</button>
 		<br>
 		<br>
 		Set new timer length:<br>
@@ -131,9 +137,9 @@
 
 			socket.on("updateModeChanged", function(data) {
 				if (data.updateRealTime) {
-					document.getElementById("updateMode").innerHTML = "Real Time";
+					document.getElementById("updateMode").innerHTML = "Update Mode: Real Time";
 				} else {
-					document.getElementById("updateMode").innerHTML = "End of Round";
+					document.getElementById("updateMode").innerHTML = "Update Mode: End of Round";
 				};
 			});
 
@@ -212,6 +218,14 @@
 					decisionTable.deleteRow(i);
 					console.log("this happened");
 				};
+			};
+
+			function presenter() {
+				socket.emit("presenter", {});
+			};
+
+			function endPresenter() {
+				socket.emit("endPresenter", {});
 			};
 
 			function advanceRound(){
