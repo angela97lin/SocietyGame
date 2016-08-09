@@ -184,12 +184,7 @@
 				TIME_LIMIT_SECONDS = data.seconds;
 				timerMinutes = TIME_LIMIT_MINUTES;
 				timerSeconds = TIME_LIMIT_SECONDS;
-				socket.emit('startTimer', {
-					timer: timeLimitToString(timerMinutes, timerSeconds)
-				});
-			} else {
-				socket.emit("startGame", {});
-			}
+			};
 			investigationLists = [];
 			for(i=1; i<=numberOfTeams; i++){
 				thisTeam = [];

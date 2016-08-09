@@ -12,6 +12,9 @@
 	
 		<br>
 		<br>
+		<button id="startGame" onclick="beginGame()">Start Game</button>
+		<br>
+		<br>
 		<button onclick="advanceRound()">Advance Round</button>
 		<br>
 		<br>
@@ -183,6 +186,11 @@
 				for (var i = 1; i < playerTable.rows[0].cells.length; i++) {
 					createCell(row.insertCell(i), "", 'row scoreCell', [i, group]);
 				};
+			};
+
+			function beginGame() {
+				socket.emit('beginGame', {});
+				$("#startGame").remove();
 			};
 
 			function changeUpdateMode() {

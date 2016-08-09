@@ -17,7 +17,6 @@
 			
 			<div class="centeredInline">
 				<h2 id="timer"></h2>
-				<div id="starttimer"></div>
 				<h2 id="worldscore"></h2>
 			</div>
 			<h2 id ="roundsTill">Initial Scores</h2>
@@ -179,14 +178,6 @@
 				if (!isWorldEvent) {
 					document.getElementById("worldscore").innerHTML = "World Score: " + data.world;
 				};
-			});
-
-			socket.on('startTimer', function(data) {
-				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
-			});
-
-			socket.on("startGame", function() {
-				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Game</h2></button>');
 			});
 
 			socket.on('timer', function(data) {
