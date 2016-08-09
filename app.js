@@ -995,10 +995,8 @@
 		if (updateRealTime) {
 			for (var i in SOCKET_LIST) {
 				var emitSocket = SOCKET_LIST[i];
-				emitSocket.emit("decisionUpdate", {
+				emitSocket.emit("realTimeUpdate", {
 					playerScore: playerScores[emitSocket.playerNumber],
-					groupScore: groupScores[emitSocket.groupNumber],
-					teamScore: teamScores[emitSocket.teamNumber],
 					world: world
 				});
 			};

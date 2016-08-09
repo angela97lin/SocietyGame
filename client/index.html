@@ -363,6 +363,12 @@
 		document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
 	});
 
+	socket.on("realTimeUpdate", function(data) {
+		playerScore = data.playerScore;
+		document.getElementById("individualscore").innerHTML = username + "'s Score: " + playerScore;
+		document.getElementById("worldscore").innerHTML = "World Score: " + data.world;
+	});
+
 	socket.on('enable', function(data) {
 		enableButtons();
 	});

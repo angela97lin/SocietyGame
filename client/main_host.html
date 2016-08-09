@@ -175,6 +175,12 @@
 				};			
 			});
 
+			socket.on("realTimeUpdate", function(data) {
+				if (!isWorldEvent) {
+					document.getElementById("worldscore").innerHTML = "World Score: " + data.world;
+				};
+			});
+
 			socket.on('startTimer', function(data) {
 				$("#starttimer").replaceWith('<button id="starttimer" onclick="beginGame()"><h2>Start Timer</h2></button>')
 			});
