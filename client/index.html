@@ -545,9 +545,9 @@
 		if(sendToServer){
 			socket.emit('decision1', {});
 		}		
-		document.getElementById("individualChange").innerHTML = '<div class="fade">+2</div>';
-		document.getElementById("nationChange").innerHTML = '<div class="fade">-2</div>';
-		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("individualChange").innerHTML = '<div class="fade">+</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">-</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
@@ -558,9 +558,9 @@
 		if(sendToServer){
 			socket.emit('decision2', {});
 		}	
-		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
-		document.getElementById("nationChange").innerHTML = '<div class="fade">+2</div>';
-		document.getElementById("worldChange").innerHTML = '<div class="fade">+0</div>';
+		document.getElementById("individualChange").innerHTML = '<div class="fade">-</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">+</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade"></div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
@@ -571,9 +571,9 @@
 		if(sendToServer){
 			socket.emit('decision3', {});
 		}	
-		document.getElementById("individualChange").innerHTML = '<div class="fade">+1</div>';
-		document.getElementById("nationChange").innerHTML = '<div class="fade">+1</div>';
-		document.getElementById("worldChange").innerHTML = '<div class="fade">-1</div>';
+		document.getElementById("individualChange").innerHTML = '<div class="fade">+</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade">+</div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
@@ -584,9 +584,9 @@
 		if(sendToServer){
 			socket.emit('decision4', {});
 		}	
-		document.getElementById("individualChange").innerHTML = '<div class="fade">-1</div>';
-		document.getElementById("nationChange").innerHTML = '<div class="fade">+0</div>';
-		document.getElementById("worldChange").innerHTML = '<div class="fade">+2</div>';
+		document.getElementById("individualChange").innerHTML = '<div class="fade">-</div>';
+		document.getElementById("nationChange").innerHTML = '<div class="fade"></div>';
+		document.getElementById("worldChange").innerHTML = '<div class="fade">+</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 
@@ -900,21 +900,21 @@
 	
 	function displayDecision5Numbers(groupNumber) {
 		if (groupNumber == 1) {
-			document.getElementById("individualChange").innerHTML = "-1";
-			document.getElementById("nationChange").innerHTML = "+1";
-			document.getElementById("worldChange").innerHTML = "+1";
+			document.getElementById("individualChange").innerHTML = "-";
+			document.getElementById("nationChange").innerHTML = "+";
+			document.getElementById("worldChange").innerHTML = "+";
 		} else if (groupNumber == 2) {
-			document.getElementById("individualChange").innerHTML = "+1";
-			document.getElementById("nationChange").innerHTML = "-2";
-			document.getElementById("worldChange").innerHTML = "+1";
+			document.getElementById("individualChange").innerHTML = "+";
+			document.getElementById("nationChange").innerHTML = "-";
+			document.getElementById("worldChange").innerHTML = "+";
 		} else if (groupNumber == 3) {
-			document.getElementById("individualChange").innerHTML = "+0";
-			document.getElementById("nationChange").innerHTML = "-1";
-			document.getElementById("worldChange").innerHTML = "+2";
+			document.getElementById("individualChange").innerHTML = "";
+			document.getElementById("nationChange").innerHTML = "-";
+			document.getElementById("worldChange").innerHTML = "+";
 		} else if (groupNumber == 4) {
-			document.getElementById("individualChange").innerHTML = "+2";
-			document.getElementById("nationChange").innerHTML = "-1";
-			document.getElementById("worldChange").innerHTML = "-2";
+			document.getElementById("individualChange").innerHTML = "+";
+			document.getElementById("nationChange").innerHTML = "-";
+			document.getElementById("worldChange").innerHTML = "-";
 		};
 	};
 
