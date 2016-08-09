@@ -18,6 +18,16 @@
 		<button onclick="pauseButton()">Pause</button><button onclick="unpauseButton()">Unpause</button>
 		<br>
 		<br>
+		<h2 id="updateMode">Update Mode: End of Round</h2>
+		<button onclick="changeUpdateMode()">Change Update Mode</button>
+		<br>
+		<br>
+		<button onclick="presenter()">Presenter</button>
+		<br>
+		<br>
+		<button onclick="endPresenter()">End Presenter</button>
+		<br>
+		<br>
 		Set new timer length:<br>
 		<input type="text" id="timerMinutes">:<input type="text" id="timerSeconds"><br>
 
@@ -55,8 +65,23 @@
 			</tbody>
 		</table>
 
+		<table id="teamTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
 
+		<table id="scoreTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
 
+		<table id="decisionTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
 
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
@@ -84,6 +109,19 @@
 				for (var i = 1; i <= numberOfGroups; i++) {
 					addGroup(i);
 				};
+				var teamTable = document.getElementById("teamTable");
+				teamTable.cellSpacing = 30;
+				var teamScore = 20 * numberOfGroups;
+				createCell(teamTable.rows[0].insertCell(0), "Nation Scores", 'col scoreCell');
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addTeamScore(i, teamScore);
+				};
+				var scoreTable = document.getElementById("scoreTable");
+				scoreTable.cellSpacing = 30;
+				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
+				var decisionTable = document.getElementById("decisionTable");
+				decisionTable.cellSpacing = 30;
+				createCell(decisionTable.rows[0].insertCell(0), "Decided Players", 'col scoreCell');
 			});
 
 			socket.on("putPlayerInGameMasterTable", function(data) {
@@ -93,6 +131,36 @@
 			socket.on("removePlayerFromTable", function(data) {
 				var element = "[id='" + data.groupNumber + "']";
 				$(element).html($(element).html().split(data.username + " " + data.playerNumber + "<br>").join(""));
+				var nameToRemove = document.getElementById(data.username);
+				nameToRemove.parentNode.removeChild(nameToRemove);
+			});
+
+			socket.on("updateModeChanged", function(data) {
+				if (data.updateRealTime) {
+					document.getElementById("updateMode").innerHTML = "Update Mode: Real Time";
+				} else {
+					document.getElementById("updateMode").innerHTML = "Update Mode: End of Round";
+				};
+			});
+
+			socket.on("addPlayerScore", function(data) {
+				addPlayerScore(data.username, data.playerScore, data.playerNumber);
+			});
+
+			socket.on("updatePlayerScore", function(data) {
+				updatePlayerScore(data.username, data.playerScore)
+			});
+
+			socket.on("updateTeamScore", function(data) {
+				updateTeamScore(data.team, data.teamScore);
+			});
+
+			socket.on("addDecidedPlayer", function(data) {
+				addDecidedPlayer(data.username);
+			});
+
+			socket.on("clearDecidedPlayers", function(data) {
+				clearDecidedPlayers();
 			});
 
 			function createCell(cell, text, style, id=null) {
@@ -115,6 +183,49 @@
 				for (var i = 1; i < playerTable.rows[0].cells.length; i++) {
 					createCell(row.insertCell(i), "", 'row scoreCell', [i, group]);
 				};
+			};
+
+			function changeUpdateMode() {
+				socket.emit("changeUpdateMode", {});
+			};
+
+			function addPlayerScore(username, playerScore) {
+				var row = scoreTable.insertRow(scoreTable.rows.length);
+				createCell(row.insertCell(0), username + " " + playerScore, 'row scoreCell', username);
+			};
+
+			function addTeamScore(team, teamScore) {
+				var row = teamTable.insertRow(teamTable.rows.length);
+				createCell(row.insertCell(0), NATIONS[team] + " " + teamScore, 'row scoreCell', NATIONS[team]);
+			};
+
+			function addDecidedPlayer(username) {
+				var row = decisionTable.insertRow(decisionTable.rows.length);
+				createCell(row.insertCell(0), username, 'row scoreCell');
+			};
+
+			function updatePlayerScore(username, playerScore) {
+				document.getElementById(username).innerHTML = username + " " + playerScore;
+			};
+
+			function updateTeamScore(team, teamScore) {
+				document.getElementById(NATIONS[team]).innerHTML = NATIONS[team] + " " + teamScore;
+			};
+
+			function clearDecidedPlayers() {
+				var decisionTable = document.getElementById("decisionTable");
+				for (var i = decisionTable.rows.length - 1; i > 0; i--) {
+					decisionTable.deleteRow(i);
+					console.log("this happened");
+				};
+			};
+
+			function presenter() {
+				socket.emit("presenter", {});
+			};
+
+			function endPresenter() {
+				socket.emit("endPresenter", {});
 			};
 
 			function advanceRound(){
