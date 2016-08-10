@@ -137,6 +137,35 @@ button {
 	-o-transition: all 1s ease;
 }
 
+#popup {
+	display: none;
+	border-style: solid;
+	border-color: #f9f9f9;
+	position: absolute;
+	top: 10%;
+	left: 35%;
+	background-color: black;
+	width: 30%;
+	padding-left: 3%;
+	padding-right: 3%;
+	padding-bottom: 5%;
+	padding-top: 2%;
+}
+
+#popupLeft button {
+	width: 75%;
+	margin-left: 10%;
+	margin-right: auto;
+	margin-top: 5%;
+}
+
+#popupRight button {
+	width: 75%;
+	margin-left: 10%;
+	margin-right: auto;
+	margin-top: 5%;
+}
+
 button.investigate{
 	border: 2px solid #df9f9f;
 	background: radial-gradient(rgba(0,0,0,0), rgba(0,0,0,0), #4a2121);
