@@ -1,9 +1,9 @@
-Downloads:
-1. Download Node.js
-Download link: https://nodejs.org/en/download
-Install LTS version
-2. Clone the github repo
-Repo link: https://github.com/elacava06/SocietyGame
+Downloads:\n
+1. Download Node.js\n
+Download link: https://nodejs.org/en/download\n
+Install LTS version\n
+2. Clone the github repo\n
+Repo link: https://github.com/elacava06/SocietyGame\n
 
 Running the server:
 3. Open a terminal and change directory to the society game directory
