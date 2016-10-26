@@ -11,13 +11,29 @@ var World = function() {
     //the teams that are in the world
     var teams;
 
+    /**
+	* Adds the team to the world
+	*
+	* @param {Team} team - the team that will be added to the world
+	*/
+    that.addTeam = function (team) {
+        teams.push(team);
+    };
+
+    /**
+	* Gets the teams in the world
+	*/
+    that.getTeams = function () {
+        return teams.slice(0);
+    };
+
 
     /*
     * Gets the world score
     */
-    that.getWorldScore = function() {
+    that.getWorldScore = function () {
         return score;
-    }
+    };
 
 
     /*
@@ -25,10 +41,11 @@ var World = function() {
     *
     * @param {Integer} amount - the amount to be added to the world score
     */
-    that.updateWorldScore = function(amount) {
+    that.updateWorldScore = function (amount) {
         worldScore += amount;
-    }
+    };
 
-
+    Object.freeze(that);
+    return that;
 }
 
