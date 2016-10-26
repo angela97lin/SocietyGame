@@ -51,8 +51,8 @@ var Player = function(name, number) {
 	/**
 	* Updates the player score based on the decision made by the player
 	*/
-	that.makeDecision = function(type) {
-		that.updatePlayerScore(DECISIONS_IMPACTS[type - 1]);
+	that.makeDecision = function(decisionNumber) {
+		that.updatePlayerScore(DECISIONS_IMPACTS[decisionNumber - 1]);
 	};
 
 	Object.freeze(that);
