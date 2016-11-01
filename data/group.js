@@ -12,7 +12,7 @@ var Group = function(number) {
 	var DECISION_IMPACT = [-1, 2, 1, 0];
 
 	//the score of the group
-	var groupScore;
+	var groupScore = STARTING_GROUP_SCORE;
 
 	//the players that are in the group
 	var players = [];
