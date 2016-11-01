@@ -16,6 +16,32 @@ describe("Player", function() {
 
 	});
 
+	describe("investigate", function() {
+
+		it("should increase score by 4", function() {
+			var player1 = Player("Harambe", 1);
+			var player2 = Player("Datboi", 2);
+			player2.makeDecision(1);
+			player2.makeDecision(2);
+			player2.makeDecision(1);
+			player1.investigate(player2, 1, 1);
+			assert.equal(player1.getPlayerScore(), 24);
+			assert.equal(player2.getPlayerScore(), 19);
+		});
+
+		it("should decrease by 6", function() {
+			var player1 = Player("Harambe", 1);
+			var player2 = Player("Datboi", 2);
+			player2.makeDecision(2);
+			player2.makeDecision(2);
+			player2.makeDecision(2);
+			player1.investigate(player2, 2, 1);
+			assert.equal(player1.getPlayerScore(), 14);
+			assert.equal(player2.getPlayerScore(), 17);
+		});
+
+	});
+
 });
 
 describe("Group", function() {
