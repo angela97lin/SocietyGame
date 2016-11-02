@@ -12,11 +12,13 @@ var Player = function(name, number) {
 
 	var DECISIONS_IMPACTS = [2, -1, 1, -1];
 
+	var INVESTIGATION_COST = 12;
+
 	//the current score of the player
 	var playerScore = STARTING_PLAYER_SCORE;
 
 	//the decisions that the player has made in the game
-	var decisions;
+	var decisions = [];
 
 	/**
 	* Increases player score by amount
@@ -49,10 +51,40 @@ var Player = function(name, number) {
 	};
 
 	/**
+	* Gets the decisions the player has made
+	*/
+	that.getDecisions = function() {
+		return decisions.slice(0);
+	};
+
+	/**
 	* Updates the player score based on the decision made by the player
 	*/
 	that.makeDecision = function(decisionNumber) {
 		that.updatePlayerScore(DECISIONS_IMPACTS[decisionNumber - 1]);
+		decisions.push(decisionNumber);
+	};
+
+	/**
+	* Carries out an investigation of a player
+	*
+	* @param {Player} - the player that is being investigated
+	* @param {Integer} - the number of players that are investigating the player
+	* @param {Integer} - the quarter that the game is currently in
+	*/
+	that.investigate = function(player, numInvestigating, quarter) {
+		var lastRound = quarter * 3;
+		var caughtPlayer = false;
+		player.getDecisions().slice(lastRound - 3, lastRound).forEach(function(decision) {
+			if (decision == 1) {
+				caughtPlayer = true;
+				that.updatePlayerScore(DECISIONS_IMPACTS[0]);
+				player.updatePlayerScore(-DECISIONS_IMPACTS[0]);
+			};
+		});
+		if (!caughtPlayer) {
+			that.updatePlayerScore(-(INVESTIGATION_COST/numInvestigating));
+		};
 	};
 
 	Object.freeze(that);
