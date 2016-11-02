@@ -5,6 +5,9 @@ var World = function() {
 
     var that = Object.create(World.prototype);
 
+    //the total number of players in this session
+    var NUM_TOTAL_PLAYERS;
+
     //the current score of the world
     var worldScore;
 
@@ -13,6 +16,9 @@ var World = function() {
 
     //world event numbers that are unused so far
     var unusedWorldEvents = [1, 2, 3, 4, 5];
+
+    //the number of players that have made a decision so far this round
+    var numDecidedPlayers = 0;
 
     /**
 	* Adds the team to the world
@@ -47,6 +53,26 @@ var World = function() {
     that.updateWorldScore = function (amount) {
         worldScore += amount;
     };
+
+    /*
+    * Alerts the World that a decision was made and checks if all players have made a decision
+    */
+    that.decisionMade = function () {
+        numDecidedPlayers += 1;
+        if (numDecidedPlayers == NUM_TOTAL_PLAYERS) {
+            numDecidedPlayers = 0;
+            if (GameControl.timer > 5) {
+                timer = 5;
+            }
+        }
+    };
+
+    /*
+    * Ends the current round
+    */
+    that.endRound = function () {
+        //TODO: write endRound function
+    }
 
     /*
     * Selects a random unused world event and starts it
