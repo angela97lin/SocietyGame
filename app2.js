@@ -38,6 +38,8 @@ const GROUP_NAMES = {1: "Education",
 			  4: "Policy Makers"};
 const MODES = {1: "timer",
 				 2: "waitForPlayers"};
+
+var world; 
 var decisionMode;
 
 io.sockets.on("connection", function(socket) {
@@ -57,7 +59,8 @@ io.sockets.on("connection", function(socket) {
 
 	socket.on("gameSettings", function(data) {
 		decisionMode = MODES[data.decisionMode];
-
+		world = World();
+		world.makeWorldScore(data.totalNumberOfPlayers);
 	});
 
 });

@@ -54,6 +54,17 @@ var World = function() {
         worldScore += amount;
     };
 
+    /**
+    * Makes the world score based off of the total number of players in the game
+    *
+    * @param {Integer} numPlayers - the total number of players that are in the game
+    */
+    that.makeWorldScore = function(numPlayers) {
+        var newWorldScore = 0;
+        newWorldScore = Math.floor(((0.00012149 * (Math.pow(numPlayers,3))) - (0.03348123*(Math.pow(numPlayers,2))) + (3.8385*numPlayers) - 0.3781)/5.0)*5.0;
+        worldScore = newWorldScore;
+    };
+
     /*
     * Alerts the World that a decision was made and checks if all players have made a decision
     */
