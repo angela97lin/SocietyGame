@@ -47,5 +47,6 @@ var World = function() {
 
     Object.freeze(that);
     return that;
-}
+};
 
+module.exports = World;

@@ -1,0 +1,324 @@
+<!doctype html>
+
+<!-- HTML -->
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Society Game Host</title>
+		<link href="client/main_host.css" rel="stylesheet" type="text/css" />
+		<link href="client/worldEvents/worldEvents.css" rel="stylesheet" type="text/css" />
+	</head>
+
+	<body>
+		
+		<div class="container" id="mainScreen">
+			<h2 id="roundnumber">Round Number: 1</h2>
+			
+			<div class="centeredInline">
+				<h2 id="timer"></h2>
+				<h2 id="worldscore"></h2>
+			</div>
+			<h2 id ="roundsTill">Initial Scores</h2>
+
+			<table id="nations" class ="cellTable">
+				<tbody>
+					<tr></tr>
+				</tbody>
+			</table>
+		</div>
+
+	<!--socket-->
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<!-- test comment -->
+
+	
+<!-- INITIALIZATION -->
+	
+	<script type="text/javascript">
+	
+			var socket = io();
+
+			var mode = prompt("How would you like rounds to end? \n" +
+							  "1: Timer, 2: Wait for everyone to make a decision");
+			while (mode < 1 || mode > 2 || !isValidInt(mode)) {
+				window.alert("Please enter either 1 or 2");
+				mode = prompt("How would you like rounds to end? \n" +
+							  "1: Timer, 2: Wait for everyone to make a decision");
+			};
+			
+			var NATIONS = {1: "Russia",
+						   2: "India",
+						   3: "Japan",
+						   4: "Mexico",
+						   5: "Germany",
+						   6: "China",
+						   7: "UK"};
+
+			var timeLimit;
+			var minutes;
+			var seconds;
+			if (mode == 1) {
+				timeLimit = prompt("How long should each round last? \n" +
+								   "Ex: 2:30 \n" +
+								   "2 minutes 30 seconds").split(":");
+				minutes = parseInt(timeLimit[0]);
+				seconds = parseInt(timeLimit[1]);
+				while (!(isValidInt(minutes)) || !(isValidInt(seconds)) || (minutes + seconds == 0)) {
+					window.alert("Please enter a valid round length");
+					timeLimit = prompt("How long should each round last? \n" +
+									   "Ex: 2:30 \n" +
+									   "2 minutes 30 seconds").split(":");
+					minutes = parseInt(timeLimit[0]);
+					seconds = parseInt(timeLimit[1]);
+				};
+			};
+			var numberOfTeams = parseInt(prompt("How many teams will there be?"),10);
+			while (!isValidInt(numberOfTeams)) {
+				window.alert("Please enter a valid number");
+				numberOfTeams = parseInt(prompt("How many teams will there be?"),10);
+			};
+			var numberOfGroups = parseInt(prompt("How many groups will be in each team?"),10);
+			while (!isValidInt(numberOfGroups)) {
+				window.alert("Please enter a valid number");
+				numberOfGroups = parseInt(prompt("How many groups will be in each team?"),10);
+			};
+			var numberOfPlayersInGroups = parseInt(prompt("How many players are in each group?"),10);
+			while (!isValidInt(numberOfPlayersInGroups)) {
+				window.alert("Please enter a valid number");
+				numberOfPlayersInGroups = parseInt(prompt("How many players are in each group?"),10);
+			}
+			var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
+			var numberOfPlayersInTeams = numberOfPlayersInGroups*numberOfGroups;
+			
+			var nationscore = 20 * numberOfGroups;
+			var A = numberOfPlayers;
+			var worldScoreFormula = (0.00012149 * (Math.pow(A,3))) - (0.03348123*(Math.pow(A,2))) + (3.8385*A) - 0.3781;
+			var worldscore = Math.floor(worldScoreFormula/5.0)*5.0;
+								//Math.floor(Math.sqrt(64 * numberOfPlayers));
+			var roundnumber = 1;
+			var GROUP_NAMES = {1: "Education",
+							  2: "Workforce",
+							  3: "Intelligence Agency",
+							  4: "Policy Makers"};
+
+			socket.emit('start', {
+				numberOfTeams: numberOfTeams,
+				numberOfGroups: numberOfGroups,
+				numberOfPlayers: numberOfPlayers,
+				numberOfPlayersInGroups: numberOfPlayersInGroups,
+				numberOfPlayersInTeams: numberOfPlayersInTeams,
+				mode: mode,
+				minutes: minutes,
+				seconds: seconds,
+				worldscore: worldscore,
+				NATIONS: NATIONS,
+				GROUP_NAMES: GROUP_NAMES
+			});
+
+			document.getElementById('worldscore').innerHTML = "World Score: " + worldscore;
+
+			var nations = document.getElementById('nations');
+			nations.cellSpacing = 200 / numberOfGroups;
+			createCell(nations.rows[0].insertCell(0), "Q1", 'col scoreCell', "quarterlyreports");
+			for (var i = 1; i <= numberOfTeams; i++) {
+				addNation(i);
+			};
+			for (i=1; i<=numberOfTeams; i++) {
+				document.getElementById(i).innerHTML = NATIONS[i] + "'s Score: " + nationscore;
+			};
+			for (var i = 1; i <= numberOfGroups; i++) {
+				addGroup(i);
+			};
+
+			/*variables for world events*/
+			var isWorldEvent = false;
+			var currentEvent;
+			var temporaryGroupScores;
+			var temporaryTeamScores;
+			var winningTeam;
+			
+/*LISTENERS*/
+			
+			socket.on('nextRound', function(data) {
+				document.getElementById("roundnumber").innerHTML = "Round Number: " + data.roundNumber;
+				var nextQuarterlyReport = 3;
+				while(data.roundNumber > nextQuarterlyReport){
+					nextQuarterlyReport += 3;
+				}
+				document.getElementById("roundsTill").innerHTML = "Next Quarterly Report After Round: " + nextQuarterlyReport;
+			});
+
+			socket.on('quarter', function(data) {
+				for (var i = 1; i <= numberOfTeams; i++) {
+					document.getElementById(i).innerHTML = NATIONS[i] + "'s Score: " + data.teamScores[i];
+					for (var j = 1; j <= numberOfGroups; j++) {
+						document.getElementById([i, j]).innerHTML = data.groupScores[[i, j]];
+					};
+				};
+			});
+
+			socket.on('newQuarterNumber', function(data) {
+				document.getElementById('quarterlyreports').innerHTML = "Q" + data.quarter;
+			});
+
+			socket.on('worldEnd', function() {
+				window.location = "/worldend";
+				// window.location = "http://corgiorgy.com";
+			});
+
+			socket.on('decisionUpdate', function(data) {
+				if (!isWorldEvent) {
+					document.getElementById('worldscore').innerHTML = "World Score: " + data.world;
+				};			
+			});
+
+			socket.on("realTimeUpdate", function(data) {
+				if (!isWorldEvent) {
+					document.getElementById("worldscore").innerHTML = "World Score: " + data.world;
+				};
+			});
+
+			socket.on('timer', function(data) {
+				document.getElementById('timer').innerHTML = "Time Left: " + data.timer;
+			});
+
+			socket.on("worldEvent", function(data) {
+				isWorldEvent = true;
+				winningTeam = NATIONS[data.teamInLead];
+				currentEvent = data.eventNumber;
+				swapToWorldEventScreen(currentEvent, "#mainScreen");
+				temporaryTeamScores = data.teamScores;
+				temporaryGroupScores = data.groupScores;
+				
+			});
+
+			socket.on("eventOver", function() {
+				isWorldEvent = false;
+				swapToMainScreen();
+			});
+
+			socket.on("swapToPresenter", function(data) {
+				swapToPresenter(data.screenType);
+				temporaryTeamScores = data.teamScores;
+				temporaryGroupScores = data.groupScores;
+			});
+
+			socket.on("swapFromPresenter", function(data) {
+				if (data.screenType == "event") {
+					swapToWorldEventScreen(currentEvent, "#worldEventScreen");
+				} else {
+					swapToMainScreen();
+				};
+			});
+
+			socket.on('mainWinners', function() {
+				window.location = "/congratulations";
+			});
+			
+			
+/*FUNCTIONS*/
+			
+			function createCell(cell, text, style, id=null) {
+				var div = document.createElement('div');
+				var txt = document.createTextNode(text);
+				div.appendChild(txt);
+				div.setAttribute('class', style);
+				div.setAttribute('className', style);
+				div.setAttribute('id', id);
+				cell.appendChild(div);
+			};
+
+			function addNation(nation) {
+				createCell(nations.rows[0].insertCell(nations.rows[0].cells.length), "Nation Score: " + nationscore, 'col scoreCell', nation);
+			};
+
+			function addGroup(group) {
+				var row = nations.insertRow(nations.rows.length);
+				createCell(row.insertCell(0), GROUP_NAMES[group], 'row scoreCell');
+				for (var i = 1; i < nations.rows[0].cells.length; i++) {
+					createCell(row.insertCell(i), 20, 'row scoreCell', [i, group]);
+				};
+			};
+
+			function beginGame() {
+				socket.emit('beginGame', {});
+				$("#starttimer").remove();
+			};
+
+			function isValidInt(int) {
+				return (int % 1 === 0 && int >= 0);
+			};
+
+			function swapToMainScreen() {
+				$("#worldEventScreen").replaceWith(
+					'<div class="container" id="mainScreen"> \
+						<h2 id="roundnumber">Round Number: 1</h2> \
+						\
+						<div class="centeredInline"> \
+							<h2 id="timer"></h2> \
+							<div id="starttimer"></div> \
+							<h2 id="worldscore"></h2> \
+						</div> \
+						<h2 id ="roundsTill">Initial Scores</h2> \
+						\
+						<table id="nations" class ="cellTable"> \
+							<tbody> \
+								<tr></tr> \
+							</tbody> \
+						</table> \
+					</div>'
+				);
+				nations = document.getElementById('nations');
+				nations.cellSpacing = 200 / numberOfGroups;
+				createCell(nations.rows[0].insertCell(0), "Q1", 'col scoreCell', "quarterlyreports");
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addNation(i);
+				};
+				for (var i = 1; i <= numberOfGroups; i++) {
+					addGroup(i);
+				};
+				for (var i = 1; i <= numberOfTeams; i++) {
+					document.getElementById(i).innerHTML = NATIONS[i] + "'s Score: " + temporaryTeamScores[i];
+					for (var j = 1; j <= numberOfGroups; j++) {
+						document.getElementById([i, j]).innerHTML = temporaryGroupScores[[i, j]];
+					};
+				};
+				socket.emit("infoRequest", {});
+			};
+
+			function swapToWorldEventScreen(worldEventNumber, fromhere) {
+				/*TODO
+				improve the world event screen
+				*/
+				var worldEvents = ['warEvent','pandemicEvent','olympicsEvent','disasterEvent','energyEvent'];
+				if(worldEventNumber==0){
+					$(fromhere).replaceWith(
+						'<div id = "worldEventScreen">\
+							<p id="warEvent">' + winningTeam + ' declared war on Switzerland! Which side will you take?</p>\
+						</div>'
+					);
+				}
+				else{
+					$.get('client/worldEvents/'+ worldEvents[worldEventNumber] + '.html',function(data){
+	    				$(fromhere).replaceWith(data);
+					});
+				}
+
+				
+			};
+
+			function swapToPresenter(screenType) {
+				$.get("client/worldEvents/presenter.html", function(data) {
+					if (screenType == "event") {
+						$("#worldEventScreen").replaceWith(data);
+					} else {
+						$("#mainScreen").replaceWith(data);
+					};
+				});
+			};
+
+	</script>	
+	</body>
+</html>

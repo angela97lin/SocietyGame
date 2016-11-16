@@ -1,0 +1,381 @@
+<!doctype html>
+
+<!-- HTML -->
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>GameMaster</title>
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	</head>
+
+	<body>
+	
+		<br>
+		<br>
+		<button id="startGame" onclick="beginGame()">Start Game</button>
+		<br>
+		<br>
+		<button onclick="advanceRound()">Advance Round</button>
+		<br>
+		<br>
+		<button onclick="pauseButton()">Pause</button><button onclick="unpauseButton()">Unpause</button>
+		<br>
+		<br>
+		<h2 id="updateMode">Update Mode: End of Round</h2>
+		<button onclick="changeUpdateMode()">Change Update Mode</button>
+		<br>
+		<br>
+		<button onclick="presenter()">Presenter</button>
+		<br>
+		<br>
+		<button onclick="endPresenter()">End Presenter</button>
+		<br>
+		<br>
+		Set new timer length:<br>
+		<input type="text" id="timerMinutes">:<input type="text" id="timerSeconds"><br>
+
+		<input type="button" value="Set length of Round" id="timerButton">
+		<br>
+		<br>
+		Username:<br>
+		<input type="text" id="username"><br>
+		New Score:<br>
+		<input type="text" id="newIndividualScore">
+		<br>
+		<br>
+		<br>
+		Team number:----------------Group Number:<br>
+		<input type="text" id="teamNumber"><input type="group" id="groupNumber">
+		<br>
+		New Scores:<br>
+		<input type="text" id="newTeamScore"><input type="text" id="newGroupScore">
+		<br>
+		<br>
+		<br>
+		New World Score:<br>
+		<input type="text" id="newWorldScore">
+		<br>
+		<br>
+		<br>
+		<input type="button" value="Change" id="submitButton">
+
+		<button onclick="removePlayer()">Remove Player</button>
+
+
+		<table id="playerTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
+		<table id="teamTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
+		<table id="scoreTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
+		<table id="decisionTable">
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
+		<script type="text/javascript">
+			var socket = io();
+
+			/**
+			* Asks the user for information related to game settings
+			*
+			* @param {Object} data - the nation and group name data
+			*/
+			socket.on("gameMasterConnect", function(data) {
+				var NATIONS = data.NATIONS;
+				var GROUP_NAMES = data.GROUP_NAMES;
+				var mode = prompt("How would you like rounds to end? \n" +
+								  "1: Timer, 2: Wait for everyone to make a decision");
+				while (mode < 1 || mode > 2 || !isValidInt(mode)) {
+					window.alert("Please enter either 1 or 2");
+					mode = prompt("How would you like rounds to end? \n" +
+								  "1: Timer, 2: Wait for everyone to make a decision");
+				};
+
+				var timeLimit;
+				var minutes;
+				var seconds;
+
+				if (mode == 1) {
+					timeLimit = prompt("How long should each round last? \n" +
+									   "Ex: 2:30 \n" +
+									   "2 minutes 30 seconds").split(":");
+					minutes = parseInt(timeLimit[0]);
+					seconds = parseInt(timeLimit[1]);
+					while (!(isValidInt(minutes)) || !(isValidInt(seconds)) || (minutes + seconds == 0)) {
+						window.alert("Please enter a valid round length");
+						timeLimit = prompt("How long should each round last? \n" +
+										   "Ex: 2:30 \n" +
+										   "2 minutes 30 seconds").split(":");
+						minutes = parseInt(timeLimit[0]);
+						seconds = parseInt(timeLimit[1]);
+					};
+				};
+
+				var numberOfTeams;
+				var numberOfGroups;
+				var numberOfPlayersInGroups;
+
+				var defaultSettings = confirm("Would you like to use the default settings?");
+
+				if (defaultSettings) {
+					numberOfTeams = 2;
+					numberOfGroups = 2;
+					numberOfPlayersInGroups = 3;
+				} else {
+					numberOfTeams = parseInt(prompt("How many teams will there be?"), 10);
+					while (!isValidInt(numberOfTeams)) {
+						window.alert("Please enter a valid number");
+						numberOfTeams = parseInt(prompt("How many teams will there be?"), 10);
+					};
+					numberOfGroups = parseInt(prompt("How many groups will be in each team?"), 10);
+					while (!isValidInt(numberOfGroups)) {
+						window.alert("Please enter a valid number");
+						numberOfGroups = parseInt(prompt("How many groups will be in each team?"), 10);
+					};
+					numberOfPlayersInGroups = parseInt(prompt("How many players are in each group?"), 10);
+					while (!isValidInt(numberOfPlayersInGroups)) {
+						window.alert("Please enter a valid number");
+						numberOfPlayersInGroups = parseInt(prompt("How many players are in each group?"), 10);
+					};
+				};
+
+				var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
+				var numberOfPlayersInTeams = numberOfPlayersInGroups*numberOfGroups;
+
+				socket.emit("gameSettings", {
+					decisionMode: mode,
+					
+				});
+
+			});
+
+			socket.on("giveGameMasterData", function(data) {
+				NATIONS = data.NATIONS;
+				GROUP_NAMES = data.GROUP_NAMES;
+				numberOfTeams = data.numberOfTeams;
+				numberOfGroups = data.numberOfGroups;
+				var playerTable = document.getElementById("playerTable");
+				playerTable.cellSpacing = 200 / numberOfGroups;
+				createCell(playerTable.rows[0].insertCell(0), "Player Table", 'col scoreCell');
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addNation(i);
+				};
+				for (var i = 1; i <= numberOfGroups; i++) {
+					addGroup(i);
+				};
+				var teamTable = document.getElementById("teamTable");
+				teamTable.cellSpacing = 30;
+				var teamScore = 20 * numberOfGroups;
+				createCell(teamTable.rows[0].insertCell(0), "Nation Scores", 'col scoreCell');
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addTeamScore(i, teamScore);
+				};
+				var scoreTable = document.getElementById("scoreTable");
+				scoreTable.cellSpacing = 30;
+				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
+				var decisionTable = document.getElementById("decisionTable");
+				decisionTable.cellSpacing = 30;
+				createCell(decisionTable.rows[0].insertCell(0), "Decided Players", 'col scoreCell');
+			});
+
+			socket.on("putPlayerInGameMasterTable", function(data) {
+				document.getElementById(data.groupNumber).innerHTML += data.username + " " + data.playerNumber + "<br>";
+			});
+
+			socket.on("removePlayerFromTable", function(data) {
+				var element = "[id='" + data.groupNumber + "']";
+				$(element).html($(element).html().split(data.username + " " + data.playerNumber + "<br>").join(""));
+				var nameToRemove = document.getElementById(data.username);
+				nameToRemove.parentNode.removeChild(nameToRemove);
+			});
+
+			socket.on("updateModeChanged", function(data) {
+				if (data.updateRealTime) {
+					document.getElementById("updateMode").innerHTML = "Update Mode: Real Time";
+				} else {
+					document.getElementById("updateMode").innerHTML = "Update Mode: End of Round";
+				};
+			});
+
+			socket.on("addPlayerScore", function(data) {
+				addPlayerScore(data.username, data.playerScore, data.playerNumber);
+			});
+
+			socket.on("updatePlayerScore", function(data) {
+				updatePlayerScore(data.username, data.playerScore)
+			});
+
+			socket.on("updateTeamScore", function(data) {
+				updateTeamScore(data.team, data.teamScore);
+			});
+
+			socket.on("addDecidedPlayer", function(data) {
+				addDecidedPlayer(data.username);
+			});
+
+			socket.on("clearDecidedPlayers", function(data) {
+				clearDecidedPlayers();
+			});
+
+			function isValidInt(int) {
+				return (int % 1 === 0 && int >= 0);
+			};
+
+			function createCell(cell, text, style, id=null) {
+				var div = document.createElement('div');
+				var txt = document.createTextNode(text);
+				div.appendChild(txt);
+				div.setAttribute('class', style);
+				div.setAttribute('className', style);
+				div.setAttribute('id', id);
+				cell.appendChild(div);
+			};
+
+			function addNation(nation) {
+				createCell(playerTable.rows[0].insertCell(playerTable.rows[0].cells.length), NATIONS[nation], 'col scoreCell', nation);
+			};
+
+			function addGroup(group) {
+				var row = playerTable.insertRow(playerTable.rows.length);
+				createCell(row.insertCell(0), GROUP_NAMES[group], 'row scoreCell');
+				for (var i = 1; i < playerTable.rows[0].cells.length; i++) {
+					createCell(row.insertCell(i), "", 'row scoreCell', [i, group]);
+				};
+			};
+
+			function beginGame() {
+				socket.emit('beginGame', {});
+				$("#startGame").remove();
+			};
+
+			function changeUpdateMode() {
+				socket.emit("changeUpdateMode", {});
+			};
+
+			function addPlayerScore(username, playerScore) {
+				var row = scoreTable.insertRow(scoreTable.rows.length);
+				createCell(row.insertCell(0), username + " " + playerScore, 'row scoreCell', username);
+			};
+
+			function addTeamScore(team, teamScore) {
+				var row = teamTable.insertRow(teamTable.rows.length);
+				createCell(row.insertCell(0), NATIONS[team] + " " + teamScore, 'row scoreCell', NATIONS[team]);
+			};
+
+			function addDecidedPlayer(username) {
+				var row = decisionTable.insertRow(decisionTable.rows.length);
+				createCell(row.insertCell(0), username, 'row scoreCell');
+			};
+
+			function updatePlayerScore(username, playerScore) {
+				document.getElementById(username).innerHTML = username + " " + playerScore;
+			};
+
+			function updateTeamScore(team, teamScore) {
+				document.getElementById(NATIONS[team]).innerHTML = NATIONS[team] + " " + teamScore;
+			};
+
+			function clearDecidedPlayers() {
+				var decisionTable = document.getElementById("decisionTable");
+				for (var i = decisionTable.rows.length - 1; i > 0; i--) {
+					decisionTable.deleteRow(i);
+					console.log("this happened");
+				};
+			};
+
+			function presenter() {
+				socket.emit("presenter", {});
+			};
+
+			function endPresenter() {
+				socket.emit("endPresenter", {});
+			};
+
+			function advanceRound(){
+				socket.emit('advanceRoundGM', {});
+			};
+
+			function removePlayer() {
+				var username = prompt("What is the username of the player you would like to remove?");
+				socket.emit("removePlayer", {
+					username: username
+				});
+			};
+
+			var subbutton = document.getElementById("submitButton");
+			subbutton.onclick = function() {
+				var newIndividualScore =  parseInt(document.getElementById("newIndividualScore").value);
+				var newWorldScore =  parseInt(document.getElementById("newWorldScore").value);
+				var newTeamScore = parseInt(document.getElementById("newTeamScore").value);
+				var newGroupScore = parseInt(document.getElementById("newGroupScore").value);
+				var usernameToChange = parseInt(document.getElementById("username").value);
+				var groupToChange = parseInt(document.getElementById("groupNumber").value);
+				var teamToChange = parseInt(document.getElementById("teamNumber").value);
+				console.log("clicked button");
+				console.log(usernameToChange);
+				console.log(newIndividualScore);
+				console.log(newGroupScore);
+				console.log("teamscore " + newTeamScore);
+				console.log("worldscore "+ newWorldScore);
+				console.log("groupscore"+ groupToChange);
+				console.log(teamToChange);
+    			socket.emit('scoreChangeGM', {
+    				newGroupScore: newGroupScore,
+    				newTeamScore: newTeamScore,
+    				newWorldScore: newWorldScore,
+    				newIndividualScore: newIndividualScore,
+    				usernameToChange: usernameToChange,
+    				groupToChange: groupToChange,
+    				teamToChange: teamToChange
+    			});
+    			clearInputs();
+			};
+
+			function clearInputs(){
+				var inputs = document.getElementsByTagName("INPUT");
+				var i;
+				for(i in inputs){
+					if(inputs[i].type="text") {
+						inputs[i].value ="";
+					};
+				};
+				
+			};
+
+			function pauseButton(){
+				socket.emit('pauseGM',{});
+			};
+			function unpauseButton(){
+				socket.emit('unpauseGM',{});
+			};
+			var setTimerButton = document.getElementById("timerButton");
+			setTimerButton.onclick = function() {
+				console.log("setting timer");
+				var newMinutes =  parseInt(document.getElementById("timerMinutes").value);
+				var newSeconds = parseInt(document.getElementById("timerSeconds").value);
+				socket.emit('roundTimeGM', {
+					newMinutes: newMinutes,
+					newSeconds: newSeconds
+				});
+				clearInputs();
+			};
+
+		</script>
+	</body>
+</html>
