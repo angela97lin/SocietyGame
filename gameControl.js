@@ -5,8 +5,11 @@ var GameControl = function() {
 
     var that = Object.create(GameControl.prototype);
 
-    //the time left in the round
-    var timer;
+    //the number of full minutes left in the round
+    var timerMinutes;
+
+    //the number of seconds (mod 60) left in the round
+    var timerSeconds;
 
     //whether the timer is paused
     var timerPaused;
@@ -32,19 +35,41 @@ var GameControl = function() {
     };
 
     /*
-    * Gets the timer's time
+    * Gets the timer's minutes remaining
     */
-    that.getTimer = function () {
-        return timer;
+    that.getTimerMinutes = function () {
+        return timerMinutes;
+    };
+
+    /*
+    * Gets the timer's seconds remaining
+    */
+    that.getTimerSeconds = function () {
+        return timerSeconds;
     };
 
     /*
     * Sets the timer to a new time
     *
-    *
+    * @param {Integer} minutes - the number of minutes of the new time to be displayed
+    * @param {Integer} seconds - the number of seconds of the new time to be displayed
     */
-    that.setTimer = function (newTime) {
-        timer = newTime;
+    that.setTimer = function (minutes, seconds) {
+        timerMinutes = minutes;
+        timerSeconds = seconds;
+    };
+
+    /*
+    * Decrements the timer
+    */
+    that.decrementTimer = function () {
+        if (timerSeconds != 0) {
+            timerSeconds--;
+        }
+        else if (timerMinutes != 0) {
+            timerMinutes--;
+            timerSeconds = 59;
+        }
     };
 
     /*
