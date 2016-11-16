@@ -12,7 +12,7 @@ var GameControl = function() {
     var timerPaused;
 
     //the round that the game is on
-    var roundNumber = 1;
+    var roundNumber;
 
     //the current state that the game is in
     var state;
@@ -36,31 +36,7 @@ var GameControl = function() {
     */
     that.getTimer = function () {
         return timer;
-    };
-
-    /*
-    * Sets the timer to a new time
-    *
-    *
-    */
-    that.setTimer = function (newTime) {
-        timer = newTime;
-    };
-
-    /*
-    * Gets the round number
-    */
-    that.getRoundNumber = function () {
-        return roundNumber;
-    };
-
-    /*
-    * Increments the round number
-    */
-    that.incrementRoundNumber = function () {
-        roundNumber += 1;
-    };
-
+    }
 
 
 
