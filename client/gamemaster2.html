@@ -160,7 +160,11 @@
 
 				socket.emit("gameSettings", {
 					decisionMode: mode,
-					totalNumberOfPlayers: totalNumberOfPlayers
+					totalNumberOfPlayers: totalNumberOfPlayers,
+					numberOfGroups: numberOfGroups,
+					numberOfTeams: numberOfTeams,
+					numberOfPlayersInGroups: numberOfPlayersInGroups,
+					numberOfPlayersInTeams: numberOfPlayersInTeams
 				});
 
 			});

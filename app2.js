@@ -32,15 +32,20 @@ const NATIONS = {1: "Russia",
 						   5: "Germany",
 						   6: "China",
 						   7: "UK"};
+
 const GROUP_NAMES = {1: "Education",
 			  2: "Workforce",
 			  3: "Intelligence Agency",
 			  4: "Policy Makers"};
+			  
 const MODES = {1: "timer",
 				 2: "waitForPlayers"};
 
 var world; 
 var decisionMode;
+var totalNumberOfPlayers;
+var numberOfGroups;
+var numberOfTeams;
 
 io.sockets.on("connection", function(socket) {
 	var typeOfConnection = socket.handshake.headers.referer.split(/\//)[3];
@@ -61,6 +66,14 @@ io.sockets.on("connection", function(socket) {
 		decisionMode = MODES[data.decisionMode];
 		world = World();
 		world.makeWorldScore(data.totalNumberOfPlayers);
+		totalNumberOfPlayers = data.totalNumberOfPlayers;
+		numberOfGroups = data.totalNumberOfGroups;
+		numberOfTeams = data.numberOfTeams;
+		numberOfPlayersInGroups = data.numberOfPlayersInGroups;
+		numberOfPlayersInTeams = data.numberOfPlayersInTeams;
+		for (var i = 1; i <= numberOfTeams; i++) {
+			
+		}
 	});
 
 });
