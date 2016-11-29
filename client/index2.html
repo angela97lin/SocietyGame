@@ -133,7 +133,7 @@
 	var playersNotToInvestigate = [];
 	var groupmates = {};
 	
-	var gameMode = "wait";
+	var decisionMode = "wait";
 	
 	var NATIONS;
 	var GROUP_NAMES;
@@ -194,7 +194,7 @@
 		} else {
 			alert("Please use a different browser or update your current browser");
 		};
-		gameMode = data.mode;
+		decisionMode = data.decisionMode;
 	});
 	
 	socket.on('gameState',function(data) {

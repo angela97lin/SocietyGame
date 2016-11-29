@@ -8,10 +8,10 @@ serv.listen(process.env.PORT || 3000, "0.0.0.0");
 console.log("server started");
 var io = require("socket.io")(serv, {});
 
-var Player = require("../data/player.js");
-var Group = require("../data/group.js");
-var Team = require("../data/team.js");
-var World = require("../data/world.js");
+var Player = require("./data/player.js");
+var Group = require("./data/group.js");
+var Team = require("./data/team.js");
+var World = require("./data/world.js");
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,6 +20,38 @@ app.use(bodyParser.urlencoded({ extended: false }));
 * Allows the server to save information
 */
 app.use(session({secret: "4746", resave: true, saveUninitialized: true}));
+
+app.get('/', function(req, res) {
+		res.sendFile(__dirname + '/client/Planetarium_Rules.html');
+	});
+app.get('/index', function(req, res) {
+	res.sendFile(__dirname + '/client/index2.html');
+});
+app.get('/main', function(req, res) {
+	res.sendFile(__dirname + '/client/main_host2.html');
+});
+app.get('/worldend', function(req, res) {
+	res.sendFile(__dirname + '/client/worldend.html');
+});
+app.get('/win', function(req, res) {
+	res.sendFile(__dirname + '/client/win.html');
+});
+app.get('/winningteam', function(req, res) {
+	res.sendFile(__dirname + '/client/winningteam.html');
+});
+app.get('/lose', function(req, res) {
+	res.sendFile(__dirname + '/client/lose.html');
+});
+app.get('/congratulations', function(req, res) {
+	res.sendFile(__dirname + '/client/congratulations.html');
+});
+app.get('/game_over', function(req, res) {
+	res.sendFile(__dirname + '/client/game_over.html');
+});
+app.get('/gamemaster', function(req, res) {
+	res.sendFile(__dirname + '/client/gamemaster2.html');
+});
+app.use('/client', express.static(__dirname + '/client'));
 
 var socketList = [];
 var playerSocketList = [];
@@ -115,7 +147,8 @@ io.sockets.on("connection", function(socket) {
 			USERNAME_TO_GROUP: USERNAME_TO_GROUP,
 			USERNAME_TO_TEAM: USERNAME_TO_TEAM,
 			DECISIONS: DECISIONS,
-			usernames: usernames
+			usernames: usernames,
+			decisionMode: decisionMode
 		});
 	};
 
@@ -140,11 +173,22 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on("getPlayerData", function(data) {
+		var username = data.username;
+		var teamNumber = data.teamNumber;
+		var groupNumber = data.groupNumber;
+		console.log(username + " connected");
+		if (username in userData) {
+			//idk
+		} else {
+			var playerNumber = world.getNumPlayersInGroup(teamNumber, groupNumber) + 1;
+			var player = Player(data.username, playerNumber);
+			world.addPlayer(teamNumber, groupNumber, player);
+			usernames.push(username);
+			usernameData[username] = {username: username,
+									  playerNumber: playerNumber,
+									  groupNumber: groupNumber,
+									  teamNumber: teamNumber};
+		};
+	});
 
-	})
-
-});
-
-app.listen(process.env.PORT || 3000, function() {
-	console.log("server started");
 });

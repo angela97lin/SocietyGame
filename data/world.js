@@ -86,6 +86,46 @@ var World = function() {
         team.addPlayer(groupNumber, player);
     };
 
+    /**
+    * Gets the number of players in the group specified
+    *
+    * @param {Integer} teamNumber - the team that the group is in
+    * @param {Integer} groupNumber - the number of the group whose number of players will be given
+    */
+    that.getNumPlayersInGroup = function(teamNumber, groupNumber) {
+        return that.getTeam(teamNumber).getNumPlayersInGroup(groupNumber);
+    };
+
+    /**
+    * Gets the score of the team specified
+    *
+    * @param {Integer} teamNumber - the number of the team whose score will be given
+    */
+    that.getTeamScore = function(teamNumber) {
+        return that.getTeam(teamNumber).getTeamScore();
+    };
+
+    /**
+    * Gets the score of the group specified
+    *
+    * @param {Integer} teamNumber - the number of the team that the group is in
+    * @param {Integer} groupNumber - the number of the group whose score will be given
+    */
+    that.getGroupScore = function(teamNumber, groupNumber) {
+        return that.getTeam(teamNumber).getGroupScore(groupNumber);
+    };
+
+    /**
+    * Gets the score of the player specified
+    *
+    * @param {Integer} teamNumber - the number of the team that the player is on
+    * @param {Integer} groupNumber - the number of the group that the player is in
+    * @param {Integer} playerNumber - the number of the player whose score will be given
+    */
+    that.getPlayerScore = function(teamNumber, groupNumber, playerNumber) {
+        return that.getTeam(teamNumber).getPlayerScore(groupNumber, playerNumber);
+    };
+
     /*
     * Alerts the World that a decision was made and checks if all players have made a decision
     */

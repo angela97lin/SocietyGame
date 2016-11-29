@@ -67,6 +67,34 @@ var Team = function(number) {
 	};
 
 	/**
+	* Gets the number of players in the group specified
+	*
+	* @param {Integer} groupNumber - the number of the group whose number of players will be given
+	*/
+	that.getNumPlayersInGroup = function(groupNumber) {
+		return that.getGroup(groupNumber).getNumPlayers();
+	};
+
+	/**
+	* Gets the score of the group specified
+	*
+	* @param {Integer} groupNumber - the number of the group whose score will be given
+	*/
+	that.getGroupScore = function(groupNumber) {
+		return that.getGroup(groupNumber).getGroupScore();
+	};
+
+	/**
+	* Gets the score of the player specified
+	*
+	* @param {Integer} groupNumber - the number of the group that the player is in
+	* @param {Integer} playerNumber - the number of the player whose score will be given
+	*/
+	that.getPlayerScore = function(groupNumber, playerNumber) {
+		return that.getGroup(groupNumber).getPlayerScore(playerNumber);
+	};
+
+	/**
 	* Makes the decision specified by decision number
 	*
 	* @param {Integer} decisionNumber - the number of the decision that will be made
