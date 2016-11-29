@@ -12,7 +12,7 @@ var World = function() {
     var worldScore;
 
     //the teams that are in the world
-    var teams;
+    var teams = [];
 
     //world event numbers that are unused so far
     var unusedWorldEvents = [1, 2, 3, 4, 5];
@@ -34,6 +34,15 @@ var World = function() {
 	*/
     that.getTeams = function () {
         return teams.slice(0);
+    };
+
+    /**
+    * Gets the team with the specified team number
+    *
+    * @param {Integer} teamNumber - the number of the team that will be returned
+    */
+    that.getTeam = function(teamNumber) {
+        return teams[teamNumber - 1];
     };
 
 
@@ -63,6 +72,18 @@ var World = function() {
         var newWorldScore = 0;
         newWorldScore = Math.floor(((0.00012149 * (Math.pow(numPlayers,3))) - (0.03348123*(Math.pow(numPlayers,2))) + (3.8385*numPlayers) - 0.3781)/5.0)*5.0;
         worldScore = newWorldScore;
+    };
+
+    /**
+    * Adds a player to the team and group specified
+    *
+    * @param {Integer} teamNumber - the number of the team that the player will be placed
+    * @param {Integer} groupNumber - the number of the group that the player will be placed
+    * @param {Player} player - the player that will be placed into the specified team and group
+    */
+    that.addPlayer = function(teamNumber, groupNumber, player) {
+        var team = that.getTeam(teamNumber);
+        team.addPlayer(groupNumber, player);
     };
 
     /*

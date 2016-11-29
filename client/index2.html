@@ -133,68 +133,13 @@
 	var playersNotToInvestigate = [];
 	var groupmates = {};
 	
-	var usernameToTeam = {"Ms. Frizzle": 1,
-						  "Mrs. Pancakes": 1,
-						  "Professor Snape": 1,
-						  "Professor X": 2,
-						  "Dr. Manhattan": 2,
-						  "John Keating": 2,
-						  "Tyler Durden": 1,
-						  "Turanga Leela": 1,
-						  "Michael Scott": 1,
-						  "Robocop": 2,
-						  "Rosie the Riveter": 2,
-						  "Commissioner Gordon": 2};
-	
-	var usernameToGroup = {"Ms. Frizzle": 1,
-						  "Mrs. Pancakes": 1,
-						  "Professor Snape": 1,
-						  "Professor X": 1,
-						  "Dr. Manhattan": 1,
-						  "John Keating": 1,
-						  "Tyler Durden": 2,
-						  "Turanga Leela": 2,
-						  "Michael Scott": 2,
-						  "Robocop": 2,
-						  "Rosie the Riveter": 2,
-						  "Commissioner Gordon": 2};
-	
 	var gameMode = "wait";
 	
-	var NATIONS = {1: "Russia",
-				   2: "India",
-				   3: "Japan",
-				   4: "Mexico",
-				   5: "Germany",
-				   6: "China",
-				   7: "UK"};
-	
-	var GROUPS = {1: "Education",
-				  2: "Workforce",
-				  3: "Intelligence Agency",
-				  4: "Policy Makers"};
-
-
-	var DECISIONS = [{1: "Pocket money from school fundraiser",
-					  2: "Buy school supplies for students out of pocket",
-					  3: "Inflate students' test scores",
-					  4: "Go teach for a year to impoverished students",
-					  5: "Volunteer to run after-school environmental club"},
-					 {1: "Buy a boat with company money",
-					  2: "Come in on Saturdays",
-					  3: "Switch production to fossil fuels for a month to lower production costs",
-					  4: "Donate to charity",
-					  5: "Outsource jobs to another country"},
-					  {1: "Sell fake identities on the black market",
-					  2: "Become an undercover agent to reduce crime in your cities",
-					  3: "Take bribe to censor the nation's failed safety inspections",	//wasn't clear how it benefits individual
-					  4: "Risk your career to reveal a world terrorist orginization", 	//why is it bad for you? why isnt it bad for your country? why is it good for the world?
-					  5: "Start propaganda campaign claiming your nation is best"},	//unclear as what type of conspiracy theories...how do they help you? +,++,--
-					 {1: "Take a bribe to lower emissions requirements",
-					  2: "Attend every voting session",
-					  3: "Impose tariffs on international trade",
-					  4: "Give time to international disaster relief organization",
-					  5: "Take bribe to deport criminal"}]; 	//doesnt seem less selfish than 1
+	var NATIONS;
+	var GROUP_NAMES;
+	var USERNAME_TO_TEAM;
+	var USERNAME_TO_GROUP;
+	var DECISIONS;
 
 	var username;
 	var playerNumber;
@@ -209,100 +154,46 @@
 	
 /*LISTENERS*/
 
-	socket.on('indexConnect', function(data) {
+	socket.on("playerConnect", function(data) {
+
+		NATIONS = data.NATIONS;
+		GROUP_NAMES = data.GROUP_NAMES;
+		USERNAME_TO_GROUP = data.USERNAME_TO_GROUP;
+		USERNAME_TO_TEAM = data.USERNAME_TO_TEAM;
+		DECISIONS = data.DECISIONS;
 		
 		numberOfTeams = data.numberOfTeams;
 		numberOfGroups = data.numberOfGroups;
 		playersPerGroup = data.numberOfPlayersInGroups;
-		numberOfPlayersConnectedPerGroup = data.numberOfPlayersConnectedPerGroup;
 		usernamesUsed = data.usernames;
 
 		if (typeof(Storage) !== "undefined") {
-			// var groupIsFull = false;
-			if (localStorage.getItem("username") in data.usernameData) {
+			var usernameData = data.usernameData;
+			if (localStorage.getItem("username") in usernameData) {
 				username = localStorage.getItem("username");
-				console.log(data.usernames);
-				for (i in data.usernames) {
-					if (data.usernames[i] == username) {
+				var usernames = data.usernames;
+				usernames.forEach(function(name) {
+					if (name == username) {
 						alert("Someone else has signed into your name!");
 						localStorage.removeItem("username");
 						window.location = "/index";
 					};
-				};
-				teamNameInput = data.usernameData[username].teamNumber;
-				groupNumberInput = data.usernameData[username].rawGroupNumber;
+				});
+				teamNameInput = usernameData[username].teamNumber;
+				groupNumberInput = usernameData[username].groupNumber;
 				teamName = NATIONS[teamNameInput];
 				swapToMainContent("#empty", true);
 			
-				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
+				socket.emit("getPlayerData", {username: username, teamNumber: teamNameInput, groupNumber: groupNumberInput});
 
 				//Redirect the player to the correct place, based on gamestate
-				socket.emit('stateRequest', {});
+				socket.emit("stateRequest", {});
 			} else {
 				$("#myModal").modal();
 			};
-			/*else { /*
-			    var nationPromptText = "";
-				var groupPromptText = "";
-				
-				for (var i = 1; i <= numberOfTeams; i++){
-					nationPromptText += (NATIONS[i] + '----> Enter "'+i+'" \n');
-				};
-				
-				for (var i = 1; i <= numberOfGroups; i++){
-					groupPromptText += (GROUPS[i] + '----> Enter "'+i+'" \n');
-				};
-				
-				
-				username = prompt("What is your name?");
-				var invalidUsername = false;
-				for (name in data.usernames) {
-					if (data.usernames[name] == username || username.toLowerCase() == "nobody") {
-						invalidUsername = true;
-					}; 
-				};
-				while (invalidUsername) {
-					window.alert("That username has already been taken");
-					username = prompt("What is your name?");
-					invalidUsername = false;
-					for (name in data.usernames) {
-						if (data.usernames[name] == username) {
-							invalidUsername = true;
-						}; 
-					};
-				};
-			    localStorage.setItem("username", username);
-				 
-				teamNameInput = parseInt(prompt("What nation are you on? Please type a number\n" + nationPromptText), 10);
-				while (teamNameInput > numberOfTeams || !isValidInt(teamNameInput)) {
-					window.alert("Please enter a valid team number");
-					teamNameInput = parseInt(prompt("What nation are you on?\n" + nationPromptText), 10);
-				};
-				groupNumberInput = parseInt(prompt("What group are you in? Please type a number\n" + groupPromptText), 10);
-				while (groupNumberInput > numberOfGroups || !isValidInt(groupNumberInput)) {
-					window.alert("Please enter a valid group number");
-					groupNumberInput = parseInt(prompt("What group are you in?\n" + groupPromptText), 10);
-				};
-				if (data.numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] == data.numberOfPlayersInGroups) {
-					groupIsFull = true;
-				}; */
-				
-			//};
-			/*if (groupIsFull) {
-				alert("This group is already full, please remove player before you can join");
-			} else {
-			swapToMainContent("#empty", true);
-				teamName = NATIONS[teamNameInput];
-				socket.emit('playerConnect', {username: username, teamNumber: teamNameInput, teamName: teamName, groupNumberInput: groupNumberInput});
-
-				//Redirect the player to the correct place, based on gamestate
-				socket.emit('stateRequest', {});
-			};
-			} */
 		} else {
 			alert("Please use a different browser or update your current browser");
 		};
-		
 		gameMode = data.mode;
 	});
 	

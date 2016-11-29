@@ -78,6 +78,17 @@ var Team = function(number) {
 		group.makeDecision(decisionNumber, playerNumber);
 	};
 
+	/**
+	* Adds a player to the team
+	*
+	* @param {Integer} groupNumber - the number of the group that player is in
+	* @param {Player} player - the player to be added
+	*/
+	that.addPlayer = function(groupNumber, player) {
+		var group = that.getGroup(groupNumber);
+		group.addPlayer(player);
+	};
+
 	Object.freeze(that);
 	return that;
 
