@@ -12,6 +12,7 @@ var Player = require("./data/player.js");
 var Group = require("./data/group.js");
 var Team = require("./data/team.js");
 var World = require("./data/world.js");
+var GameControl = require("./data/gameControl.js");
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -55,6 +56,8 @@ app.use('/client', express.static(__dirname + '/client'));
 
 var socketList = [];
 var playerSocketList = [];
+var mainSocket;
+var gameMasterSocket;
 
 const NATIONS = {1: "Russia",
 			     2: "India",
@@ -128,18 +131,19 @@ var numberOfPlayersInGroups;
 var numberOfPlayersInTeams;
 var usernames = [];
 var userData = {};
+var realTimeUpdate = true;
 
 io.sockets.on("connection", function(socket) {
 	var typeOfConnection = socket.handshake.headers.referer.split(/\//)[3];
-	if (typeOfConnection == "main") {
+	if (typeOfConnection === "main") {
 		mainSocket = socket;
-	} else if (typeOfConnection == "gamemaster") {
+	} else if (typeOfConnection === "gamemaster") {
 		gameMasterSocket = socket;
 		socket.emit("gameMasterConnect", {
 			NATIONS: NATIONS,
 			GROUP_NAMES: GROUP_NAMES
 		});
-	} else if (typeOfConnection == "index") {
+	} else if (typeOfConnection === "index") {
 		playerSocketList.push(socket);
 		socket.emit("playerConnect", {
 			NATIONS: NATIONS,
@@ -189,6 +193,60 @@ io.sockets.on("connection", function(socket) {
 									  groupNumber: groupNumber,
 									  teamNumber: teamNumber};
 		};
+		playerFullScoreUpdate(teamNumber, groupNumber, playerNumber, socket);
+	});
+
+	socket.on("decision1", function(data) {
+		var teamNumber = data.teamNumber;
+		var groupNumber = data.groupNumber;
+		var playerNumber = data.playerNumber;
+		world.makeDecision(1, teamNumber, groupNumber, playerNumber);
+		gameMasterUpdatePlayerScore(teamNumber, groupNumber, playerNumber, data.username);
+		gameMasterUpdateTeamScore(teamNumber);
 	});
 
 });
+
+/**
+* Sends a score update to the socket
+*
+* @param {Integer} teamNumber - the number of the team the socket is on
+* @param {Integer} groupNumber - the number of the group the socket is in
+* @param {Integer} playerNumber - the number of the player that the socket is
+* @param {Object} socket - the socket that will have information sent to it
+*						   the socket must be a player
+*/
+var playerFullScoreUpdate = function(teamNumber, groupNumber, playerNumber, socket) {
+	socket.emit("playerFullScoreUpdate", {
+		playerScore: world.getPlayerScore(teamNumber, groupNumber, playerNumber),
+		teamScore: world.getTeamScore(teamNumber),
+		worldScore: world.getWorldScore()
+	});
+};
+
+/**
+* Sends a player score update to the gameMaster
+*
+* @param {Integer} teamNumber - the number of the team the player is on
+* @param {Integer} groupNumber - the number of the group the player is in
+* @param {Integer} playerNumber - the number of the player
+* @param {String} username - the name of the player
+*/
+var gameMasterUpdatePlayerScore = function(teamNumber, groupNumber, playerNumber, username) {
+	gameMasterSocket.emit("gameMasterUpdatePlayerScore", {
+		username: username,
+		playerScore: world.getPlayerScore(teamNumber, groupNumber, playerNumber);
+	});
+};
+
+/**
+* Sends a team score update to the gameMaster
+*
+* @param {Integer} teamNumber - the number of the team
+*/
+var gameMasterUpdateTeamScore = function(teamNumber) {
+	gameMasterSocket.emit("gameMasterUpdateTeamScore", {
+		teamNumber: teamNumber,
+		teamScore: world.getTeamScore(teamNumber)
+	});
+};

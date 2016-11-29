@@ -158,6 +158,8 @@
 				var numberOfPlayers = numberOfTeams * numberOfGroups * numberOfPlayersInGroups;
 				var numberOfPlayersInTeams = numberOfPlayersInGroups*numberOfGroups;
 
+				setUpTables();
+
 				socket.emit("gameSettings", {
 					decisionMode: mode,
 					totalNumberOfPlayers: totalNumberOfPlayers,
@@ -169,33 +171,25 @@
 
 			});
 
-			socket.on("giveGameMasterData", function(data) {
-				NATIONS = data.NATIONS;
-				GROUP_NAMES = data.GROUP_NAMES;
-				numberOfTeams = data.numberOfTeams;
-				numberOfGroups = data.numberOfGroups;
-				var playerTable = document.getElementById("playerTable");
-				playerTable.cellSpacing = 200 / numberOfGroups;
-				createCell(playerTable.rows[0].insertCell(0), "Player Table", 'col scoreCell');
-				for (var i = 1; i <= numberOfTeams; i++) {
-					addNation(i);
-				};
-				for (var i = 1; i <= numberOfGroups; i++) {
-					addGroup(i);
-				};
-				var teamTable = document.getElementById("teamTable");
-				teamTable.cellSpacing = 30;
-				var teamScore = 20 * numberOfGroups;
-				createCell(teamTable.rows[0].insertCell(0), "Nation Scores", 'col scoreCell');
-				for (var i = 1; i <= numberOfTeams; i++) {
-					addTeamScore(i, teamScore);
-				};
-				var scoreTable = document.getElementById("scoreTable");
-				scoreTable.cellSpacing = 30;
-				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
-				var decisionTable = document.getElementById("decisionTable");
-				decisionTable.cellSpacing = 30;
-				createCell(decisionTable.rows[0].insertCell(0), "Decided Players", 'col scoreCell');
+			/**
+			* Updates the score of the specified player in the table
+			*
+			* @param {Object} data - the data containing the player's name and score
+			*/
+			socket.on("gameMasterUpdatePlayerScore", function(data) {
+				var username = data.username;
+				document.getElementById(username).innerHTML = username + " " + data.playerScore;
+			});
+
+			/**
+			* Updates the score of the specified team in the table
+			*
+			* @param {Object} data - the data containing the team number and score
+			*/
+			socket.on("gameMasterUpdateTeamScore", function(data) {
+				var teamNumber = data.teamNumber;
+				var team = NATIONS[teamNumber];
+				document.getElementById(team).innerHTML = team + " " + data.teamScore;
 			});
 
 			socket.on("putPlayerInGameMasterTable", function(data) {
@@ -221,10 +215,6 @@
 				addPlayerScore(data.username, data.playerScore, data.playerNumber);
 			});
 
-			socket.on("updatePlayerScore", function(data) {
-				updatePlayerScore(data.username, data.playerScore)
-			});
-
 			socket.on("updateTeamScore", function(data) {
 				updateTeamScore(data.team, data.teamScore);
 			});
@@ -236,6 +226,34 @@
 			socket.on("clearDecidedPlayers", function(data) {
 				clearDecidedPlayers();
 			});
+
+			/**
+			* Sets up the score tables
+			*/
+			var setUpTables = function() {
+				var playerTable = document.getElementById("playerTable");
+				playerTable.cellSpacing = 200 / numberOfGroups;
+				createCell(playerTable.rows[0].insertCell(0), "Player Table", 'col scoreCell');
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addNation(i);
+				};
+				for (var i = 1; i <= numberOfGroups; i++) {
+					addGroup(i);
+				};
+				var teamTable = document.getElementById("teamTable");
+				teamTable.cellSpacing = 30;
+				var teamScore = 20 * numberOfGroups;
+				createCell(teamTable.rows[0].insertCell(0), "Nation Scores", 'col scoreCell');
+				for (var i = 1; i <= numberOfTeams; i++) {
+					addTeamScore(i, teamScore);
+				};
+				var scoreTable = document.getElementById("scoreTable");
+				scoreTable.cellSpacing = 30;
+				createCell(scoreTable.rows[0].insertCell(0), "Player Scores", 'col scoreCell');
+				var decisionTable = document.getElementById("decisionTable");
+				decisionTable.cellSpacing = 30;
+				createCell(decisionTable.rows[0].insertCell(0), "Decided Players", 'col scoreCell');
+			};
 
 			function isValidInt(int) {
 				return (int % 1 === 0 && int >= 0);
