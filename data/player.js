@@ -20,6 +20,9 @@ var Player = function(name, number) {
 	//the decisions that the player has made in the game
 	var decisions = [];
 
+    //the decision that the player made in the current world event (0 if hasn't made a decision yet)
+	var worldEventDecision = 0;
+
 	/**
 	* Increases player score by amount
 	*
@@ -59,10 +62,35 @@ var Player = function(name, number) {
 
 	/**
 	* Updates the player score based on the decision made by the player
+    *
+    * @param {Integer} decisionNumber - the number of the decision that will be made
 	*/
 	that.makeDecision = function(decisionNumber) {
 		that.updatePlayerScore(DECISIONS_IMPACTS[decisionNumber - 1]);
 		decisions.push(decisionNumber);
+	};
+
+    /*
+    * Sets the players world event decision to the decision they chose
+    *
+    * @param {Integer} decisionNumber - the number of the decision that the player chose
+    */
+	that.setWorldEventDecision = function (decisionNumber) {
+	    worldEventDecision = decisionNumber;
+	};
+
+    /*
+    * Resets the players world event decision to the default
+    */
+	that.resetWorldEventDecision = function () {
+	    worldEventDecision = 0;
+	};
+
+    /*
+    * Returns the world event decision of the player (0 if no decision was made)
+    */
+	that.getWorldEventDecision = function () {
+	    return worldEventDecision;
 	};
 
 	/**

@@ -98,12 +98,13 @@ var Team = function(number) {
 	* Makes the decision specified by decision number
 	*
 	* @param {Integer} decisionNumber - the number of the decision that will be made
-	* @param {Integer} playerNumber - the number of the player that made the decision
 	* @param {Integer} groupNumber - the number of the group that player is in
+    * @param {Integer} playerNumber - the number of the player that made the decision
 	*/
 	that.makeDecision = function(decisionNumber, groupNumber, playerNumber) {
 		var group = that.getGroup(groupNumber);
 		group.makeDecision(decisionNumber, playerNumber);
+		that.makeTeamScore();
 	};
 
 	/**

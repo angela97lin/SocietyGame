@@ -35,6 +35,13 @@ var GameControl = function() {
     };
 
     /*
+    * Returns whether the timer is paused
+    */
+    that.getTimerPaused = function () {
+        return timerPaused;
+    }
+
+    /*
     * Gets the timer's minutes remaining
     */
     that.getTimerMinutes = function () {

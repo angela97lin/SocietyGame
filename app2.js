@@ -157,7 +157,8 @@ io.sockets.on("connection", function(socket) {
 	};
 
 	socket.on("gameSettings", function(data) {
-		decisionMode = MODES[data.decisionMode];
+	    decisionMode = MODES[data.decisionMode];
+	    gameControl = GameControl();
 		world = World();
 		world.makeWorldScore(data.totalNumberOfPlayers);
 		totalNumberOfPlayers = data.totalNumberOfPlayers;
@@ -173,7 +174,15 @@ io.sockets.on("connection", function(socket) {
 			};
 			world.addTeam(teamToAdd);
 		};
-		//TODO: set up timer
+        //Handles the timer
+		setInterval(function () {
+		    if (!gameControl.getTimerPaused()) {
+		        gameControl.decrementTimer();
+		    };
+		    if (gameControl.getTimerMinutes == 0 && gameControl.getTimerSeconds == 0) {
+		        world.endRound();
+		    };
+		}, 1000);
 	});
 
 	socket.on("getPlayerData", function(data) {
@@ -205,6 +214,21 @@ io.sockets.on("connection", function(socket) {
 		gameMasterUpdateTeamScore(teamNumber);
 	});
 
+	socket.on("decision", function (data) {
+	    var decisionNumber = data.decisionNumber;
+	    var teamNumber = data.teamNumber;
+	    var groupNumber = data.groupNumber;
+	    var playerNumber = data.playerNumber;
+	    world.makeDecision(decisionNumber, teamNumber, groupNumber, playerNumber);
+	});
+
+	socket.on("worldEventDecision", function (data) {
+	    var decisionNumber = data.decisionNumber;
+	    var teamNumber = data.teamNumber;
+	    var groupNumber = data.groupNumber;
+	    var playerNumber = data.playerNumber;
+	    world.worldEventMakeDecision(decisionNumber, teamNumber, groupNumber, playerNumber);
+	})
 });
 
 /**
