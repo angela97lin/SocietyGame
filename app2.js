@@ -235,7 +235,7 @@ var playerFullScoreUpdate = function(teamNumber, groupNumber, playerNumber, sock
 var gameMasterUpdatePlayerScore = function(teamNumber, groupNumber, playerNumber, username) {
 	gameMasterSocket.emit("gameMasterUpdatePlayerScore", {
 		username: username,
-		playerScore: world.getPlayerScore(teamNumber, groupNumber, playerNumber);
+		playerScore: world.getPlayerScore(teamNumber, groupNumber, playerNumber)
 	});
 };
 

@@ -235,7 +235,7 @@
 			teamScores[socket.teamNumber] += -2;
 			playerScores[socket.playerNumber] += 2;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
-			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			gameMasterUpdateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
 			updateScoreRealTime();
 			checkPlayers(decisionMode);
@@ -249,7 +249,7 @@
 			teamScores[socket.teamNumber] += 2;
 			playerScores[socket.playerNumber] += -1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
-			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			gameMasterUpdateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
 			updateScoreRealTime();
 			checkPlayers(decisionMode);
@@ -263,7 +263,7 @@
 			teamScores[socket.teamNumber] += 1;
 			playerScores[socket.playerNumber] += 1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
-			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			gameMasterUpdateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
 			updateScoreRealTime();
 			checkPlayers(decisionMode);
@@ -277,7 +277,7 @@
 			teamScores[socket.teamNumber] += 0;
 			playerScores[socket.playerNumber] += -1;
 			updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
-			updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+			gameMasterUpdateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 			addDecidedPlayer(socket.username);
 			updateScoreRealTime();
 			checkPlayers(decisionMode);
@@ -986,7 +986,7 @@
 		});
 	};
 
-	function updateScoreRealTime() {
+	var updateScoreRealTime = function() {
 		if (updateRealTime) {
 			for (var i in SOCKET_LIST) {
 				var emitSocket = SOCKET_LIST[i];
@@ -1141,7 +1141,7 @@
 			playerScores[socket.playerNumber] += 2;
 		};
 		updatePlayerScore(socket.username, playerScores[socket.playerNumber]);
-		updateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
+		gameMasterUpdateTeamScore(socket.teamNumber, teamScores[socket.teamNumber]);
 		addDecidedPlayer(socket.username);
 		updateScoreRealTime();
 		checkPlayers(decisionMode);
@@ -1355,7 +1355,7 @@
 			updatePlayerScore
 		};
 		for (var i in teamScores) {
-			updateTeamScore(i, teamScores[i]);
+			gameMasterUpdateTeamScore(i, teamScores[i]);
 		};
 		clearDecidedPlayers();
 		resetPlayerDecisionMade();
@@ -1376,8 +1376,8 @@
 		});
 	};
 
-	function updateTeamScore(team, teamScore) {
-		gameMasterSocket.emit("updateTeamScore", {
+	var gameMasterUpdateTeamScore = function(team, teamScore) {
+		gameMasterSocket.emit("gameMasterUpdateTeamScore", {
 			team: team,
 			teamScore: teamScore
 		});
