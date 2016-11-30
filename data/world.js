@@ -184,21 +184,61 @@ var World = function() {
     }
 
     /*
-    * Selects a random unused world event and starts it
+    * Returns a random unused world event number
     */
     that.chooseRandomWorldEvent = function () {
         randomNumber = Math.floor((Math.random() * unusedWorldEvents.length));
         worldEventNumber = unusedWorldEvents.splice(randomNumber, 1);
-        startWorldEvent(worldEventNumber);
+        return worldEventNumber;
     };
 
     /*
-    * Starts the specified world event
+    * Sets the current world event to the number given
     *
-    *@param {Integer} worldEventNumber - the number of the world event to be initiated
+    * @param {Integer} worldEventNumber - the number of the new current world event
     */
-    that.startWorldEvent = function (worldEventNumber) {
-        switch (worldEventNumber) {
+    that.setWorldEventNumber = function (worldEventNumber) {
+        currentWorldEvent = worldEventNumber;
+    };
+
+    /*
+    * Records the player's made decision to the world event
+    *
+    * @param {Integer} decisionNumber - the number of the decision that the player made
+    * @param {Integer} teamNumber - the number of the team that the decided player is on
+    * @param {Integer} groupNumber - the number of the group that the decided player is on
+    * @param {Integer} playerNumber - the number of the decided player
+    */
+    that.worldEventMakeDecision = function (decisionNumber, teamNumber, groupNumber, playerNumber) {
+        switch (currentWorldEvent) {
+            case 1:
+                that.getTeam(teamNumber).getGroup(groupNumber).getPlayer(playerNumber).setWorldEventDecision(1);
+                break;
+            case 2:
+                that.getTeam(teamNumber).getGroup(groupNumber).getPlayer(playerNumber).setWorldEventDecision(2);
+                break;
+            default:
+                console.log("that decision does not exist");
+        }
+        that.worldEventDecisionMade();
+    };
+
+    /*
+    * Alerts the world that a world event decision was made and checks if all decisions have been made
+    */
+    that.worldEventDecisionMade() = function () {
+        numDecidedPlayers += 1;
+        if (numDecidedPlayers == NUM_TOTAL_PLAYERS) {
+            numDecidedPlayers = 0;
+            that.startWorldEvent();
+        };
+    };
+
+    /*
+    * Starts the correct world event (call only when everyone has made a decision)
+    */
+    that.startWorldEvent = function () {
+        switch (currentWorldEvent) {
             case 0:
                 startWar();
                 break;
@@ -220,18 +260,10 @@ var World = function() {
     };
 
     /*
-    * Applies the effect of the made decision to the world event
-    *
-    * @param {Integer} decisionNumber - the number of the decision that the player made
-    * @param {Integer} teamNumber - the number of the team that the decided player is on
-    * @param {Integer} groupNumber - the number of the group that the decided player is on
-    * @param {Integer} playerNumber - the number of the decided player
+    * Ends the current world event and returns back to the game
     */
-    that.worldEventMakeDecision = function (decisionNumber, teamNumber, groupNumber, playerNumber) {
-        switch (currentWorldEvent) {
-            case 0:
-
-        }
+    that.endWorldEvent = function () {
+        //TODO: endWorldEvent function
     }
 
     /*
@@ -252,14 +284,64 @@ var World = function() {
     * Starts and handles the world event corresponding to the Olympics
     */
     that.startOlympics = function () {
-
+        var individualScores = [];
+        //for each team
+        for (var i = 0; i < that.getTeams().length; i++) {
+            //for each group in that team
+            for (var j = 0; j < that.getTeam(i).getGroups().length; j++) {
+                //for each player in that group
+                for (var k = 0; k < that.getTeam(i).getGroup(j).getPlayers().length; k++) {
+                    var team = that.getTeam(i);
+                    var group = that.getTeam(i).getGroup(j);
+                    var player = that.getTeam(i).getGroup(j).getPlayer(k);
+                    //a value of 1 indicates they entered the olympics
+                    if (player.getWorldEventDecision() == 1) {
+                        var playerAndScore = [player.getPlayerScore(), player, group, team];
+                        individualScores.push(playerAndScore);
+                        //-2 is the cost of the Olympics, hard-coded for now
+                        player.updatePlayerScore(-2);
+                    };
+                };
+            };
+        };
+        //sorts the array of participating players by players' scores
+        individualScores.sort(function (a,b) {
+            return a[0] - b[0];
+        });
+        for (var i = 0; i < individualScores.length; i++) {
+            //if the score is at least tied for the third highest score
+            if (individualScores[i][0] >= individualScores[2][0]) {
+                //3 is the individual reward for being a winner in the olympics, hard-coded for now
+                individualScores[i][1].updatePlayerScore(3);
+                //6 is the group reward for being a winner in the olympics, hard-coded for now
+                individualScores[i][2].updateTeamScore(6);
+            }
+        };
+        that.endWorldEvent();
     };
 
     /*
     * Starts and handles the world event corresponding to a Natural Disaster
     */
     that.startNaturalDisaster = function () {
-
+        //for each team
+        for (var i = 0; i < that.getTeams().length; i++) {
+            //for each group in that team
+            for (var j = 0; j < that.getTeam(i).getGroups().length; j++) {
+                //for each player in that group
+                for (var k = 0; k < that.getTeam(i).getGroup(j).getPlayers().length; k++) {
+                    var team = that.getTeam(i);
+                    var group = that.getTeam(i).getGroup(j);
+                    var player = that.getTeam(i).getGroup(j).getPlayer(k);
+                    //a value of 1 indicates that this player sent a relief team
+                    if (player.getWorldEventDecision() == 1) {
+                        group.updateGroupScore(-1);
+                        that.updateWorldScore(1);
+                    };
+                };
+            };
+        };
+        that.endWorldEvent();
     };
 
     /*
