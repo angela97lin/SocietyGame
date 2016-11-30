@@ -15,7 +15,10 @@ var World = function() {
     var teams = [];
 
     //world event numbers that are unused so far
-    var unusedWorldEvents = [1, 2, 3, 4, 5];
+    var unusedWorldEvents = [0, 1, 2, 3, 4];
+
+    //the world event currently happening (-1 if none)
+    var currentWorldEvent = -1;
 
     //the number of players that have made a decision so far this round
     var numDecidedPlayers = 0;
@@ -87,6 +90,40 @@ var World = function() {
     };
 
     /*
+    * Affects the world score based on a players decision and passes the decision down to the relevant team
+    *
+    * @param {Integer} decisionNumber - the number of the decision that the player made
+    * @param {Integer} teamNumber - the number of the team that the decided player is on
+    * @param {Integer} groupNumber - the number of the group that the decided player is on
+    * @param {Integer} playerNumber - the number of the decided player
+    */
+    that.makeDecision = function (decisionNumber, teamNumber, groupNumber, playerNumber) {
+        switch (decisionNumber) {
+            //TODO: Update decision information
+            case 1:
+                that.updateWorldScore(-1);
+                break;
+            case 2:
+                that.updateWorldScore(0);
+                break;
+            case 3:
+                that.updateWorldScore(-1);
+                break;
+            case 4:
+                that.updateWorldScore(+2);
+                break;
+            case 5:
+                that.updateWorldScore(0);
+                break;
+            default:
+                console.log("decision does not exist");
+        }
+        var team = that.getTeam(teamNumber);
+        team.makeDecision(decisionNumber, groupNumber, playerNumber);
+        that.decisionMade();
+    }
+
+    /*
     * Alerts the World that a decision was made and checks if all players have made a decision
     */
     that.decisionMade = function () {
@@ -141,6 +178,21 @@ var World = function() {
                 console.log("world event does not exist");
         }
     };
+
+    /*
+    * Applies the effect of the made decision to the world event
+    *
+    * @param {Integer} decisionNumber - the number of the decision that the player made
+    * @param {Integer} teamNumber - the number of the team that the decided player is on
+    * @param {Integer} groupNumber - the number of the group that the decided player is on
+    * @param {Integer} playerNumber - the number of the decided player
+    */
+    that.worldEventMakeDecision = function (decisionNumber, teamNumber, groupNumber, playerNumber) {
+        switch (currentWorldEvent) {
+            case 0:
+
+        }
+    }
 
     /*
     * Starts and handles the world event corresponding to a World War

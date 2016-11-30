@@ -139,10 +139,25 @@ io.sockets.on("connection", function(socket) {
 		//TODO: set up timer
 	});
 
-	socket.on("getPlayerData", function(data) {
+	socket.on("getPlayerData", function (data) {
 
+	});
+
+	socket.on("decision", function (data) {
+	    var decisionNumber = data.decisionNumber;
+	    var teamNumber = data.teamNumber;
+	    var groupNumber = data.groupNumber;
+	    var playerNumber = data.playerNumber;
+	    world.makeDecision(decisionNumber, teamNumber, groupNumber, playerNumber);
+	});
+
+	socket.on("worldEventDecision", function (data) {
+	    var decisionNumber = data.decisionNumber;
+	    var teamNumber = data.teamNumber;
+	    var groupNumber = data.groupNumber;
+	    var playerNumber = data.playerNumber;
+	    world.worldEventMakeDecision(decisionNumber, teamNumber, groupNumber, playerNumber);
 	})
-
 });
 
 app.listen(process.env.PORT || 3000, function() {

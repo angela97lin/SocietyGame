@@ -59,6 +59,8 @@ var Player = function(name, number) {
 
 	/**
 	* Updates the player score based on the decision made by the player
+    *
+    * @param {Integer} decisionNumber - the number of the decision that will be made
 	*/
 	that.makeDecision = function(decisionNumber) {
 		that.updatePlayerScore(DECISIONS_IMPACTS[decisionNumber - 1]);
