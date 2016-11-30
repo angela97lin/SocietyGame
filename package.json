@@ -4,7 +4,9 @@
   "description": "a decision-based game where choices affect society, team, group, and individual scores",
   "main": "app.js",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.13.4",
+    "express-session": "^1.14.2",
     "jquery": "^3.0.0",
     "socket.io": "^1.4.6"
   },

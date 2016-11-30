@@ -62,6 +62,22 @@ var Group = function(number) {
 	};
 
 	/**
+	* Gets the score of the player specified
+	*
+	* @param {Integer} playerNumber - the number of the player whose score will be given
+ 	*/
+	that.getPlayerScore = function(playerNumber) {
+		return that.getPlayer(playerNumber).getPlayerScore();
+	};
+
+	/**
+	* Gets the number of players currently in the group
+	*/
+	that.getNumPlayers = function() {
+		return players.length;
+	};
+
+	/**
 	* Makes the decision specified by the decision number
 	*
 	* @param {Integer} decisionNumber - the number of the decision that will be made

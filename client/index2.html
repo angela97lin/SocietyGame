@@ -133,7 +133,7 @@
 	var playersNotToInvestigate = [];
 	var groupmates = {};
 	
-	var gameMode = "wait";
+	var decisionMode = "wait";
 	
 	var NATIONS;
 	var GROUP_NAMES;
@@ -154,6 +154,11 @@
 	
 /*LISTENERS*/
 
+	/**
+	* Gives the player the initial game data
+	*
+	* @param {Function} callback - the function that contains the initial game data
+	*/
 	socket.on("playerConnect", function(data) {
 
 		NATIONS = data.NATIONS;
@@ -194,7 +199,18 @@
 		} else {
 			alert("Please use a different browser or update your current browser");
 		};
-		gameMode = data.mode;
+		decisionMode = data.decisionMode;
+	});
+
+	/**
+	* Updates the player, team, and world scores
+	*
+	* @param {Function} callback - the function with data containing the player, team, and world scores
+	*/
+	socket.on("playerFullScoreUpdate", function(data) {
+		document.getElementById("individualscore").innerHTML = username + "'s Score: " + data.playerScore;
+		document.getElementById("nationscore").innerHTML = teamName + "'s Score: " + data.team;
+		document.getElementById("worldscore").innerHTML = "World Score: " + data.world;
 	});
 	
 	socket.on('gameState',function(data) {
@@ -363,7 +379,7 @@
 	
 /*FUNCTIONS*/
 
-	function modalEnter() {
+	var modalEnter = function() {
 	
 		if(document.getElementById("usernameChooser").value == "Choose your username:"){
 			alert("Please choose your username");
@@ -408,28 +424,7 @@
 		};
 	};
 
-	// function getModalInput(numberOfPlayersConnectedPerGroup) {
-	// 	$("#myModal").modal();
-	// 	alert("this should be second");
-	// 	console.log(teamNameInput);
-	// 	console.log(numberOfTeams);
-	// 	console.log(groupNumberInput);
-	// 	console.log(numberOfGroups);
-	// 	console.log(numberOfPlayersConnectedPerGroup);
-	// 	console.log(numberOfPlayersConnectedPerGroup[teamNameInput - 1]);
-	// 	console.log(numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1]);
-	// 	while (teamNameInput > numberOfTeams || groupNumberInput > numberOfGroups) {
-	// 		window.alert("Please choose an appropriate character");
-	// 		$("#myModal").modal();
-	// 	};
-	// 	while (numberOfPlayersConnectedPerGroup[teamNameInput - 1][groupNumberInput - 1] >= playersPerGroup) {
-	// 		alert("This group is already full, please remove player before you can join");
-	// 		$("#myModal").modal();
-	// 	};	
-	// };
-
-
-	function createDecisions(group) {
+	var createDecisions = function(group) {
 		document.getElementById('decision1').innerHTML = DECISIONS[group - 1][1];
 		document.getElementById('decision2').innerHTML = DECISIONS[group - 1][2];
 		document.getElementById('decision3').innerHTML = DECISIONS[group - 1][3];
@@ -445,7 +440,7 @@
 		$(':button').prop('disabled', false);
 	};
 
-	function goToConfirm(number, screenType, event=null) {
+	var goToConfirm = function(number, screenType, event=null) {
 		disableButtons();
 		document.getElementById("popup").style.display = "block";
 		document.getElementById("confirm").disabled = false;
@@ -518,7 +513,7 @@
 		document.getElementById("popup").style.display = "none"; 
 	};
 
-	function cancel() {
+	var cancel = function() {
 		enableButtons();
 		document.getElementById("popup").style.display = "none";
 	};
