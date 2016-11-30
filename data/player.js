@@ -70,7 +70,7 @@ var Player = function(name, number) {
 		decisions.push(decisionNumber);
 	};
 
-    /*
+    /**
     * Sets the players world event decision to the decision they chose
     *
     * @param {Integer} decisionNumber - the number of the decision that the player chose
@@ -79,14 +79,14 @@ var Player = function(name, number) {
 	    worldEventDecision = decisionNumber;
 	};
 
-    /*
+    /**
     * Resets the players world event decision to the default
     */
 	that.resetWorldEventDecision = function () {
 	    worldEventDecision = 0;
 	};
 
-    /*
+    /**
     * Returns the world event decision of the player (0 if no decision was made)
     */
 	that.getWorldEventDecision = function () {

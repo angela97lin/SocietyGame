@@ -49,7 +49,7 @@ var World = function() {
     };
 
 
-    /*
+    /**
     * Gets the world score
     */
     that.getWorldScore = function () {
@@ -57,7 +57,7 @@ var World = function() {
     };
 
 
-    /*
+    /**
     * Increases the world score by amount
     *
     * @param {Integer} amount - the amount to be added to the world score
@@ -129,7 +129,7 @@ var World = function() {
         return that.getTeam(teamNumber).getPlayerScore(groupNumber, playerNumber);
     };
 
-    /*
+    /**
     * Affects the world score based on a players decision and passes the decision down to the relevant team
     *
     * @param {Integer} decisionNumber - the number of the decision that the player made
@@ -163,7 +163,7 @@ var World = function() {
         that.decisionMade();
     }
 
-    /*
+    /**
     * Alerts the World that a decision was made and checks if all players have made a decision
     */
     that.decisionMade = function () {
@@ -176,14 +176,14 @@ var World = function() {
         }
     };
 
-    /*
+    /**
     * Ends the current round
     */
     that.endRound = function () {
         //TODO: write endRound function
     }
 
-    /*
+    /**
     * Returns a random unused world event number
     */
     that.chooseRandomWorldEvent = function () {
@@ -192,7 +192,7 @@ var World = function() {
         return worldEventNumber;
     };
 
-    /*
+    /**
     * Sets the current world event to the number given
     *
     * @param {Integer} worldEventNumber - the number of the new current world event
@@ -201,7 +201,7 @@ var World = function() {
         currentWorldEvent = worldEventNumber;
     };
 
-    /*
+    /**
     * Records the player's made decision to the world event
     *
     * @param {Integer} decisionNumber - the number of the decision that the player made
@@ -223,10 +223,10 @@ var World = function() {
         that.worldEventDecisionMade();
     };
 
-    /*
+    /**
     * Alerts the world that a world event decision was made and checks if all decisions have been made
     */
-    that.worldEventDecisionMade() = function () {
+    that.worldEventDecisionMade = function () {
         numDecidedPlayers += 1;
         if (numDecidedPlayers == NUM_TOTAL_PLAYERS) {
             numDecidedPlayers = 0;
@@ -234,7 +234,7 @@ var World = function() {
         };
     };
 
-    /*
+    /**
     * Starts the correct world event (call only when everyone has made a decision)
     */
     that.startWorldEvent = function () {
@@ -259,28 +259,28 @@ var World = function() {
         }
     };
 
-    /*
+    /**
     * Ends the current world event and returns back to the game
     */
     that.endWorldEvent = function () {
         //TODO: endWorldEvent function
     }
 
-    /*
+    /**
     * Starts and handles the world event corresponding to a World War
     */
     that.startWar = function () {
 
     };
 
-    /*
+    /**
     * Starts and handles the world event corresponding to an Epidemic
     */
     that.startEpidemic = function () {
 
     };
 
-    /*
+    /**
     * Starts and handles the world event corresponding to the Olympics
     */
     that.startOlympics = function () {
@@ -320,7 +320,7 @@ var World = function() {
         that.endWorldEvent();
     };
 
-    /*
+    /**
     * Starts and handles the world event corresponding to a Natural Disaster
     */
     that.startNaturalDisaster = function () {
@@ -344,7 +344,7 @@ var World = function() {
         that.endWorldEvent();
     };
 
-    /*
+    /**
     * Starts and handles the world event corresponding to a Space Race
     */
     that.startSpaceRace = function () {
