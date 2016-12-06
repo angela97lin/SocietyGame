@@ -93,14 +93,9 @@ var GameControl = function() {
         roundNumber += 1;
     };
 
-
-
-
-
-
-
-
     Object.freeze(that);
     return that;
-}
 
+};
+
+module.exports = GameControl;

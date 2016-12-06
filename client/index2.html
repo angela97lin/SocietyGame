@@ -117,12 +117,12 @@
 				<div id="waitingForPlayers"></div>\
 			</div>\
 		</div>'+decisionString+'</div>'
+		
 	var socket = io();
 	
 	var playerScore;
 	var numberOfTeams;
 	var numberOfGroups;
-	var numberOfPlayersConnectedPerGroup;
 	var usernamesUsed;
 	
 	var playerNumberInput;
@@ -130,8 +130,6 @@
 	var groupNumberInput;
 	
 	var playersPerGroup;
-	var playersNotToInvestigate = [];
-	var groupmates = {};
 	
 	var decisionMode = "wait";
 	
@@ -144,15 +142,11 @@
 	var username;
 	var playerNumber;
 	var teamName;
-	var groupNumber = [];
+	var groupNumber;
 
 	var hasStarted = false;
 
 	var teamInLead;
-
-	
-	
-/*LISTENERS*/
 
 	/**
 	* Gives the player the initial game data
@@ -171,6 +165,7 @@
 		numberOfGroups = data.numberOfGroups;
 		playersPerGroup = data.numberOfPlayersInGroups;
 		usernamesUsed = data.usernames;
+		decisionMode = data.decisionMode;
 
 		if (typeof(Storage) !== "undefined") {
 			var usernameData = data.usernameData;
@@ -199,7 +194,15 @@
 		} else {
 			alert("Please use a different browser or update your current browser");
 		};
-		decisionMode = data.decisionMode;
+	});
+
+	/**
+	* Gets the player number from the server
+	*
+	* @param {Function} callback - the function with data containing the player number
+	*/
+	socket.on("givePlayerNumber", function(data) {
+		playerNumber = data.playerNumber;
 	});
 
 	/**
@@ -451,13 +454,13 @@
 	var confirm = function(number, screenType, event) {
 		if (screenType == 1) {
 			if (number == 1) {
-				decision1(true);
+				decision1();
 			} else if (number == 2) {
-				decision2(true);
+				decision2();
 			} else if (number == 3) {
-				decision3(true);
+				decision3();
 			} else if (number == 4) {
-				decision4(true);
+				decision4();
 			} else if (number == 5) {
 				decision5(true);
 			};
@@ -518,52 +521,84 @@
 		document.getElementById("popup").style.display = "none";
 	};
 
-	var decision1 = function(sendToServer) {
+	/**
+	* Sends the decision 1 data to the server
+	* Shows the impact of the decision
+	*/
+	var decision1 = function() {
 		socket.emit("disableCopies", {
 			username: username
 		});
-		if(sendToServer){
-			socket.emit('decision1', {});
-		}		
+		socket.emit("decision", {
+			decisionNumber: 1,
+			teamNumber: teamNumber,
+			groupNumber: groupNumber,
+			playerNumber: playerNumber,
+			username: username
+		});
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
-	var decision2 = function(sendToServer) {
+	/**
+	* Sends the decision 2 data to the server
+	* Shows the impact of the decision
+	*/
+	var decision2 = function() {
 		socket.emit("disableCopies", {
 			username: username
 		});
-		if(sendToServer){
-			socket.emit('decision2', {});
-		}	
+		socket.emit("decision", {
+			decisionNumber: 2,
+			teamNumber: teamNumber,
+			groupNumber: groupNumber,
+			playerNumber: playerNumber,
+			username: username
+		});
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade"></div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
-	var decision3 = function(sendToServer) {
+	/**
+	* Sends the decision 3 data to the server
+	* Shows the impact of the decision
+	*/
+	var decision3 = function() {
 		socket.emit("disableCopies", {
 			username: username
 		});
-		if(sendToServer){
-			socket.emit('decision3', {});
-		}	
+		socket.emit("decision", {
+			decisionNumber: 3,
+			teamNumber: teamNumber,
+			groupNumber: groupNumber,
+			playerNumber: playerNumber,
+			username: username
+		});
 		document.getElementById("individualChange").innerHTML = '<div class="fade">+</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade">+</div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("waitingForPlayers").innerHTML = '<h4>Waiting for the other players</h4>';
 	};
 	
-	var decision4 = function(sendToServer) {
+	/**
+	* Sends the decision 4 data to the server
+	* Shows the impact of the decision
+	*/
+	var decision4 = function() {
 		socket.emit("disableCopies", {
 			username: username
 		});
-		if(sendToServer){
-			socket.emit('decision4', {});
-		}	
+		socket.emit("decision", {
+			decisionNumber: 4,
+			teamNumber: teamNumber,
+			groupNumber: groupNumber,
+			playerNumber: playerNumber,
+			username: username
+		});
 		document.getElementById("individualChange").innerHTML = '<div class="fade">-</div>';
 		document.getElementById("nationChange").innerHTML = '<div class="fade"></div>';
 		document.getElementById("worldChange").innerHTML = '<div class="fade">+</div>';

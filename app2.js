@@ -202,16 +202,10 @@ io.sockets.on("connection", function(socket) {
 									  groupNumber: groupNumber,
 									  teamNumber: teamNumber};
 		};
+		socket.emit("givePlayerNumber", {
+			playerNumber: playerNumber
+		});
 		playerFullScoreUpdate(teamNumber, groupNumber, playerNumber, socket);
-	});
-
-	socket.on("decision1", function(data) {
-		var teamNumber = data.teamNumber;
-		var groupNumber = data.groupNumber;
-		var playerNumber = data.playerNumber;
-		world.makeDecision(1, teamNumber, groupNumber, playerNumber);
-		gameMasterUpdatePlayerScore(teamNumber, groupNumber, playerNumber, data.username);
-		gameMasterUpdateTeamScore(teamNumber);
 	});
 
 	socket.on("decision", function (data) {
@@ -220,6 +214,8 @@ io.sockets.on("connection", function(socket) {
 	    var groupNumber = data.groupNumber;
 	    var playerNumber = data.playerNumber;
 	    world.makeDecision(decisionNumber, teamNumber, groupNumber, playerNumber);
+	    gameMasterUpdatePlayerScore(teamNumber, groupNumber, playerNumber, data.username);
+		gameMasterUpdateTeamScore(teamNumber);
 	});
 
 	socket.on("worldEventDecision", function (data) {
@@ -228,7 +224,8 @@ io.sockets.on("connection", function(socket) {
 	    var groupNumber = data.groupNumber;
 	    var playerNumber = data.playerNumber;
 	    world.worldEventMakeDecision(decisionNumber, teamNumber, groupNumber, playerNumber);
-	})
+	});
+
 });
 
 /**
